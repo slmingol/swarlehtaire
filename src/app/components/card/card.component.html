@@ -4,7 +4,9 @@
 		[class.face-down]="!card.faceUp"
 		[class.red]="isRed"
 		[class.black]="!isRed"
-		[attr.draggable]="draggable && card.faceUp">
+		[attr.draggable]="draggable && card.faceUp"
+		(dragstart)="onDragStart($event)"
+		(dragend)="onDragEnd()">
 		@if (card.faceUp) {
 			<div class="card-content">
 				<div class="card-corner top-left">

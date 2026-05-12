@@ -3,6 +3,7 @@
 	min-width: 80px;
 	min-height: 112px;
 	cursor: pointer;
+	transition: all 0.2s;
 
 	&.spread-down {
 		padding-bottom: 400px; // Space for cascading cards
@@ -11,6 +12,21 @@
 	&.spread-right {
 		padding-right: 200px; // Space for spread cards
 		display: flex;
+	}
+
+	&.drag-over {
+		&::before {
+			content: '';
+			position: absolute;
+			top: -4px;
+			left: -4px;
+			right: -4px;
+			bottom: -4px;
+			border: 3px dashed #4CAF50;
+			border-radius: 12px;
+			pointer-events: none;
+			z-index: 1000;
+		}
 	}
 }
 

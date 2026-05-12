@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Card, Suit, Rank } from '../../model/card';
 
@@ -12,6 +12,21 @@ import { Card, Suit, Rank } from '../../model/card';
 export class CardComponent {
 	@Input() card?: Card;
 	@Input() draggable: boolean = false;
+	@Output() dragStart = new EventEmitter<void>();
+	@Output() dragEnd = new EventEmitter<void>();
+
+	onDragStart(event: DragEvent): void {
+		if (this.card?.faceUp && this.draggable) {
+			event.dataTransfer!.effectAllowed = 'move';
+			this.dragStart.emit();
+		} else {
+			event.preventDefault();
+		}
+	}
+
+	onDragEnd(): void {
+		this.dragEnd.emit();
+	}
 
 	get displayRank(): string {
 		if (!this.card) return '';

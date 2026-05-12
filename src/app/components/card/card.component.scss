@@ -6,10 +6,19 @@
 	position: relative;
 	cursor: pointer;
 	transition: transform 0.2s, box-shadow 0.2s;
+	user-select: none;
 
 	&:hover {
 		transform: translateY(-4px);
 		box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+	}
+
+	&:active {
+		cursor: grabbing;
+	}
+
+	&[draggable=\"true\"] {
+		cursor: grab;
 	}
 
 	&.face-up {

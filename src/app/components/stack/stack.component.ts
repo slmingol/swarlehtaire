@@ -16,15 +16,45 @@ export class StackComponent {
 	@Input() spread: 'none' | 'down' | 'right' = 'down';
 	@Output() cardClick = new EventEmitter<{ card: Card; index: number }>();
 	@Output() stackClick = new EventEmitter<void>();
+	@Output() cardDragStart = new EventEmitter<number>();
+	@Output() cardDragEnd = new EventEmitter<void>();
+	@Output() stackDrop = new EventEmitter<void>();
+
+	isDragOver = false;
 
 	onCardClick(card: Card, index: number): void {
-		this.cardClick.emit({ card, index });
+		if (card.faceUp) {
+			this.cardClick.emit({ card, index });
+		}
 	}
 
 	onStackClick(): void {
 		if (this.cards.length === 0) {
 			this.stackClick.emit();
 		}
+	}
+
+	onCardDragStart(index: number): void {
+		this.cardDragStart.emit(index);
+	}
+
+	onCardDragEnd(): void {
+		this.cardDragEnd.emit();
+	}
+
+	onDragOver(event: DragEvent): void {
+		event.preventDefault();
+		this.isDragOver = true;
+	}
+
+	onDragLeave(): void {
+		this.isDragOver = false;
+	}
+
+	onDrop(event: DragEvent): void {
+		event.preventDefault();
+		this.isDragOver = false;
+		this.stackDrop.emit();
 	}
 
 	getCardStyle(index: number): { [key: string]: string } {

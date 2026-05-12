@@ -15,6 +15,9 @@ import { Card } from '../../model/card';
 export class KlondikeBoardComponent implements OnInit, OnDestroy {
 	gameState!: GameState;
 	private destroy$ = new Subject<void>();
+	
+	// Drag state
+	dragSource: { type: 'tableau' | 'waste' | 'foundation'; index: number; cardIndex: number } | null = null;
 
 	constructor(private klondikeService: KlondikeService) {}
 
@@ -44,11 +47,21 @@ export class KlondikeBoardComponent implements OnInit, OnDestroy {
 	}
 
 	onWasteClick(event: { card: Card; index: number }): void {
-		// Try to auto-move to foundation
 		const wasteStack = this.klondikeService.getWasteStack();
+		const cardIndex = wasteStack.cards.length - 1;
+		
+		// Try to move to foundation
 		for (let i = 0; i < 4; i++) {
 			const foundation = this.klondikeService.getFoundationStack(i);
-			if (this.klondikeService.moveCard(wasteStack, foundation, wasteStack.cards.length - 1)) {
+			if (this.klondikeService.moveCard(wasteStack, foundation, cardIndex)) {
+				return;
+			}
+		}
+		
+		// Try to move to tableau
+		for (let i = 0; i < 7; i++) {
+			const tableau = this.klondikeService.getTableauStack(i);
+			if (this.klondikeService.moveCard(wasteStack, tableau, cardIndex)) {
 				return;
 			}
 		}
@@ -57,11 +70,21 @@ export class KlondikeBoardComponent implements OnInit, OnDestroy {
 	onTableauClick(tableauIndex: number, event: { card: Card; index: number }): void {
 		const tableau = this.klondikeService.getTableauStack(tableauIndex);
 		
-		// Try to move to foundation first
+		// Try to move to foundation
 		for (let i = 0; i < 4; i++) {
 			const foundation = this.klondikeService.getFoundationStack(i);
 			if (this.klondikeService.moveCard(tableau, foundation, event.index)) {
 				return;
+			}
+		}
+		
+		// Try to move to another tableau
+		for (let i = 0; i < 7; i++) {
+			if (i !== tableauIndex) {
+				const targetTableau = this.klondikeService.getTableauStack(i);
+				if (this.klondikeService.moveCard(tableau, targetTableau, event.index)) {
+					return;
+				}
 			}
 		}
 	}
@@ -83,5 +106,41 @@ export class KlondikeBoardComponent implements OnInit, OnDestroy {
 
 	onAutoComplete(): void {
 		this.klondikeService.autoMoveToFoundations();
+	}
+
+	// Drag and Drop handlers
+	onDragStart(source: { type: 'tableau' | 'waste' | 'foundation'; index: number; cardIndex: number }): void {
+		this.dragSource = source;
+	}
+
+	onDragEnd(): void {
+		this.dragSource = null;
+	}
+
+	onDrop(target: { type: 'tableau' | 'foundation'; index: number }): void {
+		if (!this.dragSource) return;
+
+		let sourceStack;
+		if (this.dragSource.type === 'tableau') {
+			sourceStack = this.klondikeService.getTableauStack(this.dragSource.index);
+		} else if (this.dragSource.type === 'waste') {
+			sourceStack = this.klondikeService.getWasteStack();
+		} else if (this.dragSource.type === 'foundation') {
+			sourceStack = this.klondikeService.getFoundationStack(this.dragSource.index);
+		} else {
+			return;
+		}
+
+		let targetStack;
+		if (target.type === 'tableau') {
+			targetStack = this.klondikeService.getTableauStack(target.index);
+		} else if (target.type === 'foundation') {
+			targetStack = this.klondikeService.getFoundationStack(target.index);
+		} else {
+			return;
+		}
+
+		this.klondikeService.moveCard(sourceStack, targetStack, this.dragSource.cardIndex);
+		this.dragSource = null;
 	}
 }

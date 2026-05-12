@@ -25,7 +25,9 @@
 							[cards]="gameState.waste" 
 							stackType="waste"
 							spread="right"
-							(cardClick)="onWasteClick($event)">
+							(cardClick)="onWasteClick($event)"
+							(cardDragStart)="onDragStart({type: 'waste', index: 0, cardIndex: $event})"
+							(cardDragEnd)="onDragEnd()">
 						</app-stack>
 					</div>
 				</div>
@@ -35,7 +37,10 @@
 							[cards]="foundation" 
 							stackType="foundation"
 							spread="none"
-							(cardClick)="onFoundationClick($index, $event)">
+							(cardClick)="onFoundationClick($index, $event)"
+							(cardDragStart)="onDragStart({type: 'foundation', index: $index, cardIndex: $event})"
+							(cardDragEnd)="onDragEnd()"
+							(stackDrop)="onDrop({type: 'foundation', index: $index})">
 						</app-stack>
 					}
 				</div>
@@ -49,7 +54,10 @@
 						stackType="tableau"
 						spread="down"
 						(cardClick)="onTableauClick($index, $event)"
-						(stackClick)="onTableauStackClick($index)">
+						(stackClick)="onTableauStackClick($index)"
+						(cardDragStart)="onDragStart({type: 'tableau', index: $index, cardIndex: $event})"
+						(cardDragEnd)="onDragEnd()"
+						(stackDrop)="onDrop({type: 'tableau', index: $index})">
 					</app-stack>
 				}
 			</div>
