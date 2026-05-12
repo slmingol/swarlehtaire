@@ -1,0 +1,48 @@
+# Dependencies
+node_modules/
+npm-debug.log
+yarn-error.log
+package-lock.json
+
+# Build outputs
+dist/
+.angular/
+*.js.map
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# Testing
+coverage/
+*.spec.ts
+*.spec.js
+
+# Documentation
+*.md
+!README.md
+docs/
+
+# CI/CD
+.github/
+.travis.yml
+.gitlab-ci.yml
+
+# Other
+.editorconfig
+.eslintrc*
+.prettierrc
+tsconfig.spec.json
+jest.config.*

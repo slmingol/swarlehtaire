@@ -1,0 +1,32 @@
+services:
+  web:
+    image: ghcr.io/slmingol/swarlehtaire:latest
+    container_name: swarlehtaire
+    ports:
+      - "8080:80"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://127.0.0.1:80/"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
+
+  # Development service with live reload
+  dev:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: swarlehtaire-dev
+    ports:
+      - "4200:4200"
+    volumes:
+      - ./src:/app/src:ro
+      - ./angular.json:/app/angular.json:ro
+      - ./tsconfig.json:/app/tsconfig.json:ro
+      - ./tsconfig.app.json:/app/tsconfig.app.json:ro
+    environment:
+      - NODE_ENV=development
+    restart: unless-stopped
+    profiles:
+      - dev

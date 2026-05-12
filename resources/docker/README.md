@@ -1,6 +1,8 @@
-# Build your own Mah Docker Setup
+# Build Swarlehtaire Docker Setup from Releases
 
-Run Mah in a Docker container using nginx. To use the official Mah image, see [Docker Image](../docker-image/README.md).
+Run Swarlehtaire in a Docker container using nginx. This Dockerfile downloads pre-built releases.
+
+For building from source, use the main [Dockerfile](../../Dockerfile) in the project root.
 
 ## Quick Start
 
@@ -8,8 +10,8 @@ Download the [Dockerfile](./Dockerfile) to your local machine.
 In the same directory, build and run the Docker container:
 
 ```bash
-docker build -t mah .
-docker run -d -p 8080:80 mah
+docker build -t swarlehtaire .
+docker run -d -p 8080:80 swarlehtaire
 ```
 
 Then open [http://localhost:8080](http://localhost:8080).
@@ -19,11 +21,11 @@ Then open [http://localhost:8080](http://localhost:8080).
 Override the version at build time:
 
 ```bash
-docker build --build-arg MAH_VERSION=1.19.0 -t mah .
+docker build --build-arg SWARLEHTAIRE_VERSION=0.2.0 -t swarlehtaire .
 ```
 
 Change the port to your liking:
 
 ```bash
-docker run -d -p 9090:80 mah
+docker run -d -p 9090:80 swarlehtaire
 ```
