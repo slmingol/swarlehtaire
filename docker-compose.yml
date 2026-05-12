@@ -1,6 +1,9 @@
 services:
   web:
-    image: ghcr.io/slmingol/swarlehtaire:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: swarlehtaire:local
     container_name: swarlehtaire
     ports:
       - "8080:80"

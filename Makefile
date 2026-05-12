@@ -1,5 +1,9 @@
 # Makefile for Swarlehtaire Docker operations
 
+# Use podman if docker is not available
+CONTAINER_CMD := $(shell command -v docker 2> /dev/null || echo podman)
+COMPOSE_CMD := $(CONTAINER_CMD) compose
+
 .PHONY: help build up down dev logs shell clean rebuild test
 
 # Default target
@@ -17,44 +21,44 @@ help:
 
 # Build production image
 build:
-	docker compose build web
+	$(COMPOSE_CMD) build web
 
 # Start production container
 up:
-	docker compose up -d web
+	$(COMPOSE_CMD) up -d web
 	@echo "Swarlehtaire running at http://localhost:8080"
 
 # Stop containers
 down:
-	docker compose down
+	$(COMPOSE_CMD) down
 
 # Start development server
 dev:
-	docker compose --profile dev up -d dev
+	$(COMPOSE_CMD) --profile dev up -d dev
 	@echo "Development server running at http://localhost:4200"
 
 # View logs
 logs:
-	docker compose logs -f
+	$(COMPOSE_CMD) logs -f
 
 # Shell into container
 shell:
-	docker compose exec web sh
+	$(COMPOSE_CMD) exec web sh
 
 # Clean up
 clean:
-	docker compose down -v
-	docker rmi swarlehtaire-web swarlehtaire-dev 2>/dev/null || true
+	$(COMPOSE_CMD) down -v
+	$(CONTAINER_CMD) rmi swarlehtaire-web swarlehtaire-dev 2>/dev/null || true
 
 # Rebuild from scratch
 rebuild: clean
-	docker compose build --no-cache web
-	docker compose up -d web
+	$(COMPOSE_CMD) build --no-cache web
+	$(COMPOSE_CMD) up -d web
 
 # Build and smoke test
 test: build
-	docker compose up -d web
+	$(COMPOSE_CMD) up -d web
 	@echo "Waiting for container to be healthy..."
-	@timeout 60 sh -c 'until [ "$$(docker inspect --format='"'"'{{.State.Health.Status}}'"'"' swarlehtaire)" = "healthy" ]; do sleep 2; done'
+	@timeout 60 sh -c 'until [ "$$($(CONTAINER_CMD) inspect --format='"'"'{{.State.Health.Status}}'"'"' swarlehtaire)" = "healthy" ]; do sleep 2; done'
 	@echo "✓ Container is healthy"
-	docker compose down
+	$(COMPOSE_CMD) down
