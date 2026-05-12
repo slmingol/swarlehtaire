@@ -17,13 +17,32 @@ This project is built on the excellent architecture from [mah](https://github.co
 
 ## 🚀 Quick Start
 
-### Prerequisites
-- Node.js >= 22
-- npm or yarn
+### Container (Recommended)
 
-### Development
+Requires Docker or Podman.
 
-\`\`\`bash
+```bash
+# Production - using Docker Compose
+docker compose up -d web
+
+# Access at http://localhost:8080
+
+# Development - with hot reload
+docker compose --profile dev up -d dev
+
+# Or use Makefile shortcuts
+make build      # Build image
+make up         # Start production
+make dev        # Start development
+```
+
+See [DOCKER.md](DOCKER.md) for full Docker documentation.
+
+### Traditional Build
+
+Requires Node.js >= 22 and npm.
+
+```bash
 # Install dependencies
 npm install
 
@@ -31,16 +50,10 @@ npm install
 npm start
 
 # Open browser to http://localhost:4200
-\`\`\`
 
-### Build
-
-\`\`\`bash
 # Production build
 npm run build:prod
-
-# Output in dist/
-\`\`\`
+```
 
 ## 🎮 Games
 
