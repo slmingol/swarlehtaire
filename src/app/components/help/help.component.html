@@ -1,0 +1,106 @@
+<div class="top">
+	<fieldset class="help">
+		<legend>{{ 'HOW_TO_PLAY' | translate }}</legend>
+		<p>{{ 'HOW_GOAL' | translate }}</p>
+		<p><b>{{ 'HOW_OPEN' | translate }}</b>: {{ 'HOW_OPEN_DESC' | translate }}</p>
+		<p><b>{{ 'HOW_PAIR' | translate }}</b>: {{ 'HOW_PAIR_DESC' | translate }}</p>
+		<p>{{ 'HOW_DO' | translate }}</p>
+		<p><a role="button" class="tutorial-link" (click)="showTutorial.emit()">{{ 'TUTORIAL_SHOW' | translate }}</a></p>
+		<p><a class="external-link" (click)="clickExternalHref($event)" rel="noopener" target="_blank" href="{{ 'READ_MORE_WIKIPEDIA_URL' | translate }}">{{ 'READ_MORE_WIKIPEDIA' | translate }}</a></p>
+	</fieldset>
+	<fieldset class="keyboard">
+		<legend>{{ 'SHORTCUTS' | translate }}</legend>
+		<ul class="keyboard-list">
+			@for (shortcut of shortcuts; track shortcut) {
+				<li>
+					<div>
+						<span class="key">{{ shortcut.key }}</span>
+						@if (shortcut.altKey) {
+							<span class="key-sep">/</span>
+							<span class="key">{{ shortcut.altKey }}</span>
+						}
+						<ng-container *ngComponentOutlet="shortcut.icon"></ng-container>
+						<span class="name">{{ shortcut.name|translate }}</span></div>
+					<span class="func">{{ (shortcut.name + '_LONG')|translate }}</span>
+				</li>
+			}
+		</ul>
+	</fieldset>
+</div>
+<div class="other">
+	<fieldset class="license">
+		<legend>{{ 'LICENSE' | translate }}</legend>
+		<div class="license-list">
+			<div>
+				<div class="name">{{ 'GAME' | translate }}</div>
+				<div class="info"><a (click)="clickExternalHref($event)" rel="noopener" target="_blank" href="https://github.com/ffalt/mah/blob/main/README.md">MIT</a></div>
+			</div>
+			<div>
+				<div class="name">{{ 'DESIGNS' | translate }}</div>
+				<div class="info"><a (click)="clickExternalHref($event)" rel="noopener" target="_blank" href="https://github.com/ffalt/mah/tree/main/src/assets/svg/README.md">Free | Public Domain | CCA4.0 | GNU</a></div>
+			</div>
+			<div>
+				<div class="name">{{ 'SOUNDS' | translate }}</div>
+				<div class="info"><a (click)="clickExternalHref($event)" rel="noopener" target="_blank" href="https://github.com/ffalt/mah/blob/main/src/assets/sounds/README.md">MIT</a></div>
+			</div>
+			<div>
+				<div class="name">{{ 'FONTS' | translate }}</div>
+				<div class="info"><a (click)="clickExternalHref($event)" rel="noopener" target="_blank" href="https://github.com/ffalt/mah/blob/main/src/fonts/README.md">SIL</a></div>
+			</div>
+			<div>
+				<div class="name">{{ 'BACKGROUNDS' | translate }}</div>
+				<div class="info"><a (click)="clickExternalHref($event)" rel="noopener" target="_blank" href="https://github.com/ffalt/mah/blob/main/src/assets/img/README.md">Public Domain</a></div>
+			</div>
+			<div>
+				<div class="name">{{ 'PATTERN_SETTINGS' | translate }}</div>
+				<div class="info"><a (click)="clickExternalHref($event)" rel="noopener" target="_blank" href="https://github.com/ffalt/mah/blob/main/src/assets/patterns/README.md">MIT</a></div>
+			</div>
+		</div>
+	</fieldset>
+	<fieldset class="stats">
+		<legend>{{ 'STATS' | translate }}</legend>
+		@if (stats.items.length === 0) {
+			<p class="stats-empty">{{ 'STATS_EMPTY' | translate }}</p>
+		} @else {
+			<ul class="stats-total-list">
+				<li>
+					<span class="stats-name">{{ 'STATS_WIN_GAMES' | translate }}</span>
+					<span class="stats-desc">{{ stats.winCount }}</span>
+				</li>
+				<li>
+					<span class="stats-name">{{ 'STATS_LOSE_GAMES' | translate }}</span>
+					<span class="stats-desc">{{ stats.loseCount }}</span>
+				</li>
+			</ul>
+			<div class="stats-list">
+			<table>
+				<thead>
+				<tr>
+					<th class="stats-name">{{ 'STATS_NAME' | translate }}</th>
+					<th class="stats-plays-win">{{ 'STATS_WIN_GAMES' | translate }}</th>
+					<th class="stats-plays-lose">{{ 'STATS_LOSE_GAMES' | translate }}</th>
+					<th class="stats-time-best">{{ 'STATS_BEST' | translate }}</th>
+					<th class="stats-time-avg">{{ 'STATS_AVERAGE' | translate }}</th>
+				</tr>
+				</thead>
+				<tbody>
+					@for (item of stats.items; track item) {
+						<tr class="stats-item">
+							<td class="stats-name">{{ item.name }}</td>
+							<td class="stats-plays-win">{{ item.winCount }}</td>
+							<td class="stats-plays-lose">{{ item.loseCount }}</td>
+							<td class="stats-time-best">{{ (item.bestTime ?? 0) | duration }}</td>
+							<td class="stats-time-avg">{{ (item.averageTime ?? 0) | duration }}</td>
+						</tr>
+					}
+				</tbody>
+			</table>
+			</div>
+			<div class="button-group">
+				<button class="clear-times" (click)="clearTimesClick()" aria-label="{{ 'BEST_TIMES_CLEAR' | translate }}">
+					{{ 'BEST_TIMES_CLEAR' | translate }}
+				</button>
+			</div>
+		}
+	</fieldset>
+</div>

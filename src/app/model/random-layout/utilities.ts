@@ -1,0 +1,306 @@
+import type { Mapping } from '../types';
+import { type RandomBaseLayerMode, type BaseLayerOptions, X_MAX, Y_MAX, Z_MAX } from './consts';
+import { rng } from '../rng';
+
+export function shuffleArray<T>(array: Array<T>): Array<T> {
+	for (let index = array.length - 1; index > 0; index--) {
+		const swapIndex = Math.floor(rng() * (index + 1));
+		[array[index], array[swapIndex]] = [array[swapIndex], array[index]];
+	}
+	return array;
+}
+
+export type NonEmptyArray<T> = [T, ...Array<T>];
+
+export function key(z: number, x: number, y: number): string {
+	return `${z}|${x}|${y}`;
+}
+
+export function randInt(min: number, maxInclusive: number): number {
+	return Math.floor(rng() * (maxInclusive - min + 1)) + min;
+}
+
+export function randChoice<T>(array: NonEmptyArray<T>): T {
+	return array[Math.floor(rng() * array.length)];
+}
+
+export function inBounds(x: number, y: number, z: number): boolean {
+	return inZeroTo(x, X_MAX) && inZeroTo(y, Y_MAX) && inZeroTo(z, Z_MAX);
+}
+
+export function inZeroTo(value: number, to: number): boolean {
+	return value >= 0 && value <= to;
+}
+
+export function blocksOverlap(present: Set<string>, z: number, x: number, y: number): boolean {
+	// Disallow placing (z,x,y) if any tile exists within the 3x3 neighborhood on the same z
+	// center (x,y) checked before via uniqueness
+	for (let dy = -1; dy <= 1; dy++) {
+		for (let dx = -1; dx <= 1; dx++) {
+			if (dx === 0 && dy === 0) {
+				continue;
+			}
+			if (present.has(key(z, x + dx, y + dy))) {
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+// Support rule used for z>0: direct below, small bridge (left+right), or large bridge (four diagonals)
+export function isSupported(present: Set<string>, z: number, x: number, y: number): boolean {
+	if (z === 0) {
+		return true;
+	}
+	const zb = z - 1;
+	// 1) direct below
+	if (present.has(key(zb, x, y))) {
+		return true;
+	}
+	// 2) small bridge left+right
+	if (present.has(key(zb, x - 1, y)) && present.has(key(zb, x + 1, y))) {
+		return true;
+	}
+	// 3) large bridge four diagonals
+	return (
+		present.has(key(zb, x - 1, y - 1)) &&
+		present.has(key(zb, x + 1, y - 1)) &&
+		present.has(key(zb, x - 1, y + 1)) &&
+		present.has(key(zb, x + 1, y + 1))
+	);
+}
+
+// Try to add a tile to mapping with full validation
+export function tryAdd(present: Set<string>, mapping: Mapping, z: number, x: number, y: number): boolean {
+	if (!inBounds(x, y, z)) {
+		return false;
+	}
+	const k = key(z, x, y);
+	if (present.has(k)) {
+		return false;
+	}
+	if (!isSupported(present, z, x, y)) {
+		return false;
+	}
+	if (blocksOverlap(present, z, x, y)) {
+		return false;
+	}
+	present.add(k);
+	mapping.push([z, x, y]);
+	return true;
+}
+
+export function isOdd(num: number): boolean {
+	return num % 2 !== 0;
+}
+
+export function getRandomMode(): RandomBaseLayerMode {
+	const modes: NonEmptyArray<RandomBaseLayerMode> = [
+		'lines', 'lines', 'lines',
+		'checker', 'checker',
+		'areas', 'areas',
+		'rings',
+		'cross',
+		'diamond',
+		'triangle',
+		'shapes'
+	];
+	return randChoice(modes);
+}
+
+export function buildEvenAnchors(xMax: number, yMax: number): Array<[number, number]> {
+	const anchors: Array<[number, number]> = [];
+	for (let y = 0; y <= yMax; y += 2) {
+		for (let x = 0; x <= xMax; x += 2) {
+			anchors.push([x, y]);
+		}
+	}
+	return anchors;
+}
+
+export function markBufferPoints(points: Array<[number, number]>, radius: number, blocked: Set<string>, z = 0): void {
+	for (const [px, py] of points) {
+		for (let dy = -radius; dy <= radius; dy++) {
+			for (let dx = -radius; dx <= radius; dx++) {
+				const bx = px + dx;
+				const by = py + dy;
+				if (!inBounds(bx, by, z)) {
+					continue;
+				}
+				blocked.add(key(z, bx, by));
+			}
+		}
+	}
+}
+
+export function buildMappingFromSetZ0(present: Set<string>, xMax: number, yMax: number, step = 2): Mapping {
+	const result: Mapping = [];
+	for (let y = 0; y <= yMax; y += step) {
+		for (let x = 0; x <= xMax; x += step) {
+			if (present.has(key(0, x, y))) {
+				result.push([0, x, y]);
+			}
+		}
+	}
+	return result;
+}
+
+export function buildUnitGrids(xMax: number, yMax: number, step = 1): { xs: Array<number>; ys: Array<number> } {
+	const xs: Array<number> = [];
+	for (let x = 0; x <= xMax; x += step) {
+		xs.push(x);
+	}
+	const ys: Array<number> = [];
+	for (let y = 0; y <= yMax; y += step) {
+		ys.push(y);
+	}
+	return { xs, ys };
+}
+
+export function placeSizesGeneric(
+	startTotal: number,
+	sizes: Array<[number, number]>,
+	anchors: Array<[number, number]>,
+	minTarget: number,
+	maxTarget: number,
+	tryPlace: (x0: number, y0: number, w: number, h: number) => number
+): number {
+	let total = startTotal;
+	for (const [w, h] of sizes) {
+		if (total >= maxTarget) {
+			break;
+		}
+		for (const [x0, y0] of anchors) {
+			if (total >= maxTarget) {
+				break;
+			}
+			const added = tryPlace(x0, y0, w, h);
+			if (added > 0) {
+				total += added;
+				if (total >= minTarget && total <= maxTarget) {
+					break;
+				}
+			}
+		}
+		if (total >= minTarget && total <= maxTarget) {
+			break;
+		}
+	}
+	return total;
+}
+
+export function hasMultipleLevels(mapping: Array<[number, number, number]>): boolean {
+	return mapping.some(entry => entry[0] > 0);
+}
+
+export type CellsFunction = (x0: number, y0: number, w: number, h: number) => Array<[number, number]>;
+
+export function canPlace(
+	x0: number, y0: number, w: number, h: number,
+	occupied: Set<string>, blocked: Set<string>, usedSizes: Set<string>,
+	cellsFunction: CellsFunction
+): boolean {
+	const sizeKey = `${w}x${h}`;
+	if (usedSizes.has(sizeKey)) {
+		return false;
+	}
+	const x1 = x0 + (w - 1) * 2;
+	const y1 = y0 + (h - 1) * 2;
+	if (!inBounds(x1, y1, 0)) {
+		return false;
+	}
+	const cells = cellsFunction(x0, y0, w, h);
+	for (const [x, y] of cells) {
+		if ((x % 2 !== 0) || (y % 2 !== 0)) {
+			return false;
+		}
+		if (!inBounds(x, y, 0)) {
+			return false;
+		}
+		const k = key(0, x, y);
+		if (occupied.has(k)) {
+			return false;
+		}
+		if (blocked.has(k)) {
+			return false;
+		}
+		if (blocksOverlap(occupied, 0, x, y)) {
+			return false;
+		}
+	}
+	return true;
+}
+
+export function generateBaseLayerWithShapes(
+	allSizes: Array<[number, number]>,
+	cellsFunction: CellsFunction,
+	{ minTarget, maxTarget, xMax, yMax }: BaseLayerOptions,
+	bufferRadius = 3
+): Mapping {
+	const occupied = new Set<string>();
+	const blocked = new Set<string>();
+	const usedSizes = new Set<string>();
+	const anchors = buildEvenAnchors(xMax, yMax);
+
+	shuffleArray(allSizes);
+	shuffleArray(anchors);
+
+	const tryPlace = (x0: number, y0: number, w: number, h: number): number => {
+		if (!canPlace(x0, y0, w, h, occupied, blocked, usedSizes, cellsFunction)) {
+			return 0;
+		}
+		const cells = cellsFunction(x0, y0, w, h);
+		for (const [x, y] of cells) {
+			occupied.add(key(0, x, y));
+		}
+		markBufferPoints(cells, bufferRadius, blocked, 0);
+		usedSizes.add(`${w}x${h}`);
+		return cells.length;
+	};
+
+	// Phase 1: try all sizes against all anchors
+	let total = placeSizesGeneric(0, allSizes, anchors, minTarget, maxTarget, tryPlace);
+
+	// Phase 2: if still below minTarget, retry unused sizes with reshuffled anchors
+	if (total < minTarget) {
+		const remainingSizes = allSizes.filter(([w, h]) => !usedSizes.has(`${w}x${h}`));
+		shuffleArray(remainingSizes);
+		shuffleArray(anchors);
+		total = placeSizesGeneric(total, remainingSizes, anchors, minTarget, maxTarget, tryPlace);
+	}
+
+	// Phase 3: fill to maxTarget, allowing size reuse after unique sizes are exhausted
+	if (total < maxTarget) {
+		let progress = true;
+		let allowReuse = false;
+		while (progress && total < maxTarget) {
+			const sizePool = allowReuse ? [...allSizes] : allSizes.filter(([w, h]) => !usedSizes.has(`${w}x${h}`));
+			if (sizePool.length === 0 && !allowReuse) {
+				allowReuse = true;
+				continue;
+			}
+			shuffleArray(sizePool);
+			shuffleArray(anchors);
+			const previous = total;
+			total = placeSizesGeneric(total, sizePool, anchors, minTarget, maxTarget, tryPlace);
+			progress = total > previous;
+		}
+	}
+
+	return buildMappingFromSetZ0(occupied, xMax, yMax, 2);
+}
+
+export function place(
+	x0: number, y0: number, w: number, h: number,
+	occupied: Set<string>, blocked: Set<string>, usedSizes: Set<string>,
+	cellsFunction: CellsFunction
+): number {
+	const cells = cellsFunction(x0, y0, w, h);
+	for (const [x, y] of cells) {
+		occupied.add(key(0, x, y));
+	}
+	markBufferPoints(cells, 2, blocked, 0);
+	usedSizes.add(`${w}x${h}`);
+	return cells.length;
+}

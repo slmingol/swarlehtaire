@@ -1,0 +1,190 @@
+export const CONSTS = {
+	mY: 18, mX: 38, mZ: 7,
+	tileWidth: 75,
+	tileHeight: 100,
+	levelOffset: 16
+};
+
+export const STATES = {
+	idle: 0,
+	run: 1,
+	pause: 2
+};
+
+export const GAME_MODE_EASY: GAME_MODE_ID = 'GAME_MODE_EASY';
+export const GAME_MODE_STANDARD: GAME_MODE_ID = 'GAME_MODE_STANDARD';
+export const GAME_MODE_EXPERT: GAME_MODE_ID = 'GAME_MODE_EXPERT';
+export const GameModes = [
+	{
+		id: GAME_MODE_EASY,
+		features: [
+			{ title: 'SHUFFLE' },
+			{ title: 'HINT' },
+			{ title: 'UNDO' },
+			{ title: 'RESCUE_SHUFFLE' }
+		]
+	},
+	{
+		id: GAME_MODE_STANDARD,
+		features: [
+			{ title: 'HINT' },
+			{ title: 'UNDO' }
+		]
+	},
+	{
+		id: GAME_MODE_EXPERT,
+		features: []
+	}
+];
+export type GAME_MODE_ID = 'GAME_MODE_EASY' | 'GAME_MODE_STANDARD' | 'GAME_MODE_EXPERT';
+export const GAME_MODE_ID_DEFAULT: GAME_MODE_ID = 'GAME_MODE_STANDARD';
+
+export const Themes: Array<{ id: string; name: string; colors: Array<string> }> = [
+	{ id: 'ltgreen', name: 'THEME_SAGE', colors: ['#5a7b8b', '#446471', '#1e2d35', '#0f1e25', '#4686a5'] },
+	{ id: 'dkgreen', name: 'THEME_FOREST', colors: ['#4d6673', '#2a3b46', '#405765', '#1e2e36', '#19262e'] },
+	{ id: 'ltblue', name: 'THEME_SKY', colors: ['#7480b0', '#4b527c', '#2a2e4b', '#232742', '#34385a'] },
+	{ id: 'ice', name: 'THEME_ICE', colors: ['#4f8fb6', '#9fd0e9', '#6aa7ca', '#8bc3dd', '#b3e5fc'] },
+	{ id: 'dkblue', name: 'THEME_NAVY', colors: ['#2f49a3', '#0d2165', '#233694', '#2f44ad', '#001552'] },
+	{ id: 'ocean', name: 'THEME_OCEAN', colors: ['#3b80ad', '#1d547a', '#31749f', '#134a6f', '#0a3d62'] },
+	{ id: 'cyberpunk', name: 'THEME_CYBERPUNK', colors: ['#6a4a6a', '#3e193e', '#5e3a5e', '#6c496c', '#320032'] },
+	{ id: 'desert', name: 'THEME_DESERT', colors: ['#a4863f', '#b8924d', '#a8843e', '#e3c68e', '#c9a961'] },
+	{ id: 'brown', name: 'THEME_MAHOGANY', colors: ['#d15a5a', '#c34a4a', '#8c2323', '#7a1f1f', '#a52a2a'] },
+	{ id: 'medieval', name: 'THEME_MEDIEVAL', colors: ['#8a623e', '#5a3b23', '#7b5534', '#2f1c10', '#3d2817'] },
+	{ id: 'lava', name: 'THEME_LAVA', colors: ['#a85b56', '#7a332e', '#9a4f4a', '#46201c', '#5d1f1a'] },
+	{ id: 'space', name: 'THEME_SPACE', colors: ['#435c7d', '#1f3046', '#38506d', '#162539', '#0d1b2a'] },
+	{ id: 'black', name: 'THEME_ONYX', colors: ['#5c5c5c', '#2a2a2a', '#4a4a4a', '#5a5a5a', '#000000'] },
+	{ id: 'white', name: 'THEME_PEARL', colors: ['#9e9e9e', '#d0d0d0', '#b5b5b5', '#a8a8a8', '#ffffff'] }
+];
+
+export const PATTERN_BACKGROUND = 'pattern-monster';
+
+export type LICENCE = 'cca' | 'gpl' | 'free' | 'per' | 'pub' | 'mit';
+
+export const Backgrounds: Array<{ img: string; name: string; type?: 'jpg' | 'png' | 'svg' | 'MAH'; repeat?: boolean; license?: LICENCE }> = [
+	{ img: '', name: 'BACK_NONE' },
+	{ img: 'bamboo', name: 'BACK_BAMBOO', license: 'cca' },
+	{ img: 'blueclouds', name: 'BACK_BLUE_CLOUDS', license: 'cca' },
+	{ img: 'grayclouds', name: 'BACK_GRAY_CLOUDS', license: 'cca' },
+	{ img: 'grass-1', name: 'BACK_GRAY_GRASS', license: 'free' },
+	{ img: 'stones-1', name: 'BACK_GRAY_STONES', license: 'free' },
+	{ img: 'wood', name: 'BACK_GRAY_WOOD', license: 'free' },
+	{ img: 'wood-grain-1', name: 'BACK_GRAY_WOOD_GRAIN', license: 'free' },
+	{ img: 'space', name: 'BACK_SPACE', license: 'free' },
+	{ img: PATTERN_BACKGROUND, name: 'BACK_PATTERNS', type: 'MAH', repeat: true, license: 'mit' }
+];
+
+export const Licenses: Record<string, string> = {
+	cca: 'Creative Commons Attribution 4.0 International License',
+	gpl: 'GNU General Public License 3',
+	free: 'License free',
+	per: 'Personal projects',
+	pub: 'Public domain',
+	mit: 'MIT License'
+};
+
+export const ImageSets: Array<{ id: string; type: 'SVG' | 'PNG'; name: string; license: LICENCE }> = [
+	{ id: 'riichi', type: 'SVG', name: 'Riichi 2', license: 'cca' },
+	{ id: 'picasso', type: 'PNG', name: 'Picasso', license: 'gpl' },
+	{ id: 'modern', type: 'PNG', name: 'Modern', license: 'gpl' },
+	{ id: 'animals', type: 'SVG', name: 'Animals', license: 'per' },
+	{ id: 'birds', type: 'SVG', name: 'Birds', license: 'cca' },
+	{ id: 'open-fruits', type: 'PNG', name: 'Fruits', license: 'free' },
+	{ id: 'space', type: 'SVG', name: 'Space', license: 'cca' },
+	{ id: 'riichi-old', type: 'SVG', name: 'Riichi', license: 'cca' },
+	{ id: 'uni', type: 'SVG', name: 'Uni', license: 'pub' },
+	{ id: 'cheshire137', type: 'SVG', name: 'Taksuyu', license: 'free' },
+	{ id: 'unib', type: 'SVG', name: 'Black & White', license: 'pub' },
+	{ id: 'recri2', type: 'SVG', name: 'Recri 2', license: 'free' },
+	{ id: 'classic', type: 'PNG', name: 'Classic', license: 'gpl' }
+];
+
+export const ImageSetDefault = 'riichi';
+export const ThemeDefault = 'sage';
+export const LangAuto = 'auto';
+export const LangDefault = 'auto';
+
+export const TILES: Array<[string, string, string, string]> = [
+	['t_do1', 't_do1', 't_do1', 't_do1'],
+	['t_do2', 't_do2', 't_do2', 't_do2'],
+	['t_do3', 't_do3', 't_do3', 't_do3'],
+	['t_do4', 't_do4', 't_do4', 't_do4'],
+	['t_do5', 't_do5', 't_do5', 't_do5'],
+	['t_do6', 't_do6', 't_do6', 't_do6'],
+	['t_do7', 't_do7', 't_do7', 't_do7'],
+	['t_do8', 't_do8', 't_do8', 't_do8'],
+	['t_do9', 't_do9', 't_do9', 't_do9'],
+	['t_ch1', 't_ch1', 't_ch1', 't_ch1'],
+	['t_ch2', 't_ch2', 't_ch2', 't_ch2'],
+	['t_ch3', 't_ch3', 't_ch3', 't_ch3'],
+	['t_ch4', 't_ch4', 't_ch4', 't_ch4'],
+	['t_ch5', 't_ch5', 't_ch5', 't_ch5'],
+	['t_ch6', 't_ch6', 't_ch6', 't_ch6'],
+	['t_ch7', 't_ch7', 't_ch7', 't_ch7'],
+	['t_ch8', 't_ch8', 't_ch8', 't_ch8'],
+	['t_ch9', 't_ch9', 't_ch9', 't_ch9'],
+	['t_ba1', 't_ba1', 't_ba1', 't_ba1'],
+	['t_ba2', 't_ba2', 't_ba2', 't_ba2'],
+	['t_ba3', 't_ba3', 't_ba3', 't_ba3'],
+	['t_ba4', 't_ba4', 't_ba4', 't_ba4'],
+	['t_ba5', 't_ba5', 't_ba5', 't_ba5'],
+	['t_ba6', 't_ba6', 't_ba6', 't_ba6'],
+	['t_ba7', 't_ba7', 't_ba7', 't_ba7'],
+	['t_ba8', 't_ba8', 't_ba8', 't_ba8'],
+	['t_ba9', 't_ba9', 't_ba9', 't_ba9'],
+	['t_se_spring', 't_se_summer', 't_se_fall', 't_se_winter'],
+	['t_wi_north', 't_wi_north', 't_wi_north', 't_wi_north'],
+	['t_wi_south', 't_wi_south', 't_wi_south', 't_wi_south'],
+	['t_wi_east', 't_wi_east', 't_wi_east', 't_wi_east'],
+	['t_wi_west', 't_wi_west', 't_wi_west', 't_wi_west'],
+	['t_fl_bamboo', 't_fl_chrysanthemum', 't_fl_orchid', 't_fl_plum'],
+	['t_dr_green', 't_dr_green', 't_dr_green', 't_dr_green'],
+	['t_dr_white', 't_dr_white', 't_dr_white', 't_dr_white'],
+	['t_dr_red', 't_dr_red', 't_dr_red', 't_dr_red']
+];
+
+export const TILES_EXT: Array<[string, string, string, string]> = [];
+for (let index = 1; index < 19; index++) {
+	TILES_EXT.push([`t_g${index}`, `t_g${index}`, `t_g${index}`, `t_g${index}`]);
+}
+for (let index = 1; index < 10; index++) {
+	TILES_EXT.push([`t_e${index}`, `t_e${index}`, `t_e${index}`, `t_e${index}`]);
+}
+export const TILES_INFOS = [
+	{
+		name: 'TILES_SUITS',
+		groups: [
+			{ name: 'TILES_SUIT_CIRCLES', tiles: ['t_do1', 't_do2', 't_do3', 't_do4', 't_do5', 't_do6', 't_do7', 't_do8', 't_do9'] },
+			{ name: 'TILES_SUIT_BAMBOO', tiles: ['t_ba1', 't_ba2', 't_ba3', 't_ba4', 't_ba5', 't_ba6', 't_ba7', 't_ba8', 't_ba9'] },
+			{ name: 'TILES_SUIT_CHARACTERS', tiles: ['t_ch1', 't_ch2', 't_ch3', 't_ch4', 't_ch5', 't_ch6', 't_ch7', 't_ch8', 't_ch9'] }
+		]
+	},
+	{
+		name: 'TILES_BONUS',
+		groups: [
+			{ name: 'TILES_BONUS_SEASONS', tiles: ['t_se_spring', 't_se_summer', 't_se_fall', 't_se_winter'] },
+			{ name: 'TILES_BONUS_FLOWERS', tiles: ['t_fl_bamboo', 't_fl_orchid', 't_fl_plum', 't_fl_chrysanthemum'] }
+		]
+	},
+	{
+		name: 'TILES_HONORS',
+		groups: [
+			{ name: 'TILES_HONORS_WINDS', tiles: ['t_wi_east', 't_wi_south', 't_wi_west', 't_wi_north'] },
+			{ name: 'TILES_HONORS_DRAGONS', tiles: ['t_dr_red', 't_dr_green', 't_dr_white'] }
+		]
+	},
+	{
+		name: 'TILES_JOKERS',
+		groups: [
+			{ name: 'TILES_JOKERS_GENERAL', tiles: ['t_g1', 't_g2', 't_g3'] },
+			{ name: 'TILES_JOKERS_BLUEGREEN', tiles: ['t_g4', 't_g5', 't_g6', 't_g7', 't_g8'] },
+			{ name: 'TILES_JOKERS_RED', tiles: ['t_g9', 't_g10', 't_g11', 't_g12', 't_g13'] },
+			{ name: 'TILES_JOKERS_RANK', tiles: ['t_g14', 't_g15', 't_g16', 't_g17', 't_g18'] }
+		]
+	},
+	{
+		name: 'TILES_EXTRA',
+		groups: [
+			{ name: 'TILES_EXTRA', tiles: ['t_e1', 't_e2', 't_e3', 't_e4', 't_e5', 't_e6', 't_e7', 't_e8', 't_e9'] }
+		]
+	}
+];

@@ -1,0 +1,24 @@
+@use "../../style/mixins";
+
+:host {
+	display: flex;
+	flex-direction: column;
+	color: var(--main-content-text-color);
+
+	h1 {
+		text-align: center;
+		color: var(--dialog-headline-color);
+		margin-top: -8px;
+		margin-bottom: 10px;
+		line-height: 1.3em;
+
+		@include mixins.respond-to(medium-down) {
+			font-size: 1.2em;
+		}
+
+		@include mixins.respond-to(tiny-down) {
+			font-size: 1.1em;
+		}
+
+	}
+}

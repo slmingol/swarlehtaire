@@ -1,0 +1,51 @@
+<div class="editor-content">
+	<a class="close" (click)="close()" title="{{ 'CLOSE' | translate }}"><app-icon-close /></a>
+	<div class="editor-manager" [class.visible]="mode==='manager'">
+		<div class="editor-nav buttons">
+			<ul>
+				<li class="editor-title"><app-icon-logo /> {{ 'EDITOR_TITLE' | translate }}</li>
+				<li class="sep"></li>
+				<li>
+					<button (click)="newLayout()" title="{{ 'EDITOR_NEW_LONG' | translate }}">{{ 'EDITOR_NEW' | translate }}</button>
+				</li>
+				<li>
+					<button (click)="mode='import'" title="{{ 'EDITOR_IMPORT_LONG' | translate }}">{{ 'EDITOR_IMPORT' | translate }}</button>
+				</li>
+				<li>
+					<button (click)="exportLayouts()" title="{{ 'EDITOR_EXPORT_LONG' | translate }}">{{ 'EDITOR_EXPORT' | translate }}</button>
+				</li>
+			</ul>
+		</div>
+		<div class="editor-main" (appDropZone)="onDropFiles()" (appDropZoneOver)="onDragFiles()">
+			<app-manager-component [inputLayouts]="layoutService.layouts.items" (editEvent)="editLayout($event)"></app-manager-component>
+		</div>
+	</div>
+	@if (mode === 'import') {
+		<div>
+			<div class="editor-nav">
+				<ul>
+					<li class="editor-title"><app-icon-logo /> {{ 'EDITOR_TITLE' | translate }}: {{ 'EDITOR_IMPORT' | translate }}</li>
+				</ul>
+			</div>
+			<div class="editor-main">
+				<app-import-component (editEvent)="editLayout($event)"></app-import-component>
+			</div>
+		</div>
+	}
+	@if (mode === 'edit' && !!layout) {
+		<div>
+			<div class="editor-nav buttons">
+				<ul>
+					<li class="editor-title"><app-icon-logo /> {{ 'EDITOR_TITLE' | translate }}: {{ layout.name }}</li>
+					<li class="sep"></li>
+					<li>
+						<button (click)="save()" title="{{ 'EDITOR_SAVE_LONG' | translate }}">{{ 'EDITOR_SAVE' | translate }}</button>
+					</li>
+				</ul>
+			</div>
+			<div class="editor-main">
+				<app-editor-layout-component [layout]="layout"></app-editor-layout-component>
+			</div>
+		</div>
+	}
+</div>

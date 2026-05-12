@@ -1,0 +1,188 @@
+import { TestBed } from '@angular/core/testing';
+import { HttpClient } from '@angular/common/http';
+import { SvgdefService } from './svgdef.service';
+import { of, throwError } from 'rxjs';
+import * as tilesets from '../model/tilesets';
+
+// Mock the tilesets module
+jest.mock('../model/tilesets', () => ({
+	imageSetIsKyodai: jest.fn(),
+	buildKyodaiSVG: jest.fn()
+}));
+
+interface CacheItem {
+	data?: string;
+	request?: Promise<string>;
+}
+
+interface HackHttpCache {
+	cache: Record<string, CacheItem>;
+}
+
+interface HackSvgdefService {
+	cache: HackHttpCache;
+}
+
+describe('SvgdefService', () => {
+	let service: SvgdefService;
+	let mockHttpClient: jest.Mocked<HttpClient>;
+
+	beforeEach(() => {
+		// Create mock for HttpClient
+		mockHttpClient = {
+			get: jest.fn()
+		} as unknown as jest.Mocked<HttpClient>;
+
+		// Configure TestBed
+		TestBed.configureTestingModule({
+			providers: [
+				SvgdefService,
+				{ provide: HttpClient, useValue: mockHttpClient }
+			]
+		});
+
+		// Get the service
+		service = TestBed.inject(SvgdefService);
+
+		// Reset mocks
+		jest.clearAllMocks();
+	});
+
+	describe('initialization', () => {
+		it('should be created', () => {
+			expect(service).toBeTruthy();
+		});
+
+		it('should initialize with empty cache', () => {
+			// Access private cache property for testing
+			const cache = (service as unknown as HackSvgdefService).cache.cache;
+			expect(cache).toEqual({});
+		});
+	});
+
+	describe('get', () => {
+		it('should return Kyodai SVG when imageSetIsKyodai returns true', async () => {
+			// Arrange
+			const kyodaiSvg = '<svg><defs></defs></svg>';
+			const kyodaiUrl = 'https://example.com/kyodai.jpg';
+			(tilesets.imageSetIsKyodai as jest.Mock).mockReturnValue(true);
+			(tilesets.buildKyodaiSVG as jest.Mock).mockResolvedValue(kyodaiSvg);
+
+			// Act
+			const result = await service.get('kyodai', kyodaiUrl);
+
+			// Assert
+			expect(result).toBe(kyodaiSvg);
+			expect(tilesets.imageSetIsKyodai).toHaveBeenCalledWith('kyodai');
+			expect(tilesets.buildKyodaiSVG).toHaveBeenCalledWith(kyodaiUrl);
+			expect(mockHttpClient.get).not.toHaveBeenCalled();
+		});
+
+		it('should return cached data if available', async () => {
+			// Arrange
+			const cachedSvg = '<svg>cached</svg>';
+			(tilesets.imageSetIsKyodai as jest.Mock).mockReturnValue(false);
+
+			// Set up cache with data
+			(service as unknown as HackSvgdefService).cache.cache = {
+				'assets/svg/test-set.svg': { data: cachedSvg }
+			};
+
+			// Act
+			const result = await service.get('test-set');
+
+			// Assert
+			expect(result).toBe(cachedSvg);
+			expect(tilesets.imageSetIsKyodai).toHaveBeenCalledWith('test-set');
+			expect(mockHttpClient.get).not.toHaveBeenCalled();
+		});
+
+		it('should return pending request if one is in progress', async () => {
+			// Arrange
+			const pendingSvg = '<svg>pending</svg>';
+			const pendingPromise = Promise.resolve(pendingSvg);
+			(tilesets.imageSetIsKyodai as jest.Mock).mockReturnValue(false);
+
+			// Set up cache with pending request
+			(service as unknown as HackSvgdefService).cache.cache = {
+				'assets/svg/test-set.svg': { request: pendingPromise }
+			};
+
+			// Act
+			const result = await service.get('test-set');
+
+			// Assert
+			expect(result).toBe(pendingSvg);
+			expect(tilesets.imageSetIsKyodai).toHaveBeenCalledWith('test-set');
+			expect(mockHttpClient.get).not.toHaveBeenCalled();
+		});
+
+		it('should fetch SVG from HTTP if not cached', async () => {
+			// Arrange
+			const httpSvg = '<svg>http</svg>';
+			(tilesets.imageSetIsKyodai as jest.Mock).mockReturnValue(false);
+			mockHttpClient.get.mockReturnValue(of(httpSvg));
+
+			// Act
+			const result = await service.get('test-set');
+
+			// Assert
+			expect(result).toBe(httpSvg);
+			expect(tilesets.imageSetIsKyodai).toHaveBeenCalledWith('test-set');
+			expect(mockHttpClient.get).toHaveBeenCalledWith('assets/svg/test-set.svg', { responseType: 'text' });
+
+			// Verify cache was updated with the SVG data
+			const cache = (service as unknown as HackSvgdefService).cache.cache;
+			expect(cache['assets/svg/test-set.svg'].data).toBe(httpSvg);
+		});
+
+		it('should handle HTTP errors', async () => {
+			// Arrange
+			const error = new Error('HTTP error');
+			(tilesets.imageSetIsKyodai as jest.Mock).mockReturnValue(false);
+			mockHttpClient.get.mockReturnValue(throwError(() => error));
+
+			// Act & Assert
+			await expect(service.get('test-set')).rejects.toThrow('HTTP error');
+			expect(tilesets.imageSetIsKyodai).toHaveBeenCalledWith('test-set');
+			expect(mockHttpClient.get).toHaveBeenCalledWith('assets/svg/test-set.svg', { responseType: 'text' });
+
+			// Verify cache was cleaned up after error
+			const cache = (service as unknown as HackSvgdefService).cache.cache;
+			expect(cache['assets/svg/test-set.svg']).toBeUndefined();
+		});
+
+		it('should prevent race condition by sharing pending requests', async () => {
+			// Arrange
+			const httpSvg = '<svg>http</svg>';
+			(tilesets.imageSetIsKyodai as jest.Mock).mockReturnValue(false);
+			mockHttpClient.get.mockReturnValue(of(httpSvg));
+
+			// Act - Make two simultaneous requests for the same resource
+			const promise1 = service.get('test-set');
+			const promise2 = service.get('test-set');
+
+			// Assert - Both should return the same data
+			expect(promise1).not.toBe(promise2); // Different promises but same value
+			const [result1, result2] = await Promise.all([promise1, promise2]);
+			expect(result1).toBe(httpSvg);
+			expect(result2).toBe(httpSvg);
+
+			// Verify HTTP was only called once
+			expect(mockHttpClient.get).toHaveBeenCalledTimes(1);
+		});
+
+		it('should handle errors from buildKyodaiSVG', async () => {
+			// Arrange
+			const error = new Error('Kyodai error');
+			(tilesets.imageSetIsKyodai as jest.Mock).mockReturnValue(true);
+			(tilesets.buildKyodaiSVG as jest.Mock).mockRejectedValue(error);
+
+			// Act & Assert
+			await expect(service.get('kyodai')).rejects.toThrow('Kyodai error');
+			expect(tilesets.imageSetIsKyodai).toHaveBeenCalledWith('kyodai');
+			expect(tilesets.buildKyodaiSVG).toHaveBeenCalledWith(undefined);
+			expect(mockHttpClient.get).not.toHaveBeenCalled();
+		});
+	});
+});

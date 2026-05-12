@@ -1,0 +1,15 @@
+@if (visible()) {
+	<div class="overlay {{className()}}" (click)="toggleOverlay();">
+		<div class="overlay-popup" (click)="$event.stopPropagation();">
+			<div class="dialog-header">
+			@if (title()) {
+				<h1><app-icon-logo />{{ title() }}</h1>
+			}
+			@if (!noCloseButton()) {
+				<a role="button" class="close" (click)="toggle()" title="{{ 'CLOSE' | translate }}"><app-icon-close /></a>
+			}
+			</div>
+			<ng-content></ng-content>
+		</div>
+	</div>
+}

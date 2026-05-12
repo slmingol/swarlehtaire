@@ -1,0 +1,132 @@
+<div class="controls controls-top">
+	<div class="ctrl ctrl-name">
+		<button class="button" (click)="help.toggle()" title="{{'OPEN_HELP' | translate}}">
+			<app-icon-logo/>
+			<span class="name">{{ app.name }}</span>
+		</button>
+	</div>
+	<div class="ctrl ctrl-game">
+		<button class="button" (click)="game.toggle()" title="{{'PAUSE_LONG' | translate}}">
+			<app-icon-pause/>
+			<span class="label">{{ 'PAUSE' | translate }}</span>
+		</button>
+		<button class="button feature" [class.enabled]="game.mode | gameModeEasy" (click)="game.shuffle()" title="{{'SHUFFLE_LONG' | translate}}">
+			<app-icon-shuffle/>
+			<span class="label">{{ 'SHUFFLE' | translate }}</span>
+		</button>
+		<button class="button feature" [class.enabled]="game.mode | gameModeStandard" (click)="game.back()" title="{{'UNDO_LONG' | translate}}" [attr.disabled]="game.board.undo.length===0 ? true : null">
+			<app-icon-undo/>
+			<span class="label">{{ 'UNDO' | translate }}</span>
+		</button>
+		<button class="button feature" [class.enabled]="game.mode | gameModeStandard" (click)="game.hint()" title="{{'HINT_LONG' | translate}}">
+			<app-icon-hint/>
+			<span class="label">{{ 'HINT' | translate }}</span>
+		</button>
+		<button class="button" (click)="newGame()" title="{{'RESTART_LONG' | translate}}">
+			<app-icon-restart/>
+			<span class="label">{{ 'RESTART' | translate }}</span>
+		</button>
+	</div>
+</div>
+<app-board
+	class="board"
+	[stones]="game.board.stones"
+	[theme]="app.settings.theme"
+	[imageSet]="app.settings.tileset"
+	[kyodaiUrl]="app.settings.kyodaiUrl"
+	[background]="app.settings.background"
+	[pattern]="app.settings.pattern"
+	(clickEvent)="stoneClick($event)"
+/>
+<div class="controls controls-bottom">
+	<div class="ctrl ctrl-stats">
+		<button class="button menu-button" title="Menu" aria-haspopup="true">
+			<app-icon-menu/>
+		</button>
+		<div class="menu" role="menu">
+			<button class="button" (click)="settings.toggle()" title="{{'OPEN_SETTINGS' | translate}}" role="menuitem">
+				<app-icon-settings/>
+			</button>
+			<button class="button" [class.inactive]="!app.settings.sounds" (click)="app.toggleSound()" title="{{'AUDIO_SOUNDS' | translate}}" role="menuitem">
+				<app-icon-mute/>
+			</button>
+			<button class="button" (click)="info.toggle()" title="{{'TILES_INFO' | translate}}" role="menuitem">
+				<app-icon-tilesinfo/>
+			</button>
+			@if (fullScreenEnabled) {
+				<button class="button" (click)="enterFullScreen()" title="{{'FULLSCREEN' | translate}}" role="menuitem">
+					<app-icon-fullscreen/>
+				</button>
+			}
+		</div>
+	</div>
+	<div class="ctrl ctrl-time">
+		<span class="label text"><small>{{ 'STONES' | translate }}:</small> <span>{{ game.board.count }}</span></span>
+		<span class="label text"><small>{{ 'FREE' | translate }}:</small> <span>{{ game.board.free.length }}</span></span>
+		<span class="time">{{ game.clock.elapsed | duration }}</span>
+	</div>
+</div>
+
+<app-dialog
+	#tutorial (clickEvent)="toggleDialogState($event)" className="overlay-tutorial overlay-size-small"
+	[noCloseButton]="true" [allowCloseOverlay]="false" [title]="app.name"
+>
+	@if (tutorial.visible()) {
+		<app-tutorial (completed)="completeTutorial()"/>
+	}
+</app-dialog>
+
+<app-dialog #help (clickEvent)="toggleDialogState($event)" className="overlay-help overlay-size-large" [title]="title">
+	@if (help.visible()) {
+		<app-help (showTutorial)="help.toggle(); showTutorial()"/>
+	}
+</app-dialog>
+
+<app-dialog #info (clickEvent)="toggleDialogState($event)" className="overlay-info overlay-size-large" [title]="'TILES' | translate">
+	@if (info.visible()) {
+		<app-tiles-info/>
+	}
+</app-dialog>
+
+<app-dialog #settings (clickEvent)="toggleDialogState($event)" className="overlay-settings overlay-size-medium" [title]="'SETTINGS' | translate">
+	@if (settings.visible()) {
+		<app-settings/>
+	}
+</app-dialog>
+
+<app-dialog #newgame (clickEvent)="toggleDialogState($event)" className="overlay-newgame overlay-size-large" [title]="'SELECT_BOARD' | translate">
+	@if (newgame.visible()) {
+		<app-choose-layout class="choose" (startEvent)="startGame($event)" [gameMode]="game.mode" [buildMode]="game.board.buildMode"/>
+	}
+</app-dialog>
+
+<app-dialog (clickEvent)="clickMessage()" [visible]="!!game.message" className="overlay-message overlay-size-auto" [noCloseButton]="true">
+	@if (game.message) {
+		<div class="overlay-message-message" (click)="clickMessage()">
+			@if (game.message.messageID) {
+				<div>{{ game.message.messageID | translate }}</div>
+			}
+			@if (game.message.playTime) {
+				<div>{{ game.message.playTime | duration }}</div>
+			}
+			@if (game.message.askShuffle) {
+				<div class="overlay-message-actions">
+					<button
+						class="button feature"
+						(click)="onShuffleContinue($event)"
+					>
+						<app-icon-shuffle/>
+						<span class="label">{{ 'SHUFFLE' | translate }}</span>
+					</button>
+					<button
+						class="button"
+						(click)="onSurrenderGame($event)"
+					>
+						<app-icon-restart/>
+						<span class="label">{{ 'RESTART' | translate }}</span>
+					</button>
+				</div>
+			}
+		</div>
+	}
+</app-dialog>

@@ -1,0 +1,175 @@
+@use "../../style/mixins";
+
+:host {
+	display: flex;
+	flex-direction: column;
+	overflow: hidden;
+	height: 100%;
+
+	h1 {
+		text-align: center;
+		color: var(--dialog-text-color);
+		margin-top: 0;
+		margin-bottom: 0.2em;
+		line-height: 1em;
+
+		@include mixins.respond-to(tiny-down) {
+			font-size: 1.2em;
+		}
+	}
+
+	.tiles-content {
+		display: flex;
+		flex-flow: row wrap;
+		flex: 1;
+		border: 1px solid var(--card-layout-color-border);
+		border-radius: 4px;
+		overflow-y: auto;
+	}
+
+	.tile {
+		flex: 1;
+		text-align: center;
+		word-break: normal;
+		margin-top: 5px;
+		margin-bottom: 5px;
+		display: flex;
+		flex-direction: column;
+		padding-left: 5px;
+		padding-right: 5px;
+
+		> div {
+			flex: 1;
+			font-size: 0.9em;
+		}
+	}
+
+	.tiles-title {
+		flex: 1;
+		margin-top: 0.5em;
+		margin-bottom: 0.2em;
+		font-weight: bold;
+		text-align: center;
+		letter-spacing: 2px;
+		border-bottom: 1px solid var(--main-bg-color-lt);
+	}
+
+	.tiles-section {
+		padding: 0 6px;
+	}
+
+	.tiles-section-9 {
+		flex: 100%;
+	}
+
+	.tiles-section-5 {
+		flex: 100%;
+	}
+
+	.tiles-section-4, .tiles-section-3 {
+		flex: 50%;
+	}
+
+	.tiles-set {
+		display: flex;
+		justify-content: space-around;
+	}
+
+	@include mixins.respond-to(large-down) {
+		.tiles-section-9 {
+			.tiles-set {
+				flex-wrap: wrap;
+
+				.tile {
+					flex: 20%;
+				}
+			}
+		}
+	}
+
+	@include mixins.respond-to(medium-down) {
+		.tiles-section-3 {
+			flex: 100%;
+		}
+
+		.tiles-section-4 {
+			flex: 100%;
+
+			.tiles-set {
+				flex-wrap: wrap;
+
+				.tile {
+					flex: 50%;
+				}
+			}
+		}
+
+		.tiles-section-9, .tiles-section-5, .tiles-section-3 {
+			.tiles-set {
+				flex-wrap: wrap;
+
+				.tile {
+					flex: 33%;
+				}
+			}
+		}
+	}
+
+	@include mixins.respond-to(pico-down) {
+		.tiles-section-9, .tiles-section-5, .tiles-section-4, .tiles-section-3 {
+			.tiles-set {
+				flex-wrap: wrap;
+
+				.tile {
+					flex: 50%;
+				}
+			}
+		}
+	}
+
+	.tiles-footer {
+		padding-top: 8px;
+
+		.tiles-form {
+			display: flex;
+			flex-flow: row wrap;
+			justify-content: space-between;
+			align-items: center;
+			gap: 8px;
+			width: 100%;
+
+			.tiles-reference {
+				text-align: center;
+				flex: 1;
+			}
+
+			@include mixins.respond-to(small-down) {
+				justify-content: space-around;
+
+				.tiles-reference {
+					order: 10;
+					min-width: 50%;
+					font-size: 0.9em;
+				}
+			}
+
+			.tiles-select {
+				display: flex;
+				flex-flow: row nowrap;
+				align-items: center;
+				gap: 8px;
+			}
+
+			label {
+				display: inline-flex;
+				flex-direction: row;
+				align-items: center;
+				height: 100%;
+
+				input {
+					margin-right: 6px;
+				}
+			}
+		}
+	}
+}
