@@ -1,0 +1,35 @@
+.stack {
+	position: relative;
+	min-width: 80px;
+	min-height: 112px;
+	cursor: pointer;
+
+	&.spread-down {
+		padding-bottom: 400px; // Space for cascading cards
+	}
+
+	&.spread-right {
+		padding-right: 200px; // Space for spread cards
+		display: flex;
+	}
+}
+
+.card-wrapper {
+	position: absolute;
+	top: 0;
+	left: 0;
+	
+	.spread-right & {
+		position: relative;
+		display: inline-block;
+	}
+}
+
+.stack-stock,
+.stack-waste {
+	.card-wrapper {
+		position: absolute;
+		top: 0;
+		left: 0;
+	}
+}

@@ -1,0 +1,28 @@
+@if (card) {
+	<div class="card" 
+		[class.face-up]="card.faceUp" 
+		[class.face-down]="!card.faceUp"
+		[class.red]="isRed"
+		[class.black]="!isRed"
+		[attr.draggable]="draggable && card.faceUp">
+		@if (card.faceUp) {
+			<div class="card-content">
+				<div class="card-corner top-left">
+					<div class="rank">{{ displayRank }}</div>
+					<div class="suit">{{ suitSymbol }}</div>
+				</div>
+				<div class="card-center">
+					<div class="suit-large">{{ suitSymbol }}</div>
+				</div>
+				<div class="card-corner bottom-right">
+					<div class="rank">{{ displayRank }}</div>
+					<div class="suit">{{ suitSymbol }}</div>
+				</div>
+			</div>
+		} @else {
+			<div class="card-back"></div>
+		}
+	</div>
+} @else {
+	<div class="card-placeholder"></div>
+}

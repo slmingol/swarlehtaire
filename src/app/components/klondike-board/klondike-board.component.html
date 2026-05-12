@@ -1,0 +1,68 @@
+<div class="klondike-board">
+	<div class="game-header">
+		<h1>Swarlehtaire - Klondike</h1>
+		<div class="game-controls">
+			<button (click)="onNewGame()" class="btn btn-primary">New Game</button>
+			<button (click)="onUndo()" [disabled]="!gameState?.canUndo" class="btn btn-secondary">Undo</button>
+			<button (click)="onAutoComplete()" class="btn btn-secondary">Auto Complete</button>
+			<div class="move-counter">Moves: {{ gameState?.moveCount || 0 }}</div>
+		</div>
+	</div>
+
+	@if (gameState) {
+		<div class="game-area">
+			<!-- Top row: Stock, Waste, and Foundations -->
+			<div class="top-row">
+				<div class="left-section">
+					<div class="stock-waste">
+						<app-stack 
+							[cards]="gameState.stock" 
+							stackType="stock"
+							spread="none"
+							(stackClick)="onStockClick()">
+						</app-stack>
+						<app-stack 
+							[cards]="gameState.waste" 
+							stackType="waste"
+							spread="right"
+							(cardClick)="onWasteClick($event)">
+						</app-stack>
+					</div>
+				</div>
+				<div class="foundations">
+					@for (foundation of gameState.foundations; track $index) {
+						<app-stack 
+							[cards]="foundation" 
+							stackType="foundation"
+							spread="none"
+							(cardClick)="onFoundationClick($index, $event)">
+						</app-stack>
+					}
+				</div>
+			</div>
+
+			<!-- Tableau -->
+			<div class="tableau">
+				@for (pile of gameState.tableau; track $index) {
+					<app-stack 
+						[cards]="pile" 
+						stackType="tableau"
+						spread="down"
+						(cardClick)="onTableauClick($index, $event)"
+						(stackClick)="onTableauStackClick($index)">
+					</app-stack>
+				}
+			</div>
+
+			@if (gameState.isWon) {
+				<div class="win-message">
+					<div class="win-content">
+						<h2>🎉 Congratulations! 🎉</h2>
+						<p>You won in {{ gameState.moveCount }} moves!</p>
+						<button (click)="onNewGame()" class="btn btn-primary btn-large">Play Again</button>
+					</div>
+				</div>
+			}
+		</div>
+	}
+</div>

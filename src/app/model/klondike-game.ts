@@ -36,6 +36,20 @@ export class KlondikeGame {
 	public moves = 0;
 	public startTime: number | null = null;
 
+	/**
+	 * Get the number of moves that can be undone
+	 */
+	get canUndo(): boolean {
+		return this.moveHistory.length > 0;
+	}
+
+	/**
+	 * Get the move count
+	 */
+	get moveCount(): number {
+		return this.moveHistory.length;
+	}
+
 	constructor() {
 		this.deck = new Deck();
 		

@@ -1,0 +1,21 @@
+<div class="stack" 
+	[class.stack-stock]="stackType === 'stock'"
+	[class.stack-waste]="stackType === 'waste'"
+	[class.stack-foundation]="stackType === 'foundation'"
+	[class.stack-tableau]="stackType === 'tableau'"
+	[class.spread-down]="spread === 'down'"
+	[class.spread-right]="spread === 'right'"
+	(click)="onStackClick()">
+	
+	@if (cards.length === 0) {
+		<app-card></app-card>
+	} @else {
+		@for (card of cards; track card.id; let i = $index) {
+			<div class="card-wrapper" 
+				[style]="getCardStyle(i)"
+				(click)="onCardClick(card, i); $event.stopPropagation()">
+				<app-card [card]="card" [draggable]="card.faceUp"></app-card>
+			</div>
+		}
+	}
+</div>

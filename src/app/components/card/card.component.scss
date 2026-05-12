@@ -1,0 +1,89 @@
+.card {
+	width: 80px;
+	height: 112px;
+	border-radius: 8px;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+	position: relative;
+	cursor: pointer;
+	transition: transform 0.2s, box-shadow 0.2s;
+
+	&:hover {
+		transform: translateY(-4px);
+		box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+	}
+
+	&.face-up {
+		background: white;
+		border: 1px solid #ccc;
+	}
+
+	&.face-down {
+		background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+		border: 1px solid #1a2d5a;
+	}
+}
+
+.card-content {
+	padding: 6px;
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.card-corner {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	line-height: 1;
+
+	&.bottom-right {
+		transform: rotate(180deg);
+	}
+}
+
+.rank {
+	font-size: 18px;
+	font-weight: bold;
+}
+
+.suit {
+	font-size: 16px;
+}
+
+.card-center {
+	flex: 1;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.suit-large {
+	font-size: 48px;
+}
+
+.red {
+	color: #dc143c;
+}
+
+.black {
+	color: #000;
+}
+
+.card-back {
+	width: 100%;
+	height: 100%;
+	border-radius: 7px;
+	background: 
+		repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255,255,255,0.1) 10px, rgba(255,255,255,0.1) 20px),
+		linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+	border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.card-placeholder {
+	width: 80px;
+	height: 112px;
+	border: 2px dashed rgba(255, 255, 255, 0.3);
+	border-radius: 8px;
+	background: rgba(255, 255, 255, 0.05);
+}
