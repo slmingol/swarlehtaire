@@ -42,14 +42,14 @@
 .card-corner {
 	display: flex;
 	flex-direction: column;
-	align-items: center;
 	line-height: 1;
 
 	&.top-left {
-		// Always visible
+		align-items: flex-start; // Left align
 	}
 
 	&.bottom-right {
+		align-items: flex-end; // Right align
 		transform: rotate(180deg);
 		margin-top: auto; // Push to bottom
 	}
