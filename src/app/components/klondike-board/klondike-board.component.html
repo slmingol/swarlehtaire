@@ -22,7 +22,7 @@
 							(stackClick)="onStockClick()">
 						</app-stack>
 						<app-stack 
-							[cards]="gameState.waste" 
+							[cards]="visibleWasteCards" 
 							stackType="waste"
 							spread="right"
 							(cardClick)="onWasteClick($event)"

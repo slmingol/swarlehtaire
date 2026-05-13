@@ -34,6 +34,13 @@ export class KlondikeBoardComponent implements OnInit, OnDestroy {
 		this.destroy$.complete();
 	}
 
+	get visibleWasteCards(): Card[] {
+		// Only show the top 3 cards in the waste pile
+		if (!this.gameState?.waste) return [];
+		const waste = this.gameState.waste;
+		return waste.length <= 3 ? waste : waste.slice(-3);
+	}
+
 	onNewGame(): void {
 		this.klondikeService.newGame();
 	}
@@ -48,12 +55,13 @@ export class KlondikeBoardComponent implements OnInit, OnDestroy {
 
 	onWasteClick(event: { card: Card; index: number }): void {
 		const wasteStack = this.klondikeService.getWasteStack();
-		const cardIndex = wasteStack.cards.length - 1;
+		// Map visible index to actual waste pile index
+		const actualIndex = wasteStack.cards.length - (this.visibleWasteCards.length - event.index);
 		
 		// Try to move to foundation
 		for (let i = 0; i < 4; i++) {
 			const foundation = this.klondikeService.getFoundationStack(i);
-			if (this.klondikeService.moveCard(wasteStack, foundation, cardIndex)) {
+			if (this.klondikeService.moveCard(wasteStack, foundation, actualIndex)) {
 				return;
 			}
 		}
@@ -61,7 +69,7 @@ export class KlondikeBoardComponent implements OnInit, OnDestroy {
 		// Try to move to tableau
 		for (let i = 0; i < 7; i++) {
 			const tableau = this.klondikeService.getTableauStack(i);
-			if (this.klondikeService.moveCard(wasteStack, tableau, cardIndex)) {
+			if (this.klondikeService.moveCard(wasteStack, tableau, actualIndex)) {
 				return;
 			}
 		}
@@ -99,6 +107,7 @@ export class KlondikeBoardComponent implements OnInit, OnDestroy {
 		if (tableau.cards.length === 0) {
 			const waste = this.klondikeService.getWasteStack();
 			if (waste.cards.length > 0) {
+				// Move the top card (last card in waste)
 				this.klondikeService.moveCard(waste, tableau, waste.cards.length - 1);
 			}
 		}
@@ -127,10 +136,14 @@ export class KlondikeBoardComponent implements OnInit, OnDestroy {
 		if (!this.dragSource) return;
 
 		let sourceStack;
+		let actualCardIndex = this.dragSource.cardIndex;
+		
 		if (this.dragSource.type === 'tableau') {
 			sourceStack = this.klondikeService.getTableauStack(this.dragSource.index);
 		} else if (this.dragSource.type === 'waste') {
 			sourceStack = this.klondikeService.getWasteStack();
+			// Map visible index to actual waste pile index
+			actualCardIndex = sourceStack.cards.length - (this.visibleWasteCards.length - this.dragSource.cardIndex);
 		} else if (this.dragSource.type === 'foundation') {
 			sourceStack = this.klondikeService.getFoundationStack(this.dragSource.index);
 		} else {
@@ -146,7 +159,7 @@ export class KlondikeBoardComponent implements OnInit, OnDestroy {
 			return;
 		}
 
-		this.klondikeService.moveCard(sourceStack, targetStack, this.dragSource.cardIndex);
+		this.klondikeService.moveCard(sourceStack, targetStack, actualCardIndex);
 		this.dragSource = null;
 	}
 }
