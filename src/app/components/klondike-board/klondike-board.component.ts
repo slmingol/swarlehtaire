@@ -35,10 +35,15 @@ export class KlondikeBoardComponent implements OnInit, OnDestroy {
 	}
 
 	get visibleWasteCards(): Card[] {
-		// Only show the top 3 cards in the waste pile
+		// Show all waste cards, but only the top 3 are face-up
 		if (!this.gameState?.waste) return [];
 		const waste = this.gameState.waste;
-		return waste.length <= 3 ? waste : waste.slice(-3);
+		
+		// Create display cards with modified faceUp property
+		return waste.map((card, index) => {
+			const isTopThree = index >= waste.length - 3;
+			return { ...card, faceUp: isTopThree };
+		});
 	}
 
 	onNewGame(): void {
@@ -55,8 +60,8 @@ export class KlondikeBoardComponent implements OnInit, OnDestroy {
 
 	onWasteClick(event: { card: Card; index: number }): void {
 		const wasteStack = this.klondikeService.getWasteStack();
-		// Map visible index to actual waste pile index
-		const actualIndex = wasteStack.cards.length - (this.visibleWasteCards.length - event.index);
+		// Use the actual index since we're showing all cards
+		const actualIndex = event.index;
 		
 		// Try to move to foundation
 		for (let i = 0; i < 4; i++) {
@@ -142,8 +147,8 @@ export class KlondikeBoardComponent implements OnInit, OnDestroy {
 			sourceStack = this.klondikeService.getTableauStack(this.dragSource.index);
 		} else if (this.dragSource.type === 'waste') {
 			sourceStack = this.klondikeService.getWasteStack();
-			// Map visible index to actual waste pile index
-			actualCardIndex = sourceStack.cards.length - (this.visibleWasteCards.length - this.dragSource.cardIndex);
+			// Use the actual index since we're showing all cards
+			actualCardIndex = this.dragSource.cardIndex;
 		} else if (this.dragSource.type === 'foundation') {
 			sourceStack = this.klondikeService.getFoundationStack(this.dragSource.index);
 		} else {
