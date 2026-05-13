@@ -25,6 +25,9 @@ export class StackComponent {
 	onCardClick(card: Card, index: number): void {
 		if (card.faceUp) {
 			this.cardClick.emit({ card, index });
+		} else if (this.stackType === 'stock') {
+			// Face-down stock cards should trigger stack click (draw cards)
+			this.stackClick.emit();
 		}
 	}
 
