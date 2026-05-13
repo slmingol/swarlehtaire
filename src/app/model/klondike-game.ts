@@ -130,11 +130,14 @@ export class KlondikeGame {
 				}
 			}
 		} else {
-			// Draw one card (can be modified for draw-3 variant)
-			const card = this.stock.pop();
-			if (card) {
-				card.faceUp = true;
-				this.waste.push(card);
+			// Draw three cards (standard Klondike)
+			const drawCount = Math.min(3, this.stock.count);
+			for (let i = 0; i < drawCount; i++) {
+				const card = this.stock.pop();
+				if (card) {
+					card.faceUp = true;
+					this.waste.push(card);
+				}
 			}
 		}
 		
