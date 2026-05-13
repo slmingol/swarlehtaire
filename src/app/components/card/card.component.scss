@@ -49,7 +49,7 @@
 	}
 
 	&.bottom-right {
-		align-items: flex-end; // Right align
+		align-items: flex-start; // Left align (becomes right after 180° rotation)
 		transform: rotate(180deg);
 		margin-top: auto; // Push to bottom
 	}
