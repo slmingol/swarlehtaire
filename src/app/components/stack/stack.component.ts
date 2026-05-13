@@ -82,7 +82,8 @@ export class StackComponent {
 		}
 
 		return {
-			[this.spread === 'down' ? 'top' : 'left']: `${position}px`
+			[this.spread === 'down' ? 'top' : 'left']: `${position}px`,
+			'z-index': `${index}`
 		};
 	}
 }
