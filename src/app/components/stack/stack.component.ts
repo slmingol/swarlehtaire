@@ -29,7 +29,11 @@ export class StackComponent {
 	}
 
 	onStackClick(): void {
-		if (this.cards.length === 0) {
+		// Stock pile should always be clickable to draw cards
+		if (this.stackType === 'stock') {
+			this.stackClick.emit();
+		} else if (this.cards.length === 0) {
+			// Other piles only emit when empty
 			this.stackClick.emit();
 		}
 	}
