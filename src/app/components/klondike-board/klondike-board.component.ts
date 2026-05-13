@@ -105,7 +105,13 @@ export class KlondikeBoardComponent implements OnInit, OnDestroy {
 	}
 
 	onAutoComplete(): void {
-		this.klondikeService.autoMoveToFoundations();
+		// Keep moving cards until no more moves are possible
+		let totalMoved = 0;
+		let moved = 0;
+		do {
+			moved = this.klondikeService.autoMoveToFoundations();
+			totalMoved += moved;
+		} while (moved > 0 && !this.gameState.isWon);
 	}
 
 	// Drag and Drop handlers
