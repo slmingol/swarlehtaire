@@ -129,6 +129,15 @@ export class KlondikeGame {
 					this.stock.push(card);
 				}
 			}
+			// Immediately draw 3 cards after reset
+			const drawCount = Math.min(3, this.stock.count);
+			for (let i = 0; i < drawCount; i++) {
+				const card = this.stock.pop();
+				if (card) {
+					card.faceUp = true;
+					this.waste.push(card);
+				}
+			}
 		} else {
 			// Draw three cards (standard Klondike)
 			const drawCount = Math.min(3, this.stock.count);
