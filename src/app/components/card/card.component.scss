@@ -1,16 +1,16 @@
 .card {
-	width: 80px;
-	height: 112px;
-	border-radius: 8px;
-	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+	width: 120px;
+	height: 168px;
+	border-radius: 12px;
+	box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
 	position: relative;
 	cursor: pointer;
 	transition: transform 0.2s, box-shadow 0.2s;
 	user-select: none;
 
 	&:hover {
-		transform: translateY(-4px);
-		box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+		transform: translateY(-6px);
+		box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
 	}
 
 	&:active {
@@ -33,7 +33,7 @@
 }
 
 .card-content {
-	padding: 6px;
+	padding: 9px;
 	height: 100%;
 	display: flex;
 	flex-direction: column;
@@ -56,12 +56,12 @@
 }
 
 .rank {
-	font-size: 18px;
+	font-size: 27px;
 	font-weight: bold;
 }
 
 .suit {
-	font-size: 16px;
+	font-size: 24px;
 }
 
 .card-center {
@@ -73,7 +73,7 @@
 }
 
 .suit-large {
-	font-size: 48px;
+	font-size: 72px;
 }
 
 .red {
@@ -87,7 +87,7 @@
 .card-back {
 	width: 100%;
 	height: 100%;
-	border-radius: 7px;
+	border-radius: 11px;
 	background: 
 		repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255,255,255,0.1) 10px, rgba(255,255,255,0.1) 20px),
 		linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
@@ -95,9 +95,9 @@
 }
 
 .card-placeholder {
-	width: 80px;
-	height: 112px;
-	border: 2px dashed rgba(255, 255, 255, 0.3);
-	border-radius: 8px;
+	width: 120px;
+	height: 168px;
+	border: 3px dashed rgba(255, 255, 255, 0.3);
+	border-radius: 12px;
 	background: rgba(255, 255, 255, 0.05);
 }

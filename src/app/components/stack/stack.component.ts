@@ -69,16 +69,16 @@ export class StackComponent {
 			return {};
 		}
 
-		const offset = this.spread === 'down' ? 24 : 30;
+		const offset = this.spread === 'down' ? 36 : 45;
 		const visibleCards = this.cards.filter(c => c.faceUp).length;
 		const faceDownCards = this.cards.length - visibleCards;
 		
 		// Tighter spacing for face-down cards
 		let position: number;
 		if (index < faceDownCards) {
-			position = index * 4; // 4px spacing for face-down
+			position = index * 6; // 6px spacing for face-down
 		} else {
-			position = (faceDownCards * 4) + ((index - faceDownCards) * offset);
+			position = (faceDownCards * 6) + ((index - faceDownCards) * offset);
 		}
 
 		return {

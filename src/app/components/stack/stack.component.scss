@@ -1,16 +1,16 @@
 .stack {
 	position: relative;
-	min-width: 80px;
-	min-height: 112px;
+	min-width: 120px;
+	min-height: 168px;
 	cursor: pointer;
 	transition: all 0.2s;
 
 	&.spread-down {
-		padding-bottom: 400px; // Space for cascading cards
+		padding-bottom: 600px; // Space for cascading cards
 	}
 
 	&.spread-right {
-		padding-right: 200px; // Space for spread cards
+		padding-right: 300px; // Space for spread cards
 		display: flex;
 	}
 
@@ -18,12 +18,12 @@
 		&::before {
 			content: '';
 			position: absolute;
-			top: -4px;
-			left: -4px;
-			right: -4px;
-			bottom: -4px;
-			border: 3px dashed #4CAF50;
-			border-radius: 12px;
+			top: -6px;
+			left: -6px;
+			right: -6px;
+			bottom: -6px;
+			border: 5px dashed #4CAF50;
+			border-radius: 18px;
 			pointer-events: none;
 			z-index: 1000;
 		}
