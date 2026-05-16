@@ -1,5 +1,126 @@
 import { KlondikeGame, GameVariant } from './klondike-game';
-import { Card, CardUtils, Suit, Rank } from './card';
+import { CardUtils, Suit, Rank } from './card';
+
+describe('KlondikeGame', () => {
+	let game: KlondikeGame;
+
+	beforeEach(() => {
+		game = new KlondikeGame(GameVariant.KLONDIKE_DRAW_3);
+	});
+
+	describe('initialization', () => {
+		it('should create an instance', () => {
+			expect(game).toBeTruthy();
+		});
+
+		it('should initialize with 7 tableau piles', () => {
+			expect(game.tableau.length).toBe(7);
+		});
+
+		it('should initialize with 4 foundations', () => {
+			expect(game.foundations.length).toBe(4);
+		});
+
+		it('should have correct tableau layout', () => {
+			for (let i = 0; i < 7; i++) {
+				expect(game.tableau[i].cards.length).toBe(i + 1);
+			}
+		});
+
+		it('should have stock pile with remaining cards', () => {
+			const tableauCards = game.tableau.reduce((sum, pile) => sum + pile.cards.length, 0);
+			expect(game.stock.cards.length).toBe(52 - tableauCards);
+		});
+
+		it('should have empty waste pile', () => {
+			expect(game.waste.cards.length).toBe(0);
+		});
+
+		it('should have all foundations empty', () => {
+			game.foundations.forEach(foundation => {
+				expect(foundation.cards.length).toBe(0);
+			});
+		});
+
+		it('should have canUndo false initially', () => {
+			expect(game.canUndo).toBe(false);
+		});
+	});
+
+	describe('variant configurations', () => {
+		it('should use draw 3 for KLONDIKE_DRAW_3', () => {
+			const draw3Game = new KlondikeGame(GameVariant.KLONDIKE_DRAW_3);
+			expect(draw3Game.config.drawCount).toBe(3);
+			expect(draw3Game.config.tableauCount).toBe(7);
+		});
+
+		it('should use draw 1 for KLONDIKE_DRAW_1', () => {
+			const draw1Game = new KlondikeGame(GameVariant.KLONDIKE_DRAW_1);
+			expect(draw1Game.config.drawCount).toBe(1);
+		});
+
+		it('should have all face-up for WESTCLIFF', () => {
+			const westcliffGame = new KlondikeGame(GameVariant.WESTCLIFF);
+			expect(westcliffGame.config.allFaceUp).toBe(true);
+		});
+
+		it('should have 10 tableau for EASTHAVEN', () => {
+			const easthavenGame = new KlondikeGame(GameVariant.EASTHAVEN);
+			expect(easthavenGame.config.tableauCount).toBe(10);
+		});
+	});
+
+	describe('stock operations', () => {
+		it('should draw cards from stock', () => {
+			const initialStockCount = game.stock.cards.length;
+			game.drawFromStock();
+			
+			expect(game.waste.cards.length).toBeGreaterThan(0);
+			expect(game.stock.cards.length).toBeLessThan(initialStockCount);
+		});
+
+		it('should recycle waste when stock is empty', () => {
+			// Empty the stock
+			while (game.stock.cards.length > 0) {
+				game.drawFromStock();
+			}
+			
+			const wasteCount = game.waste.cards.length;
+			game.drawFromStock(); // Should recycle
+			
+			expect(game.stock.cards.length).toBe(wasteCount);
+			expect(game.waste.cards.length).toBe(0);
+		});
+	});
+
+	describe('undo functionality', () => {
+		it('should undo stock draw', () => {
+			const initialStockCount = game.stock.cards.length;
+			game.drawFromStock();
+			game.undo();
+			
+			expect(game.stock.cards.length).toBe(initialStockCount);
+		});
+	});
+
+	describe('win condition', () => {
+		it('should not be won initially', () => {
+			expect(game.isWon()).toBe(false);
+		});
+
+		it('should be won when all foundations complete', () => {
+			// Fill all foundations
+			for (let suit = 0; suit < 4; suit++) {
+				game.foundations[suit].cards = [];
+				for (let rank = Rank.ACE; rank <= Rank.KING; rank++) {
+					game.foundations[suit].cards.push(CardUtils.createCard(suit, rank));
+				}
+			}
+			
+			expect(game.isWon()).toBe(true);
+		});
+	});
+});
 
 describe('KlondikeGame', () => {
 	let game: KlondikeGame;

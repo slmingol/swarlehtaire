@@ -96,48 +96,33 @@ export class SpiderGame {
 		const cards: Card[] = [];
 		let idCounter = 0;
 
-		for (let deckNum = 0; deckNum < 2; deckNum++) {
-			for (let rank = Rank.ACE; rank <= Rank.KING; rank++) {
-				// Generate suits based on variant
-				let suits: Suit[];
-				switch (this.variant) {
-					case SpiderVariant.ONE_SUIT:
-						suits = [Suit.SPADES]; // All spades
-						break;
-					case SpiderVariant.TWO_SUIT:
-						suits = [Suit.SPADES, Suit.HEARTS]; // Spades and hearts only
-						break;
-					case SpiderVariant.FOUR_SUIT:
-					default:
-						suits = [Suit.SPADES, Suit.HEARTS, Suit.CLUBS, Suit.DIAMONDS];
-						break;
+		for (let rank = Rank.ACE; rank <= Rank.KING; rank++) {
+			// Generate cards based on variant
+			if (this.variant === SpiderVariant.ONE_SUIT) {
+				// 8 cards of each rank, all spades (104 total)
+				for (let i = 0; i < 8; i++) {
+					const card = CardUtils.createCard(Suit.SPADES, rank, false);
+					card.id = `${card.id}-${idCounter++}`;
+					cards.push(card);
 				}
-
-				// For 1-suit and 2-suit, we need to create multiple cards per suit
-				if (this.variant === SpiderVariant.ONE_SUIT) {
-					// 8 cards of each rank, all spades
-					for (let i = 0; i < 8; i++) {
-						const card = CardUtils.createCard(Suit.SPADES, rank, false);
+			} else if (this.variant === SpiderVariant.TWO_SUIT) {
+				// 4 of each rank in each of 2 suits (104 total)
+				const suits = [Suit.SPADES, Suit.HEARTS];
+				for (const suit of suits) {
+					for (let i = 0; i < 4; i++) {
+						const card = CardUtils.createCard(suit, rank, false);
 						card.id = `${card.id}-${idCounter++}`;
 						cards.push(card);
 					}
-				} else if (this.variant === SpiderVariant.TWO_SUIT) {
-					// 4 of each rank in each of the 2 suits
-					for (const suit of suits) {
-						for (let i = 0; i < 4; i++) {
-							const card = CardUtils.createCard(suit, rank, false);
-							card.id = `${card.id}-${idCounter++}`;
-							cards.push(card);
-						}
-					}
-				} else {
-					// 2 of each rank in each of the 4 suits
-					for (const suit of suits) {
-						for (let i = 0; i < 2; i++) {
-							const card = CardUtils.createCard(suit, rank, false);
-							card.id = `${card.id}-${idCounter++}`;
-							cards.push(card);
-						}
+				}
+			} else {
+				// 2 of each rank in each of 4 suits (104 total)
+				const suits = [Suit.SPADES, Suit.HEARTS, Suit.CLUBS, Suit.DIAMONDS];
+				for (const suit of suits) {
+					for (let i = 0; i < 2; i++) {
+						const card = CardUtils.createCard(suit, rank, false);
+						card.id = `${card.id}-${idCounter++}`;
+						cards.push(card);
 					}
 				}
 			}

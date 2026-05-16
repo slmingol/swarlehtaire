@@ -1,5 +1,60 @@
 import { YukonGame } from './yukon-game';
-import { Card, CardUtils, Suit, Rank } from './card';
+import { CardUtils, Suit, Rank } from './card';
+
+describe('YukonGame', () => {
+	let game: YukonGame;
+
+	beforeEach(() => {
+		game = new YukonGame();
+	});
+
+	describe('initialization', () => {
+		it('should create an instance', () => {
+			expect(game).toBeTruthy();
+		});
+
+		it('should initialize with 7 tableau columns', () => {
+			expect(game.tableau.length).toBe(7);
+		});
+
+		it('should initialize with 4 foundations', () => {
+			expect(game.foundations.length).toBe(4);
+		});
+
+		it('should have all 52 cards in tableau', () => {
+			const totalCards = game.tableau.reduce((sum, col) => sum + col.length, 0);
+			expect(totalCards).toBe(52);
+		});
+
+		it('should have all foundations empty', () => {
+			game.foundations.forEach(foundation => {
+				expect(foundation.length).toBe(0);
+			});
+		});
+
+		it('should have canUndo false initially', () => {
+			expect(game.canUndo).toBe(false);
+		});
+	});
+
+	describe('win condition', () => {
+		it('should not be won initially', () => {
+			expect(game.isWon()).toBe(false);
+		});
+
+		it('should be won when all foundations complete', () => {
+			// Fill all foundations
+			for (let suit = 0; suit < 4; suit++) {
+				game.foundations[suit] = [];
+				for (let rank = Rank.ACE; rank <= Rank.KING; rank++) {
+					game.foundations[suit].push(CardUtils.createCard(suit, rank));
+				}
+			}
+			
+			expect(game.isWon()).toBe(true);
+		});
+	});
+});
 
 describe('YukonGame', () => {
 	let game: YukonGame;

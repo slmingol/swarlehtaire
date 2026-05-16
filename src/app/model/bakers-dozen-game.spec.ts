@@ -1,5 +1,78 @@
 import { BakersDDozenGame } from './bakers-dozen-game';
-import { Card, CardUtils, Suit, Rank } from './card';
+import { CardUtils, Suit, Rank } from './card';
+
+describe('BakersDDozenGame', () => {
+	let game: BakersDDozenGame;
+
+	beforeEach(() => {
+		game = new BakersDDozenGame();
+	});
+
+	describe('initialization', () => {
+		it('should create an instance', () => {
+			expect(game).toBeTruthy();
+		});
+
+		it('should initialize with 13 tableau columns', () => {
+			expect(game.tableau.length).toBe(13);
+		});
+
+		it('should initialize with 4 foundations', () => {
+			expect(game.foundations.length).toBe(4);
+		});
+
+		it('should have 4 cards in each column', () => {
+			game.tableau.forEach(column => {
+				expect(column.length).toBe(4);
+			});
+		});
+
+		it('should have all cards face-up', () => {
+			const allFaceUp = game.tableau.flat().every(card => card.faceUp);
+			expect(allFaceUp).toBe(true);
+		});
+
+		it('should have all foundations empty', () => {
+			game.foundations.forEach(foundation => {
+				expect(foundation.length).toBe(0);
+			});
+		});
+
+		it('should have canUndo false initially', () => {
+			expect(game.canUndo).toBe(false);
+		});
+	});
+
+	describe('King placement', () => {
+		it('should move Kings to bottom of columns during setup', () => {
+			// Check that any Kings in tableau are at the bottom
+			game.tableau.forEach(column => {
+				const kingIndex = column.findIndex(c => c.rank === Rank.KING);
+				if (kingIndex !== -1) {
+					expect(kingIndex).toBe(0); // Should be at bottom
+				}
+			});
+		});
+	});
+
+	describe('win condition', () => {
+		it('should not be won initially', () => {
+			expect(game.isWon()).toBe(false);
+		});
+
+		it('should be won when all foundations complete', () => {
+			// Fill all foundations
+			for (let suit = 0; suit < 4; suit++) {
+				game.foundations[suit] = [];
+				for (let rank = Rank.ACE; rank <= Rank.KING; rank++) {
+					game.foundations[suit].push(CardUtils.createCard(suit, rank));
+				}
+			}
+			
+			expect(game.isWon()).toBe(true);
+		});
+	});
+});
 
 describe('BakersDDozenGame', () => {
 	let game: BakersDDozenGame;

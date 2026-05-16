@@ -1,5 +1,87 @@
 import { PyramidGame } from './pyramid-game';
-import { Card, CardUtils, Suit, Rank } from './card';
+import { CardUtils, Suit, Rank } from './card';
+
+describe('PyramidGame', () => {
+	let game: PyramidGame;
+
+	beforeEach(() => {
+		game = new PyramidGame();
+	});
+
+	describe('initialization', () => {
+		it('should create an instance', () => {
+			expect(game).toBeTruthy();
+		});
+
+		it('should initialize pyramid with 28 cards', () => {
+			const pyramidCards = game.pyramid.flat().filter(c => c !== null).length;
+			expect(pyramidCards).toBe(28);
+		});
+
+		it('should have 7 rows in pyramid', () => {
+			expect(game.pyramid.length).toBe(7);
+		});
+
+		it('should have 24 cards in stock', () => {
+			expect(game.stock.length).toBe(24);
+		});
+
+		it('should have canUndo false initially', () => {
+			expect(game.canUndo).toBe(false);
+		});
+	});
+
+	describe('card values', () => {
+		it('should calculate Ace as 1', () => {
+			const ace = CardUtils.createCard(Suit.SPADES, Rank.ACE);
+			expect(game.getCardValue(ace)).toBe(1);
+		});
+
+		it('should calculate King as 13', () => {
+			const king = CardUtils.createCard(Suit.SPADES, Rank.KING);
+			expect(game.getCardValue(king)).toBe(13);
+		});
+
+		it('should calculate Queen as 12', () => {
+			const queen = CardUtils.createCard(Suit.SPADES, Rank.QUEEN);
+			expect(game.getCardValue(queen)).toBe(12);
+		});
+	});
+
+	describe('stock operations', () => {
+		it('should draw card from stock', () => {
+			const initialLength = game.stock.length;
+			const result = game.drawFromStock();
+			
+			expect(result).toBe(true);
+			expect(game.stock.length).toBeLessThan(initialLength);
+		});
+
+		it('should not draw when stock is empty', () => {
+			game.stock = [];
+			const result = game.drawFromStock();
+			
+			expect(result).toBe(false);
+		});
+	});
+
+	describe('win condition', () => {
+		it('should not be won initially', () => {
+			expect(game.isWon()).toBe(false);
+		});
+
+		it('should be won when pyramid is cleared', () => {
+			// Clear all pyramid cards
+			for (let row = 0; row < 7; row++) {
+				for (let col = 0; col < game.pyramid[row].length; col++) {
+					game.pyramid[row][col] = null;
+				}
+			}
+			
+			expect(game.isWon()).toBe(true);
+		});
+	});
+});
 
 describe('PyramidGame', () => {
 	let game: PyramidGame;

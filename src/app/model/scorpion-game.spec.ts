@@ -1,5 +1,80 @@
 import { ScorpionGame } from './scorpion-game';
-import { Card, CardUtils, Suit, Rank } from './card';
+import { CardUtils, Suit, Rank } from './card';
+
+describe('ScorpionGame', () => {
+	let game: ScorpionGame;
+
+	beforeEach(() => {
+		game = new ScorpionGame();
+	});
+
+	describe('initialization', () => {
+		it('should create an instance', () => {
+			expect(game).toBeTruthy();
+		});
+
+		it('should initialize with 7 tableau columns', () => {
+			expect(game.tableau.length).toBe(7);
+		});
+
+		it('should have 7 cards in each column', () => {
+			game.tableau.forEach(column => {
+				expect(column.length).toBe(7);
+			});
+		});
+
+		it('should have 3 cards in reserve', () => {
+			expect(game.reserve.length).toBe(3);
+		});
+
+		it('should not have dealt reserve initially', () => {
+			expect(game.reserveDealt).toBe(false);
+		});
+
+		it('should have canUndo false initially', () => {
+			expect(game.canUndo).toBe(false);
+		});
+	});
+
+	describe('reserve dealing', () => {
+		it('should deal 3 cards to first 3 columns', () => {
+			const initialLengths = game.tableau.slice(0, 3).map(col => col.length);
+			
+			const result = game.dealReserve();
+			expect(result).toBe(true);
+			
+			for (let i = 0; i < 3; i++) {
+				expect(game.tableau[i].length).toBe(initialLengths[i] + 1);
+			}
+		});
+
+		it('should mark reserve as dealt', () => {
+			game.dealReserve();
+			expect(game.reserveDealt).toBe(true);
+		});
+
+		it('should not allow dealing reserve twice', () => {
+			game.dealReserve();
+			const result = game.dealReserve();
+			expect(result).toBe(false);
+		});
+	});
+
+	describe('undo functionality', () => {
+		it('should allow undoing reserve deal', () => {
+			game.dealReserve();
+			game.undo();
+			
+			expect(game.reserveDealt).toBe(false);
+		});
+	});
+
+	describe('win condition', () => {
+		it('should not be won initially', () => {
+			expect(game.isWon()).toBe(false);
+		});
+	});
+});
 
 describe('ScorpionGame', () => {
 	let game: ScorpionGame;
