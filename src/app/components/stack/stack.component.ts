@@ -69,7 +69,7 @@ export class StackComponent {
 			return {};
 		}
 
-		const offset = this.spread === 'down' ? 36 : 45;
+		const offset = this.spread === 'down' ? 35 : 44;
 		const visibleCards = this.cards.filter(c => c.faceUp).length;
 		const faceDownCards = this.cards.length - visibleCards;
 		

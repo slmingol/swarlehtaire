@@ -1,16 +1,16 @@
 .stack {
 	position: relative;
-	min-width: 120px;
-	min-height: 168px;
+	min-width: 116px;
+	min-height: 163px;
 	cursor: pointer;
 	transition: all 0.2s;
 
 	&.spread-down {
-		padding-bottom: 600px; // Space for cascading cards
+		padding-bottom: 582px; // Space for cascading cards
 	}
 
 	&.spread-right {
-		padding-right: 300px; // Space for spread cards
+		padding-right: 291px; // Space for spread cards
 		display: flex;
 	}
 
