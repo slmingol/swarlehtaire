@@ -10,6 +10,8 @@ export interface SpiderGameState {
 	completedCount: number;
 	isWon: boolean;
 	variant: SpiderVariant;
+	canUndo: boolean;
+	moveCount: number;
 }
 
 @Injectable({
@@ -34,7 +36,9 @@ export class SpiderService {
 			stockCount: 0,
 			completedCount: 0,
 			isWon: false,
-			variant: SpiderVariant.FOUR_SUIT
+			variant: SpiderVariant.FOUR_SUIT,
+			canUndo: false,
+			moveCount: 0
 		};
 	}
 
@@ -70,6 +74,11 @@ export class SpiderService {
 		return success;
 	}
 
+	undo(): void {
+		this.game.undo();
+		this.updateState();
+	}
+
 	getTableauPile(index: number): Card[] {
 		return this.game.tableau[index] || [];
 	}
@@ -81,7 +90,9 @@ export class SpiderService {
 			stockCount: this.game.stockCount,
 			completedCount: this.game.completedCount,
 			isWon: this.game.isWon(),
-			variant: this.game['variant'] // Access private field for state
+			variant: this.game['variant'], // Access private field for state
+			canUndo: this.game.canUndo,
+			moveCount: this.game.moveCount
 		};
 		this.gameState$.next(state);
 	}

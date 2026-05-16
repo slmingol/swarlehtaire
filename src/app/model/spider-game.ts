@@ -11,6 +11,19 @@ export enum SpiderVariant {
 }
 
 /**
+ * Move history for undo
+ */
+export interface SpiderMove {
+	fromPile: number;
+	toPile: number;
+	cards: Card[];
+	fromTopWasFaceUp: boolean;
+	sequencesRemoved?: Card[][];
+	type: 'move' | 'deal';
+	stockCards?: Card[]; // For deal moves
+}
+
+/**
  * Spider Solitaire Game
  * 
  * Uses 2 decks (104 cards)
@@ -24,8 +37,16 @@ export class SpiderGame {
 	public tableau: Card[][];
 	public stock: Card[];
 	public completed: Card[][]; // Completed sequences (K-A)
-	public moveHistory: any[];
+	public moveHistory: SpiderMove[];
 	private variant: SpiderVariant;
+
+	get canUndo(): boolean {
+		return this.moveHistory.length > 0;
+	}
+
+	get moveCount(): number {
+		return this.moveHistory.length;
+	}
 
 	constructor(variant: SpiderVariant = SpiderVariant.FOUR_SUIT) {
 		this.variant = variant;
@@ -187,7 +208,14 @@ export class SpiderGame {
 		const sourcePile = this.tableau[fromPile];
 		const targetPile = this.tableau[toPile];
 
+		// Record state before move
+		const fromTopWasFaceUp = sourcePile.length > fromIndex + 1 ? 
+			sourcePile[fromIndex - 1]?.faceUp || false : false;
 		const cardsToMove = sourcePile.splice(fromIndex);
+		
+		// Make copies of cards for history
+		const cardsCopy = cardsToMove.map(c => ({ ...c }));
+		
 		targetPile.push(...cardsToMove);
 
 		// Turn over new top card in source pile
@@ -195,16 +223,27 @@ export class SpiderGame {
 			sourcePile[sourcePile.length - 1].faceUp = true;
 		}
 
-		// Check for completed sequences
-		this.checkAndRemoveCompletedSequences();
+		// Check for completed sequences before recording move
+		const sequencesRemoved = this.checkAndRemoveCompletedSequences();
+
+		// Record move
+		this.moveHistory.push({
+			fromPile,
+			toPile,
+			cards: cardsCopy,
+			fromTopWasFaceUp,
+			sequencesRemoved,
+			type: 'move'
+		});
 
 		return true;
 	}
 
 	/**
 	 * Check all piles for completed K-A sequences and remove them
+	 * Returns sequences that were removed (for undo)
 	 */
-	private checkAndRemoveCompletedSequences(): void {
+	private checkAndRemoveCompletedSequences(): Card[][] | undefined {
 		for (let pileIndex = 0; pileIndex < 10; pileIndex++) {
 			const pile = this.tableau[pileIndex];
 			if (pile.length < 13) continue;
@@ -219,6 +258,7 @@ export class SpiderGame {
 				if (this.isCompleteSequence(sequence)) {
 					// Remove the sequence
 					const removed = pile.splice(startIndex, 13);
+					const removedCopy = removed.map(c => ({ ...c }));
 					this.completed.push(removed);
 
 					// Turn over new top card
@@ -227,11 +267,12 @@ export class SpiderGame {
 					}
 
 					// Check again in case there are multiple sequences
-					this.checkAndRemoveCompletedSequences();
-					return;
+					const more = this.checkAndRemoveCompletedSequences();
+					return more ? [removedCopy, ...more] : [removedCopy];
 				}
 			}
 		}
+		return undefined;
 	}
 
 	/**
@@ -263,15 +304,78 @@ export class SpiderGame {
 		// Can't deal if stock is empty
 		if (this.stock.length < 10) return false;
 
+		// Save cards for undo
+		const dealtCards: Card[] = [];
+		
 		// Deal one card to each pile
 		for (let i = 0; i < 10; i++) {
 			const card = this.stock.pop()!;
+			dealtCards.push({ ...card });
 			card.faceUp = true;
 			this.tableau[i].push(card);
 		}
 
 		// Check for completed sequences after dealing
-		this.checkAndRemoveCompletedSequences();
+		const sequencesRemoved = this.checkAndRemoveCompletedSequences();
+
+		// Record move
+		this.moveHistory.push({
+			fromPile: -1,
+			toPile: -1,
+			cards: [],
+			fromTopWasFaceUp: false,
+			sequencesRemoved,
+			type: 'deal',
+			stockCards: dealtCards
+		});
+
+		return true;
+	}
+
+	/**
+	 * Undo last move
+	 */
+	undo(): boolean {
+		const lastMove = this.moveHistory.pop();
+		if (!lastMove) return false;
+
+		// Restore completed sequences if any were removed
+		if (lastMove.sequencesRemoved) {
+			for (const sequence of lastMove.sequencesRemoved) {
+				this.completed.pop();
+				// Find which pile to restore to (scan for matching bottom card)
+				for (let i = 0; i < 10; i++) {
+					const pile = this.tableau[i];
+					if (pile.length > 0) {
+						// Restore sequence to this pile
+						pile.push(...sequence);
+						break;
+					}
+				}
+			}
+		}
+
+		if (lastMove.type === 'deal') {
+			// Undo deal: remove one card from each pile and return to stock
+			for (let i = 9; i >= 0; i--) {
+				const card = this.tableau[i].pop()!;
+				card.faceUp = false;
+				this.stock.push(card);
+			}
+		} else {
+			// Undo regular move: move cards back
+			const targetPile = this.tableau[lastMove.toPile];
+			const sourcePile = this.tableau[lastMove.fromPile];
+			
+			const cardsToMoveBack = targetPile.splice(targetPile.length - lastMove.cards.length);
+			
+			// Restore face-down state if needed
+			if (sourcePile.length > 0 && !lastMove.fromTopWasFaceUp) {
+				sourcePile[sourcePile.length - 1].faceUp = false;
+			}
+			
+			sourcePile.push(...cardsToMoveBack);
+		}
 
 		return true;
 	}

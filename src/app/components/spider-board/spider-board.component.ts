@@ -107,6 +107,10 @@ export class SpiderBoardComponent implements OnInit, OnDestroy {
 		this.spiderService.dealFromStock();
 	}
 
+	onUndo(): void {
+		this.spiderService.undo();
+	}
+
 	onTableauClick(pileIndex: number, event: { card: Card; index: number }): void {
 		// Implement auto-move logic later
 	}

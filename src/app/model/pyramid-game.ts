@@ -1,12 +1,31 @@
 import { Card, Rank, CardUtils } from './card';
 import { Deck } from './deck';
 
+export interface PyramidMove {
+	type: 'removeKing' | 'removePair' | 'removeWithWaste' | 'draw';
+	row1?: number;
+	col1?: number;
+	row2?: number;
+	col2?: number;
+	cards: Card[];
+	previousWaste?: Card | null;
+}
+
 export class PyramidGame {
 	pyramid: Card[][] = [];
 	stock: Card[] = [];
 	waste: Card | null = null;
 	removed: Card[] = [];
 	stockIndex: number = 0;
+	moveHistory: PyramidMove[] = [];
+
+	get canUndo(): boolean {
+		return this.moveHistory.length > 0;
+	}
+
+	get moveCount(): number {
+		return this.moveHistory.length;
+	}
 
 	constructor() {
 		this.deal();
@@ -35,6 +54,7 @@ export class PyramidGame {
 		this.waste = null;
 		this.removed = [];
 		this.stockIndex = 0;
+		this.moveHistory = [];
 	}
 
 	isCardExposed(row: number, col: number): boolean {
@@ -80,6 +100,14 @@ export class PyramidGame {
 
 		this.removed.push(card);
 		this.pyramid[row][col] = null!;
+		
+		this.moveHistory.push({
+			type: 'removeKing',
+			row1: row,
+			col1: col,
+			cards: [{ ...card }]
+		});
+		
 		return true;
 	}
 
@@ -95,6 +123,16 @@ export class PyramidGame {
 		this.removed.push(card1, card2);
 		this.pyramid[row1][col1] = null!;
 		this.pyramid[row2][col2] = null!;
+		
+		this.moveHistory.push({
+			type: 'removePair',
+			row1,
+			col1,
+			row2,
+			col2,
+			cards: [{ ...card1 }, { ...card2 }]
+		});
+		
 		return true;
 	}
 
@@ -106,24 +144,48 @@ export class PyramidGame {
 		if (!this.isCardExposed(row, col)) return false;
 		if (!this.canPair(this.waste, pyramidCard)) return false;
 
-		this.removed.push(this.waste, pyramidCard);
+		const wasteCard = this.waste;
+		this.removed.push(wasteCard, pyramidCard);
 		this.waste = null;
 		this.pyramid[row][col] = null!;
+		
+		this.moveHistory.push({
+			type: 'removeWithWaste',
+			row1: row,
+			col1: col,
+			cards: [{ ...wasteCard }, { ...pyramidCard }],
+			previousWaste: null
+		});
+		
 		return true;
 	}
 
 	drawFromStock(): boolean {
 		if (this.stockIndex >= this.stock.length) return false;
 
+		const previousWaste = this.waste ? { ...this.waste } : null;
 		const card = this.stock[this.stockIndex];
 		card.faceUp = true;
 		
 		// If waste pairs with new card, auto-remove
 		if (this.waste && this.canPair(this.waste, card)) {
-			this.removed.push(this.waste, card);
+			const wasteCard = this.waste;
+			this.removed.push(wasteCard, card);
 			this.waste = null;
+			
+			this.moveHistory.push({
+				type: 'draw',
+				cards: [{ ...wasteCard }, { ...card }],
+				previousWaste
+			});
 		} else {
 			this.waste = card;
+			
+			this.moveHistory.push({
+				type: 'draw',
+				cards: [{ ...card }],
+				previousWaste
+			});
 		}
 		
 		this.stockIndex++;
@@ -178,5 +240,54 @@ export class PyramidGame {
 		return this.pyramid.reduce((sum, row) => 
 			sum + row.filter(card => card !== null).length, 0
 		);
+	}
+
+	undo(): boolean {
+		const lastMove = this.moveHistory.pop();
+		if (!lastMove) return false;
+
+		switch (lastMove.type) {
+			case 'removeKing':
+				// Restore king to pyramid
+				if (lastMove.row1 !== undefined && lastMove.col1 !== undefined) {
+					this.pyramid[lastMove.row1][lastMove.col1] = lastMove.cards[0];
+					this.removed.pop();
+				}
+				break;
+			
+			case 'removePair':
+				// Restore both pyramid cards
+				if (lastMove.row1 !== undefined && lastMove.col1 !== undefined &&
+					lastMove.row2 !== undefined && lastMove.col2 !== undefined) {
+					this.pyramid[lastMove.row1][lastMove.col1] = lastMove.cards[0];
+					this.pyramid[lastMove.row2][lastMove.col2] = lastMove.cards[1];
+					this.removed.pop();
+					this.removed.pop();
+				}
+				break;
+			
+			case 'removeWithWaste':
+				// Restore waste and pyramid card
+				if (lastMove.row1 !== undefined && lastMove.col1 !== undefined) {
+					this.waste = lastMove.cards[0];
+					this.pyramid[lastMove.row1][lastMove.col1] = lastMove.cards[1];
+					this.removed.pop();
+					this.removed.pop();
+				}
+				break;
+			
+			case 'draw':
+				// Restore previous waste and stock index
+				this.stockIndex--;
+				this.waste = lastMove.previousWaste || null;
+				// Restore cards to removed if they were auto-removed
+				if (lastMove.cards.length === 2) {
+					this.removed.pop();
+					this.removed.pop();
+				}
+				break;
+		}
+
+		return true;
 	}
 }

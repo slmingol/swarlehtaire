@@ -2,6 +2,17 @@ import { Card, Suit, Rank, CardUtils } from './card';
 import { Deck } from './deck';
 
 /**
+ * Move history for undo
+ */
+export interface FreeCellMove {
+	type: 'cascade' | 'toCell' | 'cellToCascade' | 'toFoundation';
+	fromIndex: number;
+	toIndex: number;
+	cards: Card[];
+	fromType?: 'cell' | 'cascade';
+}
+
+/**
  * FreeCell Solitaire Game
  * 
  * - 1 deck (52 cards), all face-up from start
@@ -16,7 +27,15 @@ export class FreeCellGame {
 	public cascades: Card[][];
 	public cells: (Card | null)[];
 	public foundations: Card[][];
-	public moveHistory: any[];
+	public moveHistory: FreeCellMove[];
+
+	get canUndo(): boolean {
+		return this.moveHistory.length > 0;
+	}
+
+	get moveCount(): number {
+		return this.moveHistory.length;
+	}
 
 	constructor() {
 		this.cascades = Array.from({ length: 8 }, () => []);
@@ -115,6 +134,16 @@ export class FreeCellGame {
 
 		// Add to foundation
 		this.foundations[foundationIndex].push(card);
+		
+		// Record move
+		this.moveHistory.push({
+			type: 'toFoundation',
+			fromIndex,
+			toIndex: foundationIndex,
+			cards: [{ ...card }],
+			fromType: from
+		});
+		
 		return true;
 	}
 
@@ -170,6 +199,15 @@ export class FreeCellGame {
 		// Move the cards
 		sourceCascade.splice(cardIndex);
 		targetCascade.push(...cardsToMove);
+		
+		// Record move
+		this.moveHistory.push({
+			type: 'cascade',
+			fromIndex,
+			toIndex,
+			cards: cardsToMove.map(c => ({ ...c }))
+		});
+		
 		return true;
 	}
 
@@ -184,6 +222,15 @@ export class FreeCellGame {
 
 		const card = sourceCascade.pop()!;
 		this.cells[cellIndex] = card;
+		
+		// Record move
+		this.moveHistory.push({
+			type: 'toCell',
+			fromIndex,
+			toIndex: cellIndex,
+			cards: [{ ...card }]
+		});
+		
 		return true;
 	}
 
@@ -199,6 +246,15 @@ export class FreeCellGame {
 
 		this.cells[cellIndex] = null;
 		targetCascade.push(card);
+		
+		// Record move
+		this.moveHistory.push({
+			type: 'cellToCascade',
+			fromIndex: cellIndex,
+			toIndex: cascadeIndex,
+			cards: [{ ...card }]
+		});
+		
 		return true;
 	}
 
@@ -248,9 +304,51 @@ export class FreeCellGame {
 	}
 
 	/**
-	 * Get move count (foundation cards + cards in cells)
+	 * Undo last move
 	 */
-	get moveCount(): number {
-		return this.foundations.reduce((sum, f) => sum + f.length, 0);
+	undo(): boolean {
+		const lastMove = this.moveHistory.pop();
+		if (!lastMove) return false;
+
+		switch (lastMove.type) {
+			case 'cascade':
+				// Move cards back from toIndex to fromIndex
+				const targetCascade = this.cascades[lastMove.toIndex];
+				const sourceCascade = this.cascades[lastMove.fromIndex];
+				const cardsToMoveBack = targetCascade.splice(targetCascade.length - lastMove.cards.length);
+				sourceCascade.push(...cardsToMoveBack);
+				break;
+			
+			case 'toCell':
+				// Move card back from cell to cascade
+				const card = this.cells[lastMove.toIndex];
+				if (card) {
+					this.cells[lastMove.toIndex] = null;
+					this.cascades[lastMove.fromIndex].push(card);
+				}
+				break;
+			
+			case 'cellToCascade':
+				// Move card back from cascade to cell
+				const movedCard = this.cascades[lastMove.toIndex].pop();
+				if (movedCard) {
+					this.cells[lastMove.fromIndex] = movedCard;
+				}
+				break;
+			
+			case 'toFoundation':
+				// Move card back from foundation
+				const foundationCard = this.foundations[lastMove.toIndex].pop();
+				if (foundationCard && lastMove.fromType) {
+					if (lastMove.fromType === 'cell') {
+						this.cells[lastMove.fromIndex] = foundationCard;
+					} else {
+						this.cascades[lastMove.fromIndex].push(foundationCard);
+					}
+				}
+				break;
+		}
+
+		return true;
 	}
 }

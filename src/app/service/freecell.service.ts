@@ -11,6 +11,7 @@ export interface FreeCellGameState {
 	emptyCascades: number;
 	isWon: boolean;
 	moveCount: number;
+	canUndo: boolean;
 }
 
 @Injectable({
@@ -36,7 +37,8 @@ export class FreeCellService {
 			emptyCells: 4,
 			emptyCascades: 0,
 			isWon: false,
-			moveCount: 0
+			moveCount: 0,
+			canUndo: false
 		};
 	}
 
@@ -79,6 +81,11 @@ export class FreeCellService {
 		return moved > 0;
 	}
 
+	undo(): void {
+		this.game.undo();
+		this.updateState();
+	}
+
 	private updateState(): void {
 		const state: FreeCellGameState = {
 			cascades: this.game.cascades.map(c => [...c]),
@@ -87,7 +94,8 @@ export class FreeCellService {
 			emptyCells: this.game.emptyCells,
 			emptyCascades: this.game.emptyCascades,
 			isWon: this.game.isWon(),
-			moveCount: this.game.moveCount
+			moveCount: this.game.moveCount,
+			canUndo: this.game.canUndo
 		};
 		this.gameState$.next(state);
 	}

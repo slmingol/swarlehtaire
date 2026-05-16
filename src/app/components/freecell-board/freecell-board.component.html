@@ -3,6 +3,7 @@
 		<h1>Swarlehtaire - FreeCell</h1>
 		<div class="controls">
 			<button (click)="onNewGame()" class="btn btn-primary">New Game</button>
+			<button (click)="onUndo()" [disabled]="!gameState?.canUndo" class="btn btn-secondary">Undo</button>
 			<button (click)="onAutoMove()" class="btn btn-secondary">Auto Move</button>
 			<div class="move-counter">Moves: {{ gameState?.moveCount || 0 }}</div>
 		</div>

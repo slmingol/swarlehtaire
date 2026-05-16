@@ -40,7 +40,9 @@ export class FreeCellBoardComponent implements OnInit, OnDestroy {
 			moved = this.freecellService.autoMoveToFoundations();
 		} while (moved && !this.gameState.isWon);
 	}
-
+	onUndo(): void {
+		this.freecellService.undo();
+	}
 	onCascadeDragStart(cascadeIndex: number, cardIndex: number): void {
 		this.dragSource = { type: 'cascade', index: cascadeIndex, cardIndex };
 	}

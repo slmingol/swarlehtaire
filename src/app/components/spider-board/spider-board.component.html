@@ -31,11 +31,13 @@
 		</div>
 		<div class="game-controls">
 			<button (click)="onNewGame()" class="btn btn-primary">New Game</button>
+			<button (click)="onUndo()" [disabled]="!gameState?.canUndo" class="btn btn-secondary">Undo</button>
 			<button (click)="onDealFromStock()" 
 					[disabled]="gameState?.stockCount === 0" 
 					class="btn btn-secondary">
 				Deal ({{ gameState?.stockCount || 0 }})
 			</button>
+			<div class="move-counter">Moves: {{ gameState?.moveCount || 0 }}</div>
 			<div class="completed-counter">Completed: {{ gameState?.completedCount || 0 }}/8</div>
 		</div>
 	</div>
