@@ -25,7 +25,9 @@
 				</div>
 				<div class="foundations">
 					@for (foundation of gameState.foundations; track $index) {
-						<app-stack [cards]="foundation" stackType="foundation" spread="none"></app-stack>
+						<app-stack [cards]="foundation" stackType="foundation" spread="none"
+							(stackDrop)="onFoundationDrop($index)">
+						</app-stack>
 					}
 				</div>
 			</div>

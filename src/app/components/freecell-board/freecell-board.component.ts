@@ -95,4 +95,24 @@ export class FreeCellBoardComponent implements OnInit, OnDestroy {
 			this.freecellService.moveToFoundation(card, 'cascade', cascadeIndex);
 		}
 	}
+
+	onFoundationDrop(foundationIndex: number): void {
+		if (!this.dragSource) return;
+
+		if (this.dragSource.type === 'cell') {
+			// Move from cell to foundation
+			const card = this.gameState.cells[this.dragSource.index];
+			if (card) {
+				this.freecellService.moveToFoundation(card, 'cell', this.dragSource.index);
+			}
+		} else if (this.dragSource.type === 'cascade' && this.dragSource.cardIndex !== undefined) {
+			// Move from cascade to foundation (only top card)
+			const cascade = this.gameState.cascades[this.dragSource.index];
+			if (this.dragSource.cardIndex === cascade.length - 1) {
+				const card = cascade[this.dragSource.cardIndex];
+				this.freecellService.moveToFoundation(card, 'cascade', this.dragSource.index);
+			}
+		}
+		this.dragSource = null;
+	}
 }
