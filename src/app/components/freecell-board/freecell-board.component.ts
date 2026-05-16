@@ -52,10 +52,11 @@ export class FreeCellBoardComponent implements OnInit, OnDestroy {
 	}
 
 	onAutoMove(): void {
-		let moved = false;
-		do {
+		// Keep auto-moving until no more moves are possible
+		let moved = true;
+		while (moved) {
 			moved = this.freecellService.autoMoveToFoundations();
-		} while (moved && !this.gameState.isWon);
+		}
 	}
 	onUndo(): void {
 		this.freecellService.undo();
