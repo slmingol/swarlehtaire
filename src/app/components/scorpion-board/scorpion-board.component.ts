@@ -15,6 +15,18 @@ export class ScorpionBoardComponent implements OnInit, OnDestroy {
 	gameState: ScorpionGameState | null = null;
 	dragSource: {columnIndex: number, cardIndex: number} | null = null;
 	private destroy$ = new Subject<void>();
+	showRules = false;
+
+	rulesInfo = {
+		wikipediaUrl: 'https://en.wikipedia.org/wiki/Scorpion_(solitaire)',
+		rules: [
+			'Build down by suit (same suit descending)',
+			'Move any face-up card with all cards below it',
+			'Only Kings can fill empty columns',
+			'Deal 3 reserve cards when stuck (one to each first 3 columns)',
+			'Win by building 4 complete K-A sequences'
+		]
+	};
 
 	constructor(private scorpionService: ScorpionService) {}
 
@@ -31,6 +43,10 @@ export class ScorpionBoardComponent implements OnInit, OnDestroy {
 
 	newGame(): void {
 		this.scorpionService.newGame();
+	}
+
+	toggleRules(): void {
+		this.showRules = !this.showRules;
 	}
 
 	onDragStart(columnIndex: number, cardIndex: number, event: DragEvent): void {

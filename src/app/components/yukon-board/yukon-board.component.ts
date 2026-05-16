@@ -15,6 +15,18 @@ export class YukonBoardComponent implements OnInit, OnDestroy {
 	gameState: YukonGameState | null = null;
 	dragSource: {columnIndex: number, cardIndex: number} | null = null;
 	private destroy$ = new Subject<void>();
+	showRules = false;
+
+	rulesInfo = {
+		wikipediaUrl: 'https://en.wikipedia.org/wiki/Yukon_(solitaire)',
+		rules: [
+			'All cards dealt face-up at start',
+			'Build down by alternating colors on tableau',
+			'Move any face-up card (not just sequences)',
+			'Build up by suit on foundations (Ace to King)',
+			'Only Kings can fill empty columns'
+		]
+	};
 
 	constructor(private yukonService: YukonService) {}
 
@@ -31,6 +43,10 @@ export class YukonBoardComponent implements OnInit, OnDestroy {
 
 	newGame(): void {
 		this.yukonService.newGame();
+	}
+
+	toggleRules(): void {
+		this.showRules = !this.showRules;
 	}
 
 	onDragStart(columnIndex: number, cardIndex: number, event: DragEvent): void {

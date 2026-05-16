@@ -15,6 +15,18 @@ export class BakersDozenBoardComponent implements OnInit, OnDestroy {
 	gameState: BakersDozenGameState | null = null;
 	dragSource: number | null = null;
 	private destroy$ = new Subject<void>();
+	showRules = false;
+
+	rulesInfo = {
+		wikipediaUrl: 'https://en.wikipedia.org/wiki/Baker%27s_Dozen_(solitaire)',
+		rules: [
+			'All 52 cards dealt face-up to 13 columns (4 each)',
+			'Kings automatically moved to bottom during deal',
+			'Build down by rank (suit doesn\'t matter)',
+			'Move only top card of each column',
+			'Empty columns CANNOT be filled'
+		]
+	};
 
 	constructor(private bakersDozenService: BakersDozenService) {}
 
@@ -31,6 +43,10 @@ export class BakersDozenBoardComponent implements OnInit, OnDestroy {
 
 	newGame(): void {
 		this.bakersDozenService.newGame();
+	}
+
+	toggleRules(): void {
+		this.showRules = !this.showRules;
 	}
 
 	onDragStart(columnIndex: number, event: DragEvent): void {
