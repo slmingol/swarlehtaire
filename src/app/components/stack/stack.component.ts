@@ -86,4 +86,20 @@ export class StackComponent {
 			'z-index': `${index}`
 		};
 	}
+
+	// Check if we can drag from this card index in tableau
+	// (all cards from this index onward must be face-up and form a valid sequence)
+	canDragFrom(index: number): boolean {
+		if (this.stackType !== 'tableau') return true;
+		
+		// Must be face-up
+		if (!this.cards[index]?.faceUp) return false;
+		
+		// All cards from this index to the end must be face-up
+		for (let i = index; i < this.cards.length; i++) {
+			if (!this.cards[i].faceUp) return false;
+		}
+		
+		return true;
+	}
 }
