@@ -9,6 +9,10 @@ export class YukonGame {
 		this.newGame();
 	}
 
+	private suitToIndex(suit: Suit): number {
+		return [Suit.HEARTS, Suit.DIAMONDS, Suit.CLUBS, Suit.SPADES].indexOf(suit);
+	}
+
 	newGame(): void {
 		const deck = new Deck();
 		deck.shuffle();
@@ -39,7 +43,7 @@ export class YukonGame {
 	}
 
 	canPlaceOnFoundation(card: Card): boolean {
-		const foundationIndex = card.suit;
+		const foundationIndex = this.suitToIndex(card.suit);
 		const foundation = this.foundations[foundationIndex];
 		
 		if (foundation.length === 0) {
@@ -57,7 +61,7 @@ export class YukonGame {
 		const card = pile[pile.length - 1];
 		if (!card.faceUp || !this.canPlaceOnFoundation(card)) return false;
 		
-		this.foundations[card.suit].push(pile.pop()!);
+		this.foundations[this.suitToIndex(card.suit)].push(pile.pop()!);
 		
 		// Turn over face-down card if exposed
 		if (pile.length > 0 && !pile[pile.length - 1].faceUp) {

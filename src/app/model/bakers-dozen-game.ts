@@ -8,7 +8,9 @@ export class BakersDDozenGame {
 	constructor() {
 		this.newGame();
 	}
-
+	private suitToIndex(suit: Suit): number {
+		return [Suit.HEARTS, Suit.DIAMONDS, Suit.CLUBS, Suit.SPADES].indexOf(suit);
+	}
 	newGame(): void {
 		const deck = new Deck();
 		deck.shuffle();
@@ -53,7 +55,7 @@ export class BakersDDozenGame {
 	}
 
 	canPlaceOnFoundation(card: Card): boolean {
-		const foundationIndex = card.suit;
+		const foundationIndex = this.suitToIndex(card.suit);
 		const foundation = this.foundations[foundationIndex];
 		
 		if (foundation.length === 0) {
@@ -71,7 +73,7 @@ export class BakersDDozenGame {
 		const card = pile[pile.length - 1];
 		if (!this.canPlaceOnFoundation(card)) return false;
 		
-		this.foundations[card.suit].push(pile.pop()!);
+		this.foundations[this.suitToIndex(card.suit)].push(pile.pop()!);
 		return true;
 	}
 
