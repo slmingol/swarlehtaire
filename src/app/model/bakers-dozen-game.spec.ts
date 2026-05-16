@@ -58,28 +58,28 @@ describe('BakersDDozenGame', () => {
 			const king = CardUtils.createCard(Suit.SPADES, Rank.KING);
 			const queen = CardUtils.createCard(Suit.HEARTS, Rank.QUEEN);
 			
-			expect(game.canPlaceOn(queen, king)).toBe(true);
+			expect(game.canPlaceOnTableau(queen, king)).toBe(true);
 		});
 
 		it('should allow same suit descending', () => {
 			const king = CardUtils.createCard(Suit.SPADES, Rank.KING);
 			const queen = CardUtils.createCard(Suit.SPADES, Rank.QUEEN);
 			
-			expect(game.canPlaceOn(queen, king)).toBe(true);
+			expect(game.canPlaceOnTableau(queen, king)).toBe(true);
 		});
 
 		it('should reject ascending rank', () => {
 			const queen = CardUtils.createCard(Suit.SPADES, Rank.QUEEN);
 			const king = CardUtils.createCard(Suit.SPADES, Rank.KING);
 			
-			expect(game.canPlaceOn(king, queen)).toBe(false);
+			expect(game.canPlaceOnTableau(king, queen)).toBe(false);
 		});
 
 		it('should reject same rank', () => {
 			const king1 = CardUtils.createCard(Suit.SPADES, Rank.KING);
 			const king2 = CardUtils.createCard(Suit.HEARTS, Rank.KING);
 			
-			expect(game.canPlaceOn(king1, king2)).toBe(false);
+			expect(game.canPlaceOnTableau(king1, king2)).toBe(false);
 		});
 
 		it('should not allow placing on empty column', () => {
@@ -121,7 +121,9 @@ describe('BakersDDozenGame', () => {
 
 	describe('foundation operations', () => {
 		it('should allow Ace to empty foundation', () => {
-			game.tableau[0] = [CardUtils.createCard(Suit.SPADES, Rank.ACE)];
+			const ace = CardUtils.createCard(Suit.SPADES, Rank.ACE);
+			ace.faceUp = true;
+			game.tableau[0] = [ace];
 			
 			const result = game.moveToFoundation(0);
 			expect(result).toBe(true);
@@ -130,7 +132,9 @@ describe('BakersDDozenGame', () => {
 
 		it('should allow sequential same-suit card', () => {
 			game.foundations[0] = [CardUtils.createCard(Suit.SPADES, Rank.ACE)];
-			game.tableau[0] = [CardUtils.createCard(Suit.SPADES, Rank.TWO)];
+			const two = CardUtils.createCard(Suit.SPADES, Rank.TWO);
+			two.faceUp = true;
+			game.tableau[0] = [two];
 			
 			const result = game.moveToFoundation(0);
 			expect(result).toBe(true);

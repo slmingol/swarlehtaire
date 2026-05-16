@@ -54,21 +54,21 @@ describe('YukonGame', () => {
 			const redKing = CardUtils.createCard(Suit.HEARTS, Rank.KING);
 			const blackQueen = CardUtils.createCard(Suit.SPADES, Rank.QUEEN);
 			
-			expect(game.canPlaceOn(blackQueen, redKing)).toBe(true);
+			expect(game.canPlaceOnTableau(blackQueen, redKing)).toBe(true);
 		});
 
 		it('should reject same color placement', () => {
 			const blackKing = CardUtils.createCard(Suit.SPADES, Rank.KING);
 			const blackQueen = CardUtils.createCard(Suit.CLUBS, Rank.QUEEN);
 			
-			expect(game.canPlaceOn(blackQueen, blackKing)).toBe(false);
+			expect(game.canPlaceOnTableau(blackQueen, blackKing)).toBe(false);
 		});
 
 		it('should reject ascending rank', () => {
 			const queen = CardUtils.createCard(Suit.HEARTS, Rank.QUEEN);
 			const king = CardUtils.createCard(Suit.SPADES, Rank.KING);
 			
-			expect(game.canPlaceOn(king, queen)).toBe(false);
+			expect(game.canPlaceOnTableau(king, queen)).toBe(false);
 		});
 
 		it('should allow King on empty column', () => {
@@ -127,8 +127,9 @@ describe('YukonGame', () => {
 
 	describe('foundation operations', () => {
 		it('should allow Ace to empty foundation', () => {
-			game.tableau[0] = [CardUtils.createCard(Suit.SPADES, Rank.ACE)];
-			game.tableau[0][0].faceUp = true;
+			const ace = CardUtils.createCard(Suit.SPADES, Rank.ACE);
+			ace.faceUp = true;
+			game.tableau[0] = [ace];
 			
 			const result = game.moveToFoundation(0);
 			expect(result).toBe(true);
@@ -137,8 +138,9 @@ describe('YukonGame', () => {
 
 		it('should allow sequential same-suit card', () => {
 			game.foundations[0] = [CardUtils.createCard(Suit.SPADES, Rank.ACE)];
-			game.tableau[0] = [CardUtils.createCard(Suit.SPADES, Rank.TWO)];
-			game.tableau[0][0].faceUp = true;
+			const two = CardUtils.createCard(Suit.SPADES, Rank.TWO);
+			two.faceUp = true;
+			game.tableau[0] = [two];
 			
 			const result = game.moveToFoundation(0);
 			expect(result).toBe(true);
