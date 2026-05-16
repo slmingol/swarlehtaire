@@ -1,6 +1,27 @@
 <div class="pyramid-board">
 	<div class="header">
-		<button class="btn btn-primary" (click)="newGame()">New Game</button>
+		<div class="header-left">
+			<button class="btn btn-primary" (click)="newGame()">New Game</button>
+			<div class="info-controls">
+				<a [href]="rulesInfo.wikipediaUrl" target="_blank" rel="noopener noreferrer" 
+				   class="wikipedia-link" title="How to play on Wikipedia">
+					📖
+				</a>
+				<button (click)="toggleRules()" class="rules-button" title="Show/hide rules">
+					{{ showRules ? '✕' : '❓' }}
+				</button>
+			</div>
+			@if (showRules) {
+				<div class="rules-panel">
+					<h3>Pyramid - Quick Rules</h3>
+					<ul>
+						@for (rule of rulesInfo.rules; track rule) {
+							<li>{{ rule }}</li>
+						}
+					</ul>
+				</div>
+			}
+		</div>
 		<div class="info">
 			<span class="remaining">Remaining: {{ gameState?.remainingCount || 0 }}</span>
 			<span class="stock-count">Stock: {{ (gameState?.stock?.length || 0) - (gameState?.stockIndex || 0) }}</span>

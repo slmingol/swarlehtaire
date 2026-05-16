@@ -16,6 +16,18 @@ export class PyramidBoardComponent implements OnInit, OnDestroy {
 	gameState: PyramidGameState | null = null;
 	selectedCard: {row: number, col: number} | null = null;
 	private destroy$ = new Subject<void>();
+	showRules = false;
+
+	rulesInfo = {
+		wikipediaUrl: 'https://en.wikipedia.org/wiki/Pyramid_(solitaire)',
+		rules: [
+			'Remove pairs of cards that add up to 13',
+			'Kings = 13 (remove alone), Queens = 12, Jacks = 11',
+			'Only exposed cards (not covered) can be removed',
+			'Draw from 24-card stock when stuck',
+			'Win by clearing entire pyramid'
+		]
+	};
 
 	constructor(private pyramidService: PyramidService) {}
 
@@ -33,6 +45,10 @@ export class PyramidBoardComponent implements OnInit, OnDestroy {
 	newGame(): void {
 		this.selectedCard = null;
 		this.pyramidService.newGame();
+	}
+
+	toggleRules(): void {
+		this.showRules = !this.showRules;
 	}
 
 	onPyramidCardClick(row: number, col: number): void {

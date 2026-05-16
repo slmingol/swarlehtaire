@@ -16,6 +16,19 @@ export class FreeCellBoardComponent implements OnInit, OnDestroy {
 	gameState!: FreeCellGameState;
 	private destroy$ = new Subject<void>();
 	dragSource: { type: 'cascade' | 'cell'; index: number; cardIndex?: number } | null = null;
+	showRules = false;
+
+	rulesInfo = {
+		wikipediaUrl: 'https://en.wikipedia.org/wiki/FreeCell',
+		rules: [
+			'All 52 cards dealt face-up to 8 cascades (4×7, 4×6)',
+			'Build down by alternating colors on cascades',
+			'Build up by suit on foundations (Ace to King)',
+			'Use 4 free cells for temporary card storage',
+			'Move sequences based on empty cells/cascades: C = 2^M × (N+1)',
+			'Almost all games are solvable with perfect play'
+		]
+	};
 
 	constructor(private freecellService: FreeCellService) {}
 
@@ -32,6 +45,10 @@ export class FreeCellBoardComponent implements OnInit, OnDestroy {
 
 	onNewGame(): void {
 		this.freecellService.newGame();
+	}
+
+	toggleRules(): void {
+		this.showRules = !this.showRules;
 	}
 
 	onAutoMove(): void {
