@@ -72,11 +72,11 @@ export class KlondikeBoardComponent implements OnInit, OnDestroy {
 		[GameVariant.WESTCLIFF]: {
 			wikipediaUrl: 'https://en.wikipedia.org/wiki/Westcliff_(card_game)',
 			rules: [
-				'Uses 10 tableau piles instead of 7',
+				'10 tableau piles with 5 cards each, all face-up',
 				'Build foundations from Ace to King by suit',
 				'Build tableau in descending rank, alternating colors',
-				'Draw 3 cards at a time from stock',
-				'More complex with additional tableau piles'
+				'Draw 1 card at a time from stock (2 cards remain)',
+				'Complete information variant - see all 50 tableau cards'
 			]
 		}
 	};

@@ -95,7 +95,7 @@ export class KlondikeGame {
 			case GameVariant.EASTHAVEN:
 				return { variant, drawCount: 3, tableauCount: 7, allFaceUp: true };
 			case GameVariant.WESTCLIFF:
-				return { variant, drawCount: 3, tableauCount: 10, allFaceUp: false };
+				return { variant, drawCount: 1, tableauCount: 10, allFaceUp: true };
 			case GameVariant.KLONDIKE_DRAW_3:
 			default:
 				return { variant, drawCount: 3, tableauCount: 7, allFaceUp: false };
@@ -129,18 +129,32 @@ export class KlondikeGame {
 	private deal(): void {
 		const tableauCount = this.config.tableauCount;
 		
-		// Deal to tableau: 1 card to pile 1, 2 to pile 2, etc.
-		for (let i = 0; i < tableauCount; i++) {
-			for (let j = i; j < tableauCount; j++) {
-				const card = this.deck.deal();
-				if (card) {
-					// Face-up logic depends on variant
-					if (this.config.allFaceUp) {
-						card.faceUp = true; // All cards face-up (Easthaven)
-					} else {
-						card.faceUp = (i === j); // Only top card face-up (Klondike, Westcliff)
+		// Westcliff uses a different deal pattern
+		if (this.config.variant === GameVariant.WESTCLIFF) {
+			// Westcliff: 5 cards to each of 10 piles, all face-up
+			for (let pile = 0; pile < tableauCount; pile++) {
+				for (let cardNum = 0; cardNum < 5; cardNum++) {
+					const card = this.deck.deal();
+					if (card) {
+						card.faceUp = true;
+						this.tableau[pile].push(card);
 					}
-					this.tableau[j].push(card);
+				}
+			}
+		} else {
+			// Standard Klondike/Easthaven: pyramid deal (1, 2, 3, ..., n cards)
+			for (let i = 0; i < tableauCount; i++) {
+				for (let j = i; j < tableauCount; j++) {
+					const card = this.deck.deal();
+					if (card) {
+						// Face-up logic depends on variant
+						if (this.config.allFaceUp) {
+							card.faceUp = true; // All cards face-up (Easthaven)
+						} else {
+							card.faceUp = (i === j); // Only top card face-up (Klondike)
+						}
+						this.tableau[j].push(card);
+					}
 				}
 			}
 		}
