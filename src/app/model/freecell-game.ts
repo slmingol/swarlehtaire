@@ -175,8 +175,6 @@ export class FreeCellGame {
 	 * Move cards from one cascade to another
 	 */
 	moveCascade(fromIndex: number, cardIndex: number, toIndex: number): boolean {
-		console.log(`FreeCell moveCascade: from cascade ${fromIndex} card ${cardIndex} to cascade ${toIndex}`);
-		
 		if (fromIndex === toIndex) return false;
 
 		const sourceCascade = this.cascades[fromIndex];
@@ -186,31 +184,24 @@ export class FreeCellGame {
 
 		// Get cards to move
 		const cardsToMove = sourceCascade.slice(cardIndex);
-		console.log(`FreeCell: Moving ${cardsToMove.length} cards:`, cardsToMove.map(c => `${c.rank} of ${c.suit}`));
 		
 		// Check if it's a valid sequence
 		if (!this.isValidSequence(cardsToMove)) {
-			console.log('FreeCell: Invalid sequence', cardsToMove);
 			return false;
 		}
 
 		// Check if we can move this many cards
 		const isToEmpty = targetCascade.length === 0;
 		const maxMove = this.getMaxMoveSize(isToEmpty);
-		console.log(`FreeCell: Max move = ${maxMove} (emptyCells=${this.emptyCells}, emptyCascades=${this.emptyCascades}, toEmpty=${isToEmpty})`);
 		
 		if (cardsToMove.length > maxMove) {
-			console.log(`FreeCell: BLOCKED - Trying to move ${cardsToMove.length} cards, but max is ${maxMove}`);
 			return false;
 		}
 
 		// Check if top card can be placed on target
 		if (!this.canPlaceOnCascade(cardsToMove[0], targetCascade)) {
-			console.log('FreeCell: Cannot place card on target cascade', cardsToMove[0], targetCascade);
 			return false;
 		}
-
-		console.log('FreeCell: Move allowed!');
 		
 		// Move the cards
 		sourceCascade.splice(cardIndex);
