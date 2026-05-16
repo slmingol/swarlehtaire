@@ -148,7 +148,7 @@ export class KlondikeBoardComponent implements OnInit, OnDestroy {
 		}
 		
 		// Try to move to tableau
-		for (let i = 0; i < 7; i++) {
+		for (let i = 0; i < this.gameState.tableau.length; i++) {
 			const tableau = this.klondikeService.getTableauStack(i);
 			if (this.klondikeService.moveCard(wasteStack, tableau, actualIndex)) {
 				return;
@@ -168,7 +168,7 @@ export class KlondikeBoardComponent implements OnInit, OnDestroy {
 		}
 		
 		// Try to move to another tableau
-		for (let i = 0; i < 7; i++) {
+		for (let i = 0; i < this.gameState.tableau.length; i++) {
 			if (i !== tableauIndex) {
 				const targetTableau = this.klondikeService.getTableauStack(i);
 				if (this.klondikeService.moveCard(tableau, targetTableau, event.index)) {
