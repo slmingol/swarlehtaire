@@ -38,79 +38,6 @@ describe('BakersDDozenGame', () => {
 			});
 		});
 
-		it('should have canUndo false initially', () => {
-			expect(game.canUndo).toBe(false);
-		});
-	});
-
-	describe('King placement', () => {
-		it('should move Kings to bottom of columns during setup', () => {
-			// Check that any Kings in tableau are at the bottom
-			game.tableau.forEach(column => {
-				const kingIndex = column.findIndex(c => c.rank === Rank.KING);
-				if (kingIndex !== -1) {
-					expect(kingIndex).toBe(0); // Should be at bottom
-				}
-			});
-		});
-	});
-
-	describe('win condition', () => {
-		it('should not be won initially', () => {
-			expect(game.isWon()).toBe(false);
-		});
-
-		it('should be won when all foundations complete', () => {
-			// Fill all foundations
-			for (let suit = 0; suit < 4; suit++) {
-				game.foundations[suit] = [];
-				for (let rank = Rank.ACE; rank <= Rank.KING; rank++) {
-					game.foundations[suit].push(CardUtils.createCard(suit, rank));
-				}
-			}
-			
-			expect(game.isWon()).toBe(true);
-		});
-	});
-});
-
-describe('BakersDDozenGame', () => {
-	let game: BakersDDozenGame;
-
-	beforeEach(() => {
-		game = new BakersDDozenGame();
-	});
-
-	describe('initialization', () => {
-		it('should create an instance', () => {
-			expect(game).toBeTruthy();
-		});
-
-		it('should initialize with 13 tableau columns', () => {
-			expect(game.tableau.length).toBe(13);
-		});
-
-		it('should initialize with 4 foundations', () => {
-			expect(game.foundations.length).toBe(4);
-		});
-
-		it('should have 4 cards in each column', () => {
-			game.tableau.forEach(column => {
-				expect(column.length).toBe(4);
-			});
-		});
-
-		it('should have all cards face-up', () => {
-			const allFaceUp = game.tableau.flat().every(card => card.faceUp);
-			expect(allFaceUp).toBe(true);
-		});
-
-		it('should have all foundations empty', () => {
-			game.foundations.forEach(foundation => {
-				expect(foundation.length).toBe(0);
-			});
-		});
-
 		it('should have Kings moved to bottom of columns', () => {
 			// Check that any Kings in tableau are at the bottom
 			game.tableau.forEach(column => {
@@ -280,10 +207,11 @@ describe('BakersDDozenGame', () => {
 
 		it('should be won when all foundations complete', () => {
 			// Fill all foundations
-			for (let suit = 0; suit < 4; suit++) {
-				game.foundations[suit] = [];
+			const suits = [Suit.SPADES, Suit.HEARTS, Suit.CLUBS, Suit.DIAMONDS];
+			for (let i = 0; i < 4; i++) {
+				game.foundations[i] = [];
 				for (let rank = Rank.ACE; rank <= Rank.KING; rank++) {
-					game.foundations[suit].push(CardUtils.createCard(suit, rank));
+					game.foundations[i].push(CardUtils.createCard(suits[i], rank));
 				}
 			}
 			
@@ -292,10 +220,11 @@ describe('BakersDDozenGame', () => {
 
 		it('should not be won with incomplete foundations', () => {
 			// Fill 3 foundations completely
-			for (let suit = 0; suit < 3; suit++) {
-				game.foundations[suit] = [];
+			const suits = [Suit.SPADES, Suit.HEARTS, Suit.CLUBS, Suit.DIAMONDS];
+			for (let i = 0; i < 3; i++) {
+				game.foundations[i] = [];
 				for (let rank = Rank.ACE; rank <= Rank.KING; rank++) {
-					game.foundations[suit].push(CardUtils.createCard(suit, rank));
+					game.foundations[i].push(CardUtils.createCard(suits[i], rank));
 				}
 			}
 			

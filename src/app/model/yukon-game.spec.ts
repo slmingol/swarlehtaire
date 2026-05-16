@@ -26,61 +26,6 @@ describe('YukonGame', () => {
 			expect(totalCards).toBe(52);
 		});
 
-		it('should have all foundations empty', () => {
-			game.foundations.forEach(foundation => {
-				expect(foundation.length).toBe(0);
-			});
-		});
-
-		it('should have canUndo false initially', () => {
-			expect(game.canUndo).toBe(false);
-		});
-	});
-
-	describe('win condition', () => {
-		it('should not be won initially', () => {
-			expect(game.isWon()).toBe(false);
-		});
-
-		it('should be won when all foundations complete', () => {
-			// Fill all foundations
-			for (let suit = 0; suit < 4; suit++) {
-				game.foundations[suit] = [];
-				for (let rank = Rank.ACE; rank <= Rank.KING; rank++) {
-					game.foundations[suit].push(CardUtils.createCard(suit, rank));
-				}
-			}
-			
-			expect(game.isWon()).toBe(true);
-		});
-	});
-});
-
-describe('YukonGame', () => {
-	let game: YukonGame;
-
-	beforeEach(() => {
-		game = new YukonGame();
-	});
-
-	describe('initialization', () => {
-		it('should create an instance', () => {
-			expect(game).toBeTruthy();
-		});
-
-		it('should initialize with 7 tableau columns', () => {
-			expect(game.tableau.length).toBe(7);
-		});
-
-		it('should initialize with 4 foundations', () => {
-			expect(game.foundations.length).toBe(4);
-		});
-
-		it('should have all 52 cards in tableau', () => {
-			const totalCards = game.tableau.reduce((sum, col) => sum + col.length, 0);
-			expect(totalCards).toBe(52);
-		});
-
 		it('should have first column with 1 card face-up', () => {
 			expect(game.tableau[0].length).toBeGreaterThan(0);
 			expect(game.tableau[0][0].faceUp).toBe(true);
@@ -269,14 +214,31 @@ describe('YukonGame', () => {
 
 		it('should be won when all foundations complete', () => {
 			// Fill all foundations
-			for (let suit = 0; suit < 4; suit++) {
-				game.foundations[suit] = [];
+			const suits = [Suit.SPADES, Suit.HEARTS, Suit.CLUBS, Suit.DIAMONDS];
+			for (let i = 0; i < 4; i++) {
+				game.foundations[i] = [];
 				for (let rank = Rank.ACE; rank <= Rank.KING; rank++) {
-					game.foundations[suit].push(CardUtils.createCard(suit, rank));
+					game.foundations[i].push(CardUtils.createCard(suits[i], rank));
 				}
 			}
 			
 			expect(game.isWon()).toBe(true);
+		});
+	});
+
+	describe('undo functionality', () => {
+		it('should allow undo after move', () => {
+			game.tableau[0] = [CardUtils.createCard(Suit.HEARTS, Rank.QUEEN)];
+			game.tableau[0][0].faceUp = true;
+			
+			game.tableau[1] = [CardUtils.createCard(Suit.SPADES, Rank.KING)];
+			game.tableau[1][0].faceUp = true;
+			
+			game.moveCards(0, 0, 1);
+			expect(game.canUndo).toBe(true);
+			
+			game.undo();
+			expect(game.tableau[0].length).toBe(1);
 		});
 	});
 });
