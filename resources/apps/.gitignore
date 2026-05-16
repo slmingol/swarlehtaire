@@ -11,6 +11,9 @@
 npm-debug.log
 yarn-error.log
 
+# Tauri generated files
+/tauri/gen
+
 # IDEs and editors
 .idea/
 .project

@@ -57,6 +57,11 @@ jobs:
       - name: Install tauri dependencies
         run: cd resources/apps && npm ci
 
+      - name: Initialize Android project
+        run: |
+          cd resources/apps
+          npm run tauri android init -- --skip-targets-install
+
       - name: Decode Keystore
         env:
           ENCODED_STRING: ${{ secrets.KEYSTORE }}
