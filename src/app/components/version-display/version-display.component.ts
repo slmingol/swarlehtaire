@@ -1,17 +1,13 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
+import { Component } from '@angular/core';
 
 @Component({
   selector: 'app-version-display',
   standalone: true,
-  imports: [CommonModule],
+  imports: [],
   template: `
-    @if (version) {
-      <div class="version-display">
-        <span>{{ version }}</span>
-      </div>
-    }
+    <div class="version-display">
+      <span>{{ version }}</span>
+    </div>
   `,
   styles: [`
     .version-display {
@@ -36,22 +32,6 @@ import { HttpClient } from '@angular/common/http';
     }
   `]
 })
-export class VersionDisplayComponent implements OnInit {
-  version: string | null = null;
-
-  constructor(private http: HttpClient) {}
-
-  ngOnInit(): void {
-    // Try to fetch version from API
-    this.http.get<{ version: string }>('/api/version')
-      .subscribe({
-        next: (data) => {
-          this.version = `v${data.version}`;
-        },
-        error: () => {
-          // Fallback to package.json version (embedded at build time)
-          this.version = 'v1.0.0';
-        }
-      });
-  }
+export class VersionDisplayComponent {
+  version = 'v1.0.0';
 }
