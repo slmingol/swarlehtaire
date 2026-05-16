@@ -1,0 +1,53 @@
+<div class="bakers-dozen-board">
+	<div class="header">
+		<button class="btn btn-primary" (click)="newGame()">New Game</button>
+		@if (gameState) {
+			<div class="foundations">
+				@for (foundation of gameState.foundations; track foundIdx; let foundIdx = $index) {
+					<div class="foundation">
+						@if (foundation.length > 0) {
+							<app-stack [cards]="[foundation[foundation.length - 1]]" [spread]="'none'"></app-stack>
+						} @else {
+							<div class="empty-foundation">♠♥♣♦</div>
+						}
+					</div>
+				}
+			</div>
+		}
+	</div>
+
+	@if (gameState) {
+		<div class="tableau">
+			@for (pile of gameState.tableau; track colIndex; let colIndex = $index) {
+				<div class="column"
+					 (drop)="onDrop(colIndex, $event)"
+					 (dragover)="onDragOver($event)"
+					 (dblclick)="onColumnDoubleClick(colIndex)">
+					@if (pile.length === 0) {
+						<div class="empty-column">--</div>
+					} @else {
+						@for (card of pile; track cardIdx; let cardIdx = $index) {
+							<div class="card-container"
+								 [class.top-card]="cardIdx === pile.length - 1"
+								 [attr.draggable]="cardIdx === pile.length - 1"
+								 (dragstart)="onDragStart(colIndex, $event)"
+								 (dragend)="onDragEnd()">
+								<app-stack [cards]="[card]" [spread]="'none'"></app-stack>
+							</div>
+						}
+					}
+				</div>
+			}
+		</div>
+
+		@if (gameState.isWon) {
+			<div class="modal-overlay">
+				<div class="win-modal">
+					<h2>🎉 You Win! 🎉</h2>
+					<p>All foundations complete!</p>
+					<button class="btn btn-primary" (click)="newGame()">Play Again</button>
+				</div>
+			</div>
+		}
+	}
+</div>

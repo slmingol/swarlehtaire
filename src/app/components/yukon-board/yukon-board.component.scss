@@ -1,0 +1,122 @@
+.yukon-board {
+	padding: 20px;
+	background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+	min-height: 100vh;
+
+	.header {
+		display: flex;
+		gap: 20px;
+		margin-bottom: 30px;
+		align-items: center;
+
+		.foundations {
+			display: flex;
+			gap: 10px;
+			margin-left: auto;
+
+			.foundation {
+				width: 80px;
+				height: 112px;
+
+				.empty-foundation {
+					width: 80px;
+					height: 112px;
+					border: 2px dashed rgba(255, 255, 255, 0.5);
+					border-radius: 8px;
+					display: flex;
+					align-items: center;
+					justify-content: center;
+					color: rgba(255, 255, 255, 0.5);
+					font-size: 24px;
+				}
+			}
+		}
+	}
+
+	.tableau {
+		display: flex;
+		gap: 15px;
+		justify-content: center;
+
+		.column {
+			min-height: 600px;
+			min-width: 100px;
+			padding: 10px;
+			background: rgba(255, 255, 255, 0.1);
+			border-radius: 8px;
+
+			.empty-column {
+				width: 80px;
+				height: 112px;
+				border: 2px dashed rgba(255, 255, 255, 0.5);
+				border-radius: 8px;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				color: rgba(255, 255, 255, 0.5);
+				font-size: 32px;
+				font-weight: bold;
+			}
+
+			.card-container {
+				margin-top: -90px;
+
+				&:first-child {
+					margin-top: 0;
+				}
+			}
+		}
+	}
+
+	.modal-overlay {
+		position: fixed;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		background: rgba(0, 0, 0, 0.7);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		z-index: 1000;
+
+		.win-modal {
+			background: white;
+			padding: 40px;
+			border-radius: 12px;
+			box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+			text-align: center;
+			min-width: 300px;
+
+			h2 {
+				margin: 0 0 20px 0;
+				color: #333;
+			}
+
+			p {
+				margin: 0 0 30px 0;
+				color: #666;
+				font-size: 18px;
+			}
+		}
+	}
+
+	.btn {
+		padding: 10px 20px;
+		border: none;
+		border-radius: 6px;
+		font-size: 16px;
+		font-weight: bold;
+		cursor: pointer;
+		transition: all 0.2s;
+
+		&.btn-primary {
+			background: #4CAF50;
+			color: white;
+
+			&:hover {
+				background: #45a049;
+			}
+		}
+	}
+}

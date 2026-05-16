@@ -1,0 +1,62 @@
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Subject, takeUntil } from 'rxjs';
+import { BakersDozenService, BakersDozenGameState } from '../../service/bakers-dozen.service';
+import { StackComponent } from '../stack/stack.component';
+
+@Component({
+	selector: 'app-bakers-dozen-board',
+	standalone: true,
+	imports: [CommonModule, StackComponent],
+	templateUrl: './bakers-dozen-board.component.html',
+	styleUrls: ['./bakers-dozen-board.component.scss']
+})
+export class BakersDozenBoardComponent implements OnInit, OnDestroy {
+	gameState: BakersDozenGameState | null = null;
+	dragSource: number | null = null;
+	private destroy$ = new Subject<void>();
+
+	constructor(private bakersDozenService: BakersDozenService) {}
+
+	ngOnInit(): void {
+		this.bakersDozenService.getGameState()
+			.pipe(takeUntil(this.destroy$))
+			.subscribe(state => this.gameState = state);
+	}
+
+	ngOnDestroy(): void {
+		this.destroy$.next();
+		this.destroy$.complete();
+	}
+
+	newGame(): void {
+		this.bakersDozenService.newGame();
+	}
+
+	onDragStart(columnIndex: number, event: DragEvent): void {
+		this.dragSource = columnIndex;
+		if (event.dataTransfer) {
+			event.dataTransfer.effectAllowed = 'move';
+		}
+	}
+
+	onDragEnd(): void {
+		this.dragSource = null;
+	}
+
+	onDrop(columnIndex: number, event: DragEvent): void {
+		event.preventDefault();
+		if (this.dragSource === null) return;
+
+		this.bakersDozenService.moveCard(this.dragSource, columnIndex);
+		this.dragSource = null;
+	}
+
+	onDragOver(event: DragEvent): void {
+		event.preventDefault();
+	}
+
+	onColumnDoubleClick(columnIndex: number): void {
+		this.bakersDozenService.moveToFoundation(columnIndex);
+	}
+}
