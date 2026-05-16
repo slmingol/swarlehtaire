@@ -2,11 +2,32 @@
 	<div class="game-header">
 		<div class="header-left">
 			<h1>Swarlehtaire</h1>
-			<select class="variant-selector" (change)="onVariantChange($event)" [value]="gameState?.variant">
-				@for (variant of variants; track variant) {
-					<option [value]="variant">{{ variant }}</option>
+			<div class="variant-controls">
+				<select class="variant-selector" (change)="onVariantChange($event)" [value]="gameState?.variant">
+					@for (variant of variants; track variant) {
+						<option [value]="variant">{{ variant }}</option>
+					}
+				</select>
+				@if (currentVariantInfo) {
+					<a [href]="currentVariantInfo.wikipediaUrl" target="_blank" rel="noopener noreferrer" 
+					   class="wikipedia-link" title="How to play on Wikipedia">
+						📖
+					</a>
+					<button (click)="toggleRules()" class="rules-button" title="Show/hide rules">
+						{{ showRules ? '✕' : '❓' }}
+					</button>
 				}
-			</select>
+			</div>
+			@if (showRules && currentVariantInfo) {
+				<div class="rules-panel">
+					<h3>{{ gameState.variant }} - Quick Rules</h3>
+					<ul>
+						@for (rule of currentVariantInfo.rules; track rule) {
+							<li>{{ rule }}</li>
+						}
+					</ul>
+				</div>
+			}
 		</div>
 		<div class="game-controls">
 			<button (click)="onNewGame()" class="btn btn-primary">New Game</button>

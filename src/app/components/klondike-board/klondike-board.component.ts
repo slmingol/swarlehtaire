@@ -6,6 +6,11 @@ import { StackComponent } from '../stack/stack.component';
 import { Card } from '../../model/card';
 import { GameVariant } from '../../model/klondike-game';
 
+export interface VariantInfo {
+	wikipediaUrl: string;
+	rules: string[];
+}
+
 @Component({
 	selector: 'app-klondike-board',
 	standalone: true,
@@ -20,6 +25,9 @@ export class KlondikeBoardComponent implements OnInit, OnDestroy {
 	// Drag state
 	dragSource: { type: 'tableau' | 'waste' | 'foundation'; index: number; cardIndex: number } | null = null;
 
+	// Rules panel state
+	showRules = false;
+
 	// Expose GameVariant enum to template
 	GameVariant = GameVariant;
 	variants = [
@@ -28,6 +36,50 @@ export class KlondikeBoardComponent implements OnInit, OnDestroy {
 		GameVariant.EASTHAVEN,
 		GameVariant.WESTCLIFF
 	];
+
+	// Variant information with Wikipedia links and rules
+	variantInfo: Record<GameVariant, VariantInfo> = {
+		[GameVariant.KLONDIKE_DRAW_3]: {
+			wikipediaUrl: 'https://en.wikipedia.org/wiki/Klondike_(solitaire)',
+			rules: [
+				'Build foundations from Ace to King by suit',
+				'Build tableau in descending rank, alternating colors',
+				'Draw 3 cards at a time from stock',
+				'Only Kings can be moved to empty tableau piles',
+				'Win by moving all cards to foundations'
+			]
+		},
+		[GameVariant.KLONDIKE_DRAW_1]: {
+			wikipediaUrl: 'https://en.wikipedia.org/wiki/Klondike_(solitaire)',
+			rules: [
+				'Same as Draw 3, but draw only 1 card at a time',
+				'Build foundations from Ace to King by suit',
+				'Build tableau in descending rank, alternating colors',
+				'Only Kings can be moved to empty tableau piles',
+				'Easier variant with higher win rate'
+			]
+		},
+		[GameVariant.EASTHAVEN]: {
+			wikipediaUrl: 'https://en.wikipedia.org/wiki/Easthaven',
+			rules: [
+				'All tableau cards start face-up for complete information',
+				'Build foundations from Ace to King by suit',
+				'Build tableau in descending rank, alternating colors',
+				'Draw 3 cards at a time from stock',
+				'Strategic variant - you can see everything from the start'
+			]
+		},
+		[GameVariant.WESTCLIFF]: {
+			wikipediaUrl: 'https://en.wikipedia.org/wiki/Westcliff_(card_game)',
+			rules: [
+				'Uses 10 tableau piles instead of 7',
+				'Build foundations from Ace to King by suit',
+				'Build tableau in descending rank, alternating colors',
+				'Draw 3 cards at a time from stock',
+				'More complex with additional tableau piles'
+			]
+		}
+	};
 
 	constructor(private klondikeService: KlondikeService) {}
 
@@ -42,6 +94,14 @@ export class KlondikeBoardComponent implements OnInit, OnDestroy {
 	ngOnDestroy(): void {
 		this.destroy$.next();
 		this.destroy$.complete();
+	}
+
+	get currentVariantInfo(): VariantInfo | undefined {
+		return this.gameState?.variant ? this.variantInfo[this.gameState.variant] : undefined;
+	}
+
+	toggleRules(): void {
+		this.showRules = !this.showRules;
 	}
 
 	get visibleWasteCards(): Card[] {
