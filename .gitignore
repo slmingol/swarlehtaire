@@ -6,6 +6,10 @@ stats.html
 # custom config
 custom-build-config.json
 
+# Android signing
+*.keystore
+*.jks
+
 # compiled output
 /dist
 /tmp
