@@ -6,7 +6,7 @@ services:
       dockerfile: Dockerfile
     container_name: swarlehtaire
     ports:
-      - "8080:80"
+      - "9150:80"
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://127.0.0.1:80/"]
