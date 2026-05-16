@@ -1,6 +1,13 @@
 <div class="klondike-board">
 	<div class="game-header">
-		<h1>Swarlehtaire - Klondike</h1>
+		<div class="header-left">
+			<h1>Swarlehtaire</h1>
+			<select class="variant-selector" (change)="onVariantChange($event)" [value]="gameState?.variant">
+				@for (variant of variants; track variant) {
+					<option [value]="variant">{{ variant }}</option>
+				}
+			</select>
+		</div>
 		<div class="game-controls">
 			<button (click)="onNewGame()" class="btn btn-primary">New Game</button>
 			<button (click)="onUndo()" [disabled]="!gameState?.canUndo" class="btn btn-secondary">Undo</button>

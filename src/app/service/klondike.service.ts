@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { KlondikeGame } from '../model/klondike-game';
+import { KlondikeGame, GameVariant } from '../model/klondike-game';
 import { Card } from '../model/card';
 import { CardStack } from '../model/card-stack';
 
@@ -12,6 +12,7 @@ export interface GameState {
 	moveCount: number;
 	canUndo: boolean;
 	isWon: boolean;
+	variant: GameVariant;
 }
 
 @Injectable({
@@ -36,14 +37,16 @@ export class KlondikeService {
 	}
 
 	private getInitialState(): GameState {
+		const tableauCount = this.game?.config?.tableauCount || 7;
 		return {
 			stock: [],
 			waste: [],
 			foundations: [[], [], [], []],
-			tableau: [[], [], [], [], [], [], []],
+			tableau: Array.from({ length: tableauCount }, () => []),
 			moveCount: 0,
 			canUndo: false,
-			isWon: false
+			isWon: false,
+			variant: GameVariant.KLONDIKE_DRAW_3
 		};
 	}
 
@@ -55,9 +58,15 @@ export class KlondikeService {
 			tableau: this.game.tableau.map(t => t.cards),
 			moveCount: this.game.moveCount,
 			canUndo: this.game.canUndo,
-			isWon: this.game.isWon()
+			isWon: this.game.isWon(),
+			variant: this.game.config.variant
 		};
 		this.gameState$.next(state);
+	}
+
+	changeVariant(variant: GameVariant): void {
+		this.game = new KlondikeGame(variant);
+		this.updateState();
 	}
 
 	newGame(): void {

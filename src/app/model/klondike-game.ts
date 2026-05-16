@@ -3,6 +3,26 @@ import { CardStack, StackType } from './card-stack';
 import { Deck } from './deck';
 
 /**
+ * Game variants
+ */
+export enum GameVariant {
+	KLONDIKE_DRAW_3 = 'Klondike (Draw 3)',
+	KLONDIKE_DRAW_1 = 'Klondike (Draw 1)',
+	EASTHAVEN = 'Easthaven',
+	WESTCLIFF = 'Westcliff'
+}
+
+/**
+ * Game configuration
+ */
+export interface GameConfig {
+	variant: GameVariant;
+	drawCount: number;
+	tableauCount: number;
+	allFaceUp: boolean;
+}
+
+/**
  * Move history for undo functionality
  */
 export interface Move {
@@ -35,6 +55,7 @@ export class KlondikeGame {
 	private deck: Deck;
 	public moves = 0;
 	public startTime: number | null = null;
+	public config: GameConfig;
 
 	/**
 	 * Get the number of moves that can be undone
@@ -50,8 +71,9 @@ export class KlondikeGame {
 		return this.moveHistory.length;
 	}
 
-	constructor() {
+	constructor(variant: GameVariant = GameVariant.KLONDIKE_DRAW_3) {
 		this.deck = new Deck();
+		this.config = this.getConfigForVariant(variant);
 		
 		// Initialize stacks
 		this.stock = new CardStack(StackType.STOCK);
@@ -59,11 +81,25 @@ export class KlondikeGame {
 		this.foundations = Array.from({ length: 4 }, (_, i) => 
 			new CardStack(StackType.FOUNDATION, i)
 		);
-		this.tableau = Array.from({ length: 7 }, (_, i) => 
+		this.tableau = Array.from({ length: this.config.tableauCount }, (_, i) => 
 			new CardStack(StackType.TABLEAU, i)
 		);
 
 		this.newGame();
+	}
+
+	private getConfigForVariant(variant: GameVariant): GameConfig {
+		switch (variant) {
+			case GameVariant.KLONDIKE_DRAW_1:
+				return { variant, drawCount: 1, tableauCount: 7, allFaceUp: false };
+			case GameVariant.EASTHAVEN:
+				return { variant, drawCount: 3, tableauCount: 7, allFaceUp: true };
+			case GameVariant.WESTCLIFF:
+				return { variant, drawCount: 3, tableauCount: 10, allFaceUp: false };
+			case GameVariant.KLONDIKE_DRAW_3:
+			default:
+				return { variant, drawCount: 3, tableauCount: 7, allFaceUp: false };
+		}
 	}
 
 	/**
@@ -91,13 +127,19 @@ export class KlondikeGame {
 	 * Deal cards to tableau
 	 */
 	private deal(): void {
+		const tableauCount = this.config.tableauCount;
+		
 		// Deal to tableau: 1 card to pile 1, 2 to pile 2, etc.
-		for (let i = 0; i < 7; i++) {
-			for (let j = i; j < 7; j++) {
+		for (let i = 0; i < tableauCount; i++) {
+			for (let j = i; j < tableauCount; j++) {
 				const card = this.deck.deal();
 				if (card) {
-					// Last card in each pile is face-up
-					card.faceUp = (i === j);
+					// Face-up logic depends on variant
+					if (this.config.allFaceUp) {
+						card.faceUp = true; // All cards face-up (Easthaven)
+					} else {
+						card.faceUp = (i === j); // Only top card face-up (Klondike, Westcliff)
+					}
 					this.tableau[j].push(card);
 				}
 			}
@@ -129,8 +171,8 @@ export class KlondikeGame {
 					this.stock.push(card);
 				}
 			}
-			// Immediately draw 3 cards after reset
-			const drawCount = Math.min(3, this.stock.count);
+			// Immediately draw cards after reset
+			const drawCount = Math.min(this.config.drawCount, this.stock.count);
 			for (let i = 0; i < drawCount; i++) {
 				const card = this.stock.pop();
 				if (card) {
@@ -139,8 +181,8 @@ export class KlondikeGame {
 				}
 			}
 		} else {
-			// Draw three cards (standard Klondike)
-			const drawCount = Math.min(3, this.stock.count);
+			// Draw cards based on variant
+			const drawCount = Math.min(this.config.drawCount, this.stock.count);
 			for (let i = 0; i < drawCount; i++) {
 				const card = this.stock.pop();
 				if (card) {

@@ -17,6 +17,39 @@
 	}
 }
 
+.header-left {
+	display: flex;
+	align-items: center;
+	gap: 20px;
+}
+
+.variant-selector {
+	padding: 8px 16px;
+	border: 2px solid rgba(255, 255, 255, 0.3);
+	border-radius: 6px;
+	background: rgba(255, 255, 255, 0.1);
+	color: white;
+	font-size: 14px;
+	font-weight: 600;
+	cursor: pointer;
+	transition: all 0.2s;
+
+	&:hover {
+		background: rgba(255, 255, 255, 0.2);
+		border-color: rgba(255, 255, 255, 0.5);
+	}
+
+	&:focus {
+		outline: none;
+		border-color: #4CAF50;
+	}
+
+	option {
+		background: #1e3c72;
+		color: white;
+	}
+}
+
 .game-controls {
 	display: flex;
 	gap: 12px;

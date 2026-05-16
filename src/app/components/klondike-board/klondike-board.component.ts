@@ -4,6 +4,7 @@ import { Subject, takeUntil } from 'rxjs';
 import { KlondikeService, GameState } from '../../service/klondike.service';
 import { StackComponent } from '../stack/stack.component';
 import { Card } from '../../model/card';
+import { GameVariant } from '../../model/klondike-game';
 
 @Component({
 	selector: 'app-klondike-board',
@@ -18,6 +19,15 @@ export class KlondikeBoardComponent implements OnInit, OnDestroy {
 	
 	// Drag state
 	dragSource: { type: 'tableau' | 'waste' | 'foundation'; index: number; cardIndex: number } | null = null;
+
+	// Expose GameVariant enum to template
+	GameVariant = GameVariant;
+	variants = [
+		GameVariant.KLONDIKE_DRAW_3,
+		GameVariant.KLONDIKE_DRAW_1,
+		GameVariant.EASTHAVEN,
+		GameVariant.WESTCLIFF
+	];
 
 	constructor(private klondikeService: KlondikeService) {}
 
@@ -48,6 +58,12 @@ export class KlondikeBoardComponent implements OnInit, OnDestroy {
 
 	onNewGame(): void {
 		this.klondikeService.newGame();
+	}
+
+	onVariantChange(event: Event): void {
+		const select = event.target as HTMLSelectElement;
+		const variant = select.value as GameVariant;
+		this.klondikeService.changeVariant(variant);
 	}
 
 	onUndo(): void {
