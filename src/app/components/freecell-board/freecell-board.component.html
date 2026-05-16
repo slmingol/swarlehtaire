@@ -27,6 +27,7 @@
 			<button (click)="onUndo()" [disabled]="!gameState?.canUndo" class="btn btn-secondary">Undo</button>
 			<button (click)="onAutoMove()" class="btn btn-secondary">Auto Move</button>
 			<div class="move-counter">Moves: {{ gameState?.moveCount || 0 }}</div>
+			<div class="info-text" title="Supermove formula: 2^M × (N+1), M=empty cascades, N=empty cells">Max move: {{ getMaxMoveSize() }}</div>
 		</div>
 	</div>
 

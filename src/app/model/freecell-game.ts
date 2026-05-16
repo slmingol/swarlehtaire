@@ -186,15 +186,24 @@ export class FreeCellGame {
 		const cardsToMove = sourceCascade.slice(cardIndex);
 		
 		// Check if it's a valid sequence
-		if (!this.isValidSequence(cardsToMove)) return false;
+		if (!this.isValidSequence(cardsToMove)) {
+			console.log('FreeCell: Invalid sequence', cardsToMove);
+			return false;
+		}
 
 		// Check if we can move this many cards
 		const isToEmpty = targetCascade.length === 0;
 		const maxMove = this.getMaxMoveSize(isToEmpty);
-		if (cardsToMove.length > maxMove) return false;
+		if (cardsToMove.length > maxMove) {
+			console.log(`FreeCell: Trying to move ${cardsToMove.length} cards, but max is ${maxMove} (${this.emptyCells} empty cells, ${this.emptyCascades} empty cascades)`);
+			return false;
+		}
 
 		// Check if top card can be placed on target
-		if (!this.canPlaceOnCascade(cardsToMove[0], targetCascade)) return false;
+		if (!this.canPlaceOnCascade(cardsToMove[0], targetCascade)) {
+			console.log('FreeCell: Cannot place card on target cascade', cardsToMove[0], targetCascade);
+			return false;
+		}
 
 		// Move the cards
 		sourceCascade.splice(cardIndex);

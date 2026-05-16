@@ -58,6 +58,14 @@ export class FreeCellBoardComponent implements OnInit, OnDestroy {
 			moved = this.freecellService.autoMoveToFoundations();
 		}
 	}
+
+	getMaxMoveSize(): number {
+		if (!this.gameState) return 0;
+		const M = this.gameState.emptyCascades;
+		const N = this.gameState.emptyCells;
+		return Math.pow(2, M) * (N + 1);
+	}
+
 	onUndo(): void {
 		this.freecellService.undo();
 	}

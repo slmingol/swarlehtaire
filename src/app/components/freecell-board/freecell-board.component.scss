@@ -159,6 +159,16 @@
 	font-weight: 600;
 }
 
+.info-text {
+	background: rgba(255, 255, 255, 0.15);
+	padding: 10px 20px;
+	border-radius: 6px;
+	font-weight: 600;
+	font-size: 0.9rem;
+	cursor: help;
+	opacity: 0.9;
+}
+
 .game-area {
 	max-width: 1200px;
 	margin: 0 auto;
