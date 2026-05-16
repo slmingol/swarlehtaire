@@ -1,4 +1,4 @@
-.klondike-board {
+.spider-board {
 	min-height: calc(100vh - 72px);
 	padding: 20px;
 }
@@ -114,7 +114,7 @@
 	padding: 20px;
 	border-radius: 8px;
 	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-	min-width: 350px;
+	min-width: 400px;
 	z-index: 100;
 	animation: slideDown 0.2s ease-out;
 
@@ -195,7 +195,7 @@
 	}
 }
 
-.move-counter {
+.completed-counter {
 	background: rgba(255, 255, 255, 0.2);
 	padding: 10px 20px;
 	border-radius: 6px;
@@ -203,29 +203,13 @@
 }
 
 .game-area {
-	max-width: 1200px;
+	max-width: 1400px;
 	margin: 0 auto;
-}
-
-.top-row {
-	display: flex;
-	justify-content: space-between;
-	margin-bottom: 40px;
-}
-
-.stock-waste {
-	display: flex;
-	gap: 20px;
-}
-
-.foundations {
-	display: flex;
-	gap: 12px;
 }
 
 .tableau {
 	display: flex;
-	gap: 12px;
+	gap: 10px;
 	justify-content: center;
 }
 

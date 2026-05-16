@@ -1,1 +1,20 @@
-<app-klondike-board></app-klondike-board>
+<div class="app-container">
+	<div class="game-selector">
+		@for (game of gameTypes; track game) {
+			<button 
+				class="game-button" 
+				[class.active]="currentGame === game"
+				(click)="selectGame(game)">
+				{{ game }}
+			</button>
+		}
+	</div>
+
+	@if (currentGame === GameType.KLONDIKE) {
+		<app-klondike-board></app-klondike-board>
+	}
+	
+	@if (currentGame === GameType.SPIDER) {
+		<app-spider-board></app-spider-board>
+	}
+</div>
