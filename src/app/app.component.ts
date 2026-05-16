@@ -7,6 +7,7 @@ import { PyramidBoardComponent } from './components/pyramid-board/pyramid-board.
 import { ScorpionBoardComponent } from './components/scorpion-board/scorpion-board.component';
 import { YukonBoardComponent } from './components/yukon-board/yukon-board.component';
 import { BakersDozenBoardComponent } from './components/bakers-dozen-board/bakers-dozen-board.component';
+import { VersionDisplayComponent } from './components/version-display/version-display.component';
 
 export enum GameType {
 	KLONDIKE = 'Klondike',
@@ -23,7 +24,7 @@ export enum GameType {
 	templateUrl: './app.component.html',
 	styleUrls: ['./app.component.scss'],
 	standalone: true,
-	imports: [CommonModule, KlondikeBoardComponent, SpiderBoardComponent, FreeCellBoardComponent, PyramidBoardComponent, ScorpionBoardComponent, YukonBoardComponent, BakersDozenBoardComponent]
+	imports: [CommonModule, KlondikeBoardComponent, SpiderBoardComponent, FreeCellBoardComponent, PyramidBoardComponent, ScorpionBoardComponent, YukonBoardComponent, BakersDozenBoardComponent, VersionDisplayComponent]
 })
 export class AppComponent {
 	title = 'Swarlehtaire';
