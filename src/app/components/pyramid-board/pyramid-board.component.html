@@ -1,0 +1,76 @@
+<div class="pyramid-board">
+	<div class="header">
+		<button class="btn btn-primary" (click)="newGame()">New Game</button>
+		<div class="info">
+			<span class="remaining">Remaining: {{ gameState?.remainingCount || 0 }}</span>
+			<span class="stock-count">Stock: {{ (gameState?.stock?.length || 0) - (gameState?.stockIndex || 0) }}</span>
+		</div>
+	</div>
+
+	@if (gameState) {
+		<div class="game-area">
+			<div class="pyramid">
+				@for (row of gameState.pyramid; track rowIndex; let rowIndex = $index) {
+					<div class="pyramid-row" [style.margin-left]="(6 - rowIndex) * 30 + 'px'">
+						@for (card of row; track colIndex; let colIndex = $index) {
+							@if (card) {
+								<div class="card-wrapper" 
+									 (click)="onPyramidCardClick(rowIndex, colIndex)"
+									 [class.selected]="isCardSelected(rowIndex, colIndex)">
+									<app-stack 
+										[cards]="[card]" 
+										[spread]="'none'">
+									</app-stack>
+									<div class="card-value">{{ getCardValue(card) }}</div>
+								</div>
+							} @else {
+								<div class="card-placeholder"></div>
+							}
+						}
+					</div>
+				}
+			</div>
+
+			<div class="bottom-area">
+				<div class="stock-area" (click)="onStockClick()">
+					@if (gameState.stockIndex < gameState.stock.length) {
+						<app-stack [cards]="[gameState.stock[0]]" [spread]="'none'"></app-stack>
+					} @else {
+						<div class="empty-stock">Empty</div>
+					}
+				</div>
+
+				<div class="waste-area" (click)="onWasteClick()">
+					@if (gameState.waste) {
+						<div class="card-wrapper">
+							<app-stack [cards]="[gameState.waste]" [spread]="'none'"></app-stack>
+							<div class="card-value">{{ getCardValue(gameState.waste) }}</div>
+						</div>
+					} @else {
+						<div class="empty-waste"></div>
+					}
+				</div>
+			</div>
+		</div>
+
+		@if (gameState.isWon) {
+			<div class="modal-overlay">
+				<div class="win-modal">
+					<h2>🎉 You Win! 🎉</h2>
+					<p>All cards removed!</p>
+					<button class="btn btn-primary" (click)="newGame()">Play Again</button>
+				</div>
+			</div>
+		}
+
+		@if (gameState.isGameOver && !gameState.isWon) {
+			<div class="modal-overlay">
+				<div class="game-over-modal">
+					<h2>Game Over</h2>
+					<p>{{ gameState.remainingCount }} cards remaining</p>
+					<button class="btn btn-primary" (click)="newGame()">Try Again</button>
+				</div>
+			</div>
+		}
+	}
+</div>

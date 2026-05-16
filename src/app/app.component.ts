@@ -3,11 +3,13 @@ import { CommonModule } from '@angular/common';
 import { KlondikeBoardComponent } from './components/klondike-board/klondike-board.component';
 import { SpiderBoardComponent } from './components/spider-board/spider-board.component';
 import { FreeCellBoardComponent } from './components/freecell-board/freecell-board.component';
+import { PyramidBoardComponent } from './components/pyramid-board/pyramid-board.component';
 
 export enum GameType {
 	KLONDIKE = 'Klondike',
 	SPIDER = 'Spider',
-	FREECELL = 'FreeCell'
+	FREECELL = 'FreeCell',
+	PYRAMID = 'Pyramid'
 }
 
 @Component({
@@ -15,13 +17,13 @@ export enum GameType {
 	templateUrl: './app.component.html',
 	styleUrls: ['./app.component.scss'],
 	standalone: true,
-	imports: [CommonModule, KlondikeBoardComponent, SpiderBoardComponent, FreeCellBoardComponent]
+	imports: [CommonModule, KlondikeBoardComponent, SpiderBoardComponent, FreeCellBoardComponent, PyramidBoardComponent]
 })
 export class AppComponent {
 	title = 'Swarlehtaire';
 	currentGame: GameType = GameType.KLONDIKE;
 	GameType = GameType;
-	gameTypes = [GameType.KLONDIKE, GameType.SPIDER, GameType.FREECELL];
+	gameTypes = [GameType.KLONDIKE, GameType.SPIDER, GameType.FREECELL, GameType.PYRAMID];
 
 	selectGame(game: GameType): void {
 		this.currentGame = game;
