@@ -64,6 +64,20 @@ export class FreeCellBoardComponent implements OnInit, OnDestroy {
 		this.dragSource = null;
 	}
 
+	onCellDrop(cellIndex: number): void {
+		if (!this.dragSource) return;
+
+		// Only allow moving from cascade to cell (one card at a time)
+		if (this.dragSource.type === 'cascade' && this.dragSource.cardIndex !== undefined) {
+			const cascade = this.gameState.cascades[this.dragSource.index];
+			// Only allow moving the top card (last card in cascade)
+			if (this.dragSource.cardIndex === cascade.length - 1) {
+				this.freecellService.moveToCell(this.dragSource.index, cellIndex);
+			}
+		}
+		this.dragSource = null;
+	}
+
 	onCellClick(cellIndex: number): void {
 		// Try to move to foundation or empty cascade
 		const card = this.gameState.cells[cellIndex];

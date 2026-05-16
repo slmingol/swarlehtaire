@@ -14,12 +14,11 @@
 				<div class="cells">
 					@for (cell of gameState.cells; track $index) {
 						<div class="cell" (click)="onCellClick($index)">
-							@if (cell) {
-								<app-stack [cards]="[cell]" stackType="tableau" spread="none"
-									(cardDragStart)="onCellDragStart($index)"
-									(cardDragEnd)="onDragEnd()">
-								</app-stack>
-							}
+							<app-stack [cards]="cell ? [cell] : []" stackType="tableau" spread="none"
+								(cardDragStart)="onCellDragStart($index)"
+								(cardDragEnd)="onDragEnd()"
+								(stackDrop)="onCellDrop($index)">
+							</app-stack>
 						</div>
 					}
 				</div>
