@@ -8,6 +8,8 @@ export interface ScorpionGameState {
 	reserve: Card[];
 	reserveDealt: boolean;
 	isWon: boolean;
+	canUndo: boolean;
+	moveCount: number;
 }
 
 @Injectable({
@@ -38,12 +40,19 @@ export class ScorpionService {
 		return success;
 	}
 
+	undo(): void {
+		this.game.undo();
+		this.updateState();
+	}
+
 	private getState(): ScorpionGameState {
 		return {
 			tableau: this.game.tableau,
 			reserve: this.game.reserve,
 			reserveDealt: this.game.reserveDealt,
-			isWon: this.game.isWon()
+			isWon: this.game.isWon(),
+			canUndo: this.game.canUndo,
+			moveCount: this.game.moveCount
 		};
 	}
 

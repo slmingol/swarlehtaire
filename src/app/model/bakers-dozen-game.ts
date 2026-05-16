@@ -1,9 +1,26 @@
 import { Card, Suit, Rank } from './card';
 import { Deck } from './deck';
 
+export interface BakersDozenMove {
+	type: 'move' | 'toFoundation';
+	fromCol: number;
+	toCol?: number;
+	card: Card;
+	foundationIndex?: number;
+}
+
 export class BakersDDozenGame {
 	tableau: Card[][] = [];
 	foundations: Card[][] = [];
+	moveHistory: BakersDozenMove[] = [];
+
+	get canUndo(): boolean {
+		return this.moveHistory.length > 0;
+	}
+
+	get moveCount(): number {
+		return this.moveHistory.length;
+	}
 
 	constructor() {
 		this.newGame();
@@ -17,6 +34,7 @@ export class BakersDDozenGame {
 		
 		this.tableau = Array.from({ length: 13 }, () => []);
 		this.foundations = Array.from({ length: 4 }, () => []);
+		this.moveHistory = [];
 
 		const cards = deck.getCards();
 		
@@ -73,7 +91,17 @@ export class BakersDDozenGame {
 		const card = pile[pile.length - 1];
 		if (!this.canPlaceOnFoundation(card)) return false;
 		
-		this.foundations[this.suitToIndex(card.suit)].push(pile.pop()!);
+		const foundationIndex = this.suitToIndex(card.suit);
+		this.foundations[foundationIndex].push(pile.pop()!);
+		
+		// Record move
+		this.moveHistory.push({
+			type: 'toFoundation',
+			fromCol,
+			card: { ...card },
+			foundationIndex
+		});
+		
 		return true;
 	}
 
@@ -94,6 +122,38 @@ export class BakersDDozenGame {
 
 		// Move only the top card
 		toPile.push(fromPile.pop()!);
+		
+		// Record move
+		this.moveHistory.push({
+			type: 'move',
+			fromCol,
+			toCol,
+			card: { ...card }
+		});
+		
+		return true;
+	}
+
+	undo(): boolean {
+		const lastMove = this.moveHistory.pop();
+		if (!lastMove) return false;
+
+		if (lastMove.type === 'move' && lastMove.toCol !== undefined) {
+			// Remove card from destination
+			const card = this.tableau[lastMove.toCol].pop();
+			if (card) {
+				// Add back to source
+				this.tableau[lastMove.fromCol].push(card);
+			}
+		} else if (lastMove.type === 'toFoundation' && lastMove.foundationIndex !== undefined) {
+			// Remove card from foundation
+			const card = this.foundations[lastMove.foundationIndex].pop();
+			if (card) {
+				// Add back to tableau
+				this.tableau[lastMove.fromCol].push(card);
+			}
+		}
+
 		return true;
 	}
 

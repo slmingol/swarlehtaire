@@ -79,4 +79,6 @@ export class YukonBoardComponent implements OnInit, OnDestroy {
 	onColumnDoubleClick(columnIndex: number): void {
 		this.yukonService.moveToFoundation(columnIndex);
 	}
-}
+	onUndo(): void {
+		this.yukonService.undo();
+	}}

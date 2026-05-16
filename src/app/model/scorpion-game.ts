@@ -1,10 +1,28 @@
 import { Card, Suit, Rank } from './card';
 import { Deck } from './deck';
 
+export interface ScorpionMove {
+	type: 'move' | 'dealReserve';
+	fromCol?: number;
+	toCol?: number;
+	cards?: Card[];
+	cardIndex?: number;
+	fromTopWasFaceUp?: boolean;
+}
+
 export class ScorpionGame {
 	tableau: Card[][] = [];
 	reserve: Card[] = [];
 	reserveDealt: boolean = false;
+	moveHistory: ScorpionMove[] = [];
+
+	get canUndo(): boolean {
+		return this.moveHistory.length > 0;
+	}
+
+	get moveCount(): number {
+		return this.moveHistory.length;
+	}
 
 	constructor() {
 		this.newGame();
@@ -17,6 +35,7 @@ export class ScorpionGame {
 		this.tableau = Array.from({ length: 7 }, () => []);
 		this.reserve = [];
 		this.reserveDealt = false;
+		this.moveHistory = [];
 
 		// Deal 49 cards to 7 columns
 		let cardIndex = 0;
@@ -58,6 +77,10 @@ export class ScorpionGame {
 			if (!this.canPlaceOn(movingCards[0], targetCard)) return false;
 		}
 
+		// Remember if card below was face-up
+		const fromTopCard = fromPile[cardIndex - 1];
+		const fromTopWasFaceUp = fromTopCard ? fromTopCard.faceUp : true;
+
 		// Move cards
 		this.tableau[fromCol] = fromPile.slice(0, cardIndex);
 		this.tableau[toCol].push(...movingCards);
@@ -69,6 +92,16 @@ export class ScorpionGame {
 				topCard.faceUp = true;
 			}
 		}
+
+		// Record move
+		this.moveHistory.push({
+			type: 'move',
+			fromCol,
+			toCol,
+			cardIndex,
+			cards: movingCards.map(c => ({ ...c })),
+			fromTopWasFaceUp
+		});
 
 		return true;
 	}
@@ -83,6 +116,41 @@ export class ScorpionGame {
 		}
 
 		this.reserveDealt = true;
+
+		// Record move
+		this.moveHistory.push({
+			type: 'dealReserve'
+		});
+
+		return true;
+	}
+
+	undo(): boolean {
+		const lastMove = this.moveHistory.pop();
+		if (!lastMove) return false;
+
+		if (lastMove.type === 'move' && lastMove.fromCol !== undefined && lastMove.toCol !== undefined && lastMove.cards && lastMove.cardIndex !== undefined) {
+			// Remove cards from destination
+			const cardsToMoveBack = this.tableau[lastMove.toCol].splice(-lastMove.cards.length);
+			
+			// Add cards back to source
+			this.tableau[lastMove.fromCol].push(...cardsToMoveBack);
+
+			// Restore face-down state if needed
+			if (this.tableau[lastMove.fromCol].length > lastMove.cardIndex) {
+				const exposedCard = this.tableau[lastMove.fromCol][lastMove.cardIndex - 1];
+				if (exposedCard && !lastMove.fromTopWasFaceUp) {
+					exposedCard.faceUp = false;
+				}
+			}
+		} else if (lastMove.type === 'dealReserve') {
+			// Remove 3 cards from first 3 columns
+			for (let i = 0; i < 3; i++) {
+				this.tableau[i].pop();
+			}
+			this.reserveDealt = false;
+		}
+
 		return true;
 	}
 

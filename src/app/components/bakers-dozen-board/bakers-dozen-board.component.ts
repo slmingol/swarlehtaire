@@ -75,4 +75,6 @@ export class BakersDozenBoardComponent implements OnInit, OnDestroy {
 	onColumnDoubleClick(columnIndex: number): void {
 		this.bakersDozenService.moveToFoundation(columnIndex);
 	}
-}
+	onUndo(): void {
+		this.bakersDozenService.undo();
+	}}

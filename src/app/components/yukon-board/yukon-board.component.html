@@ -23,6 +23,10 @@
 			}
 		</div>
 		@if (gameState) {
+			<div class="controls">
+				<button class="btn btn-secondary" (click)="onUndo()" [disabled]="!gameState.canUndo">Undo</button>
+				<div class="move-counter">Moves: {{ gameState.moveCount }}</div>
+			</div>
 			<div class="foundations">
 				@for (foundation of gameState.foundations; track foundIdx; let foundIdx = $index) {
 					<div class="foundation">

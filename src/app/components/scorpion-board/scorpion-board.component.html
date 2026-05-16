@@ -23,7 +23,16 @@
 			}
 		</div>
 		@if (gameState && !gameState.reserveDealt && gameState.reserve.length > 0) {
-			<button class="btn btn-secondary" (click)="dealReserve()">Deal Reserve ({{ gameState.reserve.length }})</button>
+			<div class="controls">
+				<button class="btn btn-secondary" (click)="onUndo()" [disabled]="!gameState.canUndo">Undo</button>
+				<div class="move-counter">Moves: {{ gameState.moveCount }}</div>
+				<button class="btn btn-secondary" (click)="dealReserve()">Deal Reserve ({{ gameState.reserve.length }})</button>
+			</div>
+		} @else if (gameState) {
+			<div class="controls">
+				<button class="btn btn-secondary" (click)="onUndo()" [disabled]="!gameState.canUndo">Undo</button>
+				<div class="move-counter">Moves: {{ gameState.moveCount }}</div>
+			</div>
 		}
 	</div>
 

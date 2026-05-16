@@ -7,6 +7,8 @@ export interface BakersDozenGameState {
 	tableau: Card[][];
 	foundations: Card[][];
 	isWon: boolean;
+	canUndo: boolean;
+	moveCount: number;
 }
 
 @Injectable({
@@ -37,11 +39,18 @@ export class BakersDozenService {
 		return success;
 	}
 
+	undo(): void {
+		this.game.undo();
+		this.updateState();
+	}
+
 	private getState(): BakersDozenGameState {
 		return {
 			tableau: this.game.tableau,
 			foundations: this.game.foundations,
-			isWon: this.game.isWon()
+			isWon: this.game.isWon(),
+			canUndo: this.game.canUndo,
+			moveCount: this.game.moveCount
 		};
 	}
 

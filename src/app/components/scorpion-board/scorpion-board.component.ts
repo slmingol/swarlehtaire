@@ -79,4 +79,8 @@ export class ScorpionBoardComponent implements OnInit, OnDestroy {
 	dealReserve(): void {
 		this.scorpionService.dealReserve();
 	}
+
+	onUndo(): void {
+		this.scorpionService.undo();
+	}
 }
