@@ -1,0 +1,55 @@
+<div class="freecell-board">
+	<div class="game-header">
+		<h1>Swarlehtaire - FreeCell</h1>
+		<div class="controls">
+			<button (click)="onNewGame()" class="btn btn-primary">New Game</button>
+			<button (click)="onAutoMove()" class="btn btn-secondary">Auto Move</button>
+			<div class="move-counter">Moves: {{ gameState?.moveCount || 0 }}</div>
+		</div>
+	</div>
+
+	@if (gameState) {
+		<div class="game-area">
+			<div class="top-row">
+				<div class="cells">
+					@for (cell of gameState.cells; track $index) {
+						<div class="cell" (click)="onCellClick($index)">
+							@if (cell) {
+								<app-stack [cards]="[cell]" stackType="tableau" spread="none"
+									(cardDragStart)="onCellDragStart($index)"
+									(cardDragEnd)="onDragEnd()">
+								</app-stack>
+							}
+						</div>
+					}
+				</div>
+				<div class="foundations">
+					@for (foundation of gameState.foundations; track $index) {
+						<app-stack [cards]="foundation" stackType="foundation" spread="none"></app-stack>
+					}
+				</div>
+			</div>
+
+			<div class="cascades">
+				@for (cascade of gameState.cascades; track $index) {
+					<app-stack [cards]="cascade" stackType="tableau" spread="down"
+						(cardClick)="onCascadeClick($index, $event.index)"
+						(cardDragStart)="onCascadeDragStart($index, $event)"
+						(cardDragEnd)="onDragEnd()"
+						(stackDrop)="onCascadeDrop($index)">
+					</app-stack>
+				}
+			</div>
+
+			@if (gameState.isWon) {
+				<div class="win-message">
+					<div class="win-content">
+						<h2>🎉 Victory! 🎉</h2>
+						<p>You completed the game in {{ gameState.moveCount }} moves!</p>
+						<button (click)="onNewGame()" class="btn btn-primary btn-large">Play Again</button>
+					</div>
+				</div>
+			}
+		</div>
+	}
+</div>
