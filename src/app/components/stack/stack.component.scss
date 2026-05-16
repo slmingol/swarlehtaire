@@ -35,30 +35,10 @@
 	top: 0;
 	left: 0;
 	
-	// Allow clicks on exposed card area in cascaded stacks
+	// Allow drag/click on any face-up card in cascaded stacks
+	// Z-index ensures proper layering so you can grab exposed portions
 	.spread-down & {
-		pointer-events: none;
-		
-		// Only the exposed bottom area should be clickable
-		&::after {
-			content: '';
-			position: absolute;
-			bottom: 0;
-			left: 0;
-			right: 0;
-			height: 35px; // Match the cascade offset
-			pointer-events: auto;
-			z-index: 1;
-		}
-		
-		// Last card is fully clickable
-		&:last-child {
-			pointer-events: auto;
-			
-			&::after {
-				display: none;
-			}
-		}
+		pointer-events: auto;
 	}
 	
 	.spread-right & {

@@ -88,10 +88,8 @@ export class StackComponent {
 	}
 
 	// Check if we can drag from this card index in tableau
-	// (all cards from this index onward must be face-up and form a valid sequence)
+	// (all cards from this index onward must be face-up)
 	canDragFrom(index: number): boolean {
-		if (this.stackType !== 'tableau') return true;
-		
 		// Must be face-up
 		if (!this.cards[index]?.faceUp) return false;
 		
