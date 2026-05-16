@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import packageInfo from '../../../../package.json';
 
 @Component({
   selector: 'app-version-display',
@@ -49,5 +50,5 @@ import { Component } from '@angular/core';
   `]
 })
 export class VersionDisplayComponent {
-  version = 'v1.0.0';
+  version = `v${packageInfo.version}`;
 }
