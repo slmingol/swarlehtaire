@@ -95,7 +95,7 @@ export class KlondikeGame {
 			case GameVariant.EASTHAVEN:
 				return { variant, drawCount: 3, tableauCount: 7, allFaceUp: true };
 			case GameVariant.WESTCLIFF:
-				return { variant, drawCount: 1, tableauCount: 10, allFaceUp: true };
+				return { variant, drawCount: 1, tableauCount: 10, allFaceUp: false };
 			case GameVariant.KLONDIKE_DRAW_3:
 			default:
 				return { variant, drawCount: 3, tableauCount: 7, allFaceUp: false };
@@ -131,12 +131,12 @@ export class KlondikeGame {
 		
 		// Westcliff uses a different deal pattern
 		if (this.config.variant === GameVariant.WESTCLIFF) {
-			// Westcliff: 5 cards to each of 10 piles, all face-up
+			// American Westcliff: 3 cards to each of 10 piles, only top card face-up
 			for (let pile = 0; pile < tableauCount; pile++) {
-				for (let cardNum = 0; cardNum < 5; cardNum++) {
+				for (let cardNum = 0; cardNum < 3; cardNum++) {
 					const card = this.deck.deal();
 					if (card) {
-						card.faceUp = true;
+						card.faceUp = (cardNum === 2); // Only the third (top) card face-up
 						this.tableau[pile].push(card);
 					}
 				}
