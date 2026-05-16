@@ -178,32 +178,60 @@ export class KlondikeGame {
 			if (this.waste.isEmpty) {
 				return false;
 			}
+			const cardsToMove: Card[] = [];
 			while (!this.waste.isEmpty) {
 				const card = this.waste.pop();
 				if (card) {
 					card.faceUp = false;
+					cardsToMove.push(card);
 					this.stock.push(card);
 				}
 			}
+			// Record the waste-to-stock reset for undo
+			this.moveHistory.push({
+				from: this.waste,
+				to: this.stock,
+				cards: cardsToMove,
+				fromFaceUp: false
+			});
+			
 			// Immediately draw cards after reset
 			const drawCount = Math.min(this.config.drawCount, this.stock.count);
+			const drawnCards: Card[] = [];
 			for (let i = 0; i < drawCount; i++) {
 				const card = this.stock.pop();
 				if (card) {
 					card.faceUp = true;
+					drawnCards.push(card);
 					this.waste.push(card);
 				}
 			}
+			// Record the stock-to-waste draw for undo
+			this.moveHistory.push({
+				from: this.stock,
+				to: this.waste,
+				cards: drawnCards,
+				fromFaceUp: false
+			});
 		} else {
 			// Draw cards based on variant
 			const drawCount = Math.min(this.config.drawCount, this.stock.count);
+			const drawnCards: Card[] = [];
 			for (let i = 0; i < drawCount; i++) {
 				const card = this.stock.pop();
 				if (card) {
 					card.faceUp = true;
+					drawnCards.push(card);
 					this.waste.push(card);
 				}
 			}
+			// Record the move for undo
+			this.moveHistory.push({
+				from: this.stock,
+				to: this.waste,
+				cards: drawnCards,
+				fromFaceUp: false
+			});
 		}
 		
 		this.moves++;
@@ -278,6 +306,16 @@ export class KlondikeGame {
 			lastMove.to.count - lastMove.cards.length
 		);
 		lastMove.to.removeCardsFrom(lastMove.to.count - lastMove.cards.length);
+		
+		// Special handling for stock/waste undo
+		if (lastMove.from.type === StackType.STOCK && lastMove.to.type === StackType.WASTE) {
+			// Cards going back to stock should be face-down
+			cards.forEach(card => card.faceUp = false);
+		} else if (lastMove.from.type === StackType.WASTE && lastMove.to.type === StackType.STOCK) {
+			// Cards going back to waste should be face-up
+			cards.forEach(card => card.faceUp = true);
+		}
+		
 		lastMove.from.addCards(cards);
 
 		// Restore face-down state if needed
