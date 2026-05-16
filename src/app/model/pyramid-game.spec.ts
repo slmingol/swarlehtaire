@@ -50,11 +50,12 @@ describe('PyramidGame', () => {
 
 	describe('stock operations', () => {
 		it('should draw card from stock', () => {
-			const initialLength = game.stock.length;
+			const initialIndex = game.stockIndex;
 			const result = game.drawFromStock();
 			
 			expect(result).toBe(true);
-			expect(game.stock.length).toBeLessThan(initialLength);
+			expect(game.stockIndex).toBeGreaterThan(initialIndex);
+			expect(game.waste).not.toBeNull();
 		});
 
 		it('should not draw when stock is empty', () => {
@@ -108,10 +109,6 @@ describe('PyramidGame', () => {
 			expect(game.stock.length).toBe(24); // 52 - 28 = 24
 		});
 
-		it('should have no selected card initially', () => {
-			expect(game.selected).toBeNull();
-		});
-
 		it('should have canUndo false initially', () => {
 			expect(game.canUndo).toBe(false);
 		});
@@ -145,29 +142,29 @@ describe('PyramidGame', () => {
 	});
 
 	describe('card availability', () => {
-		it('should have bottom row cards available initially', () => {
+		it('should have bottom row cards exposed initially', () => {
 			const bottomRow = game.pyramid[6];
-			bottomRow.forEach(card => {
+			bottomRow.forEach((card, index) => {
 				if (card) {
-					expect(game.isCardAvailable(6, bottomRow.indexOf(card))).toBe(true);
+					expect(game.isCardExposed(6, index)).toBe(true);
 				}
 			});
 		});
 
-		it('should not have top card available if covered', () => {
+		it('should not have top card exposed initially', () => {
 			// Top card should be covered by cards below
-			const isAvailable = game.isCardAvailable(0, 0);
-			expect(isAvailable).toBe(false);
+			const isExposed = game.isCardExposed(0, 0);
+			expect(isExposed).toBe(false);
 		});
 	});
 
 	describe('king removal', () => {
 		it('should allow removing single King', () => {
-			// Mock a King at an available position
+			// Mock a King at an exposed position
 			const king = CardUtils.createCard(Suit.SPADES, Rank.KING);
 			game.pyramid[6][0] = king;
 			
-			const result = game.removePair(6, 0);
+			const result = game.removeKing(6, 0);
 			expect(result).toBe(true);
 			expect(game.pyramid[6][0]).toBeNull();
 		});
@@ -176,20 +173,12 @@ describe('PyramidGame', () => {
 			const queen = CardUtils.createCard(Suit.SPADES, Rank.QUEEN);
 			game.pyramid[6][0] = queen;
 			
-			const result = game.removePair(6, 0);
+			const result = game.removeKing(6, 0);
 			expect(result).toBe(false);
 		});
 	});
 
-	describe('pair selection', () => {
-		it('should select first card when none selected', () => {
-			const card = game.pyramid[6][0];
-			if (card) {
-				game.selectCard(6, 0);
-				expect(game.selected).not.toBeNull();
-			}
-		});
-
+	describe('pair removal', () => {
 		it('should remove valid pair that sums to 13', () => {
 			// Set up a valid pair
 			const ace = CardUtils.createCard(Suit.SPADES, Rank.ACE); // value 1
@@ -198,9 +187,9 @@ describe('PyramidGame', () => {
 			game.pyramid[6][0] = ace;
 			game.pyramid[6][1] = queen;
 			
-			game.selectCard(6, 0); // Select Ace
-			game.selectCard(6, 1); // Select Queen - should remove both
+			const result = game.removePyramidPair(6, 0, 6, 1);
 			
+			expect(result).toBe(true);
 			expect(game.pyramid[6][0]).toBeNull();
 			expect(game.pyramid[6][1]).toBeNull();
 		});
@@ -212,8 +201,7 @@ describe('PyramidGame', () => {
 			game.pyramid[6][0] = ace;
 			game.pyramid[6][1] = jack;
 			
-			game.selectCard(6, 0);
-			const result = game.selectCard(6, 1);
+			const result = game.removePyramidPair(6, 0, 6, 1);
 			
 			expect(result).toBe(false);
 		});
@@ -221,16 +209,16 @@ describe('PyramidGame', () => {
 
 	describe('stock operations', () => {
 		it('should draw card from stock', () => {
-			const initialStockLength = game.stock.length;
+			const initialIndex = game.stockIndex;
 			const result = game.drawFromStock();
 			
 			expect(result).toBe(true);
-			expect(game.stock.length).toBe(initialStockLength - 1);
+			expect(game.stockIndex).toBeGreaterThan(initialIndex);
 			expect(game.waste).not.toBeNull();
 		});
 
 		it('should not draw when stock is empty', () => {
-			game.stock = [];
+			game.stockIndex = game.stock.length;
 			const result = game.drawFromStock();
 			
 			expect(result).toBe(false);
@@ -244,20 +232,19 @@ describe('PyramidGame', () => {
 			game.pyramid[6][0] = six;
 			game.waste = seven;
 			
-			game.selectWaste();
-			game.selectCard(6, 0);
+			const result = game.removeWastePyramidPair(6, 0);
 			
+			expect(result).toBe(true);
 			expect(game.pyramid[6][0]).toBeNull();
-			expect(game.waste).toBeNull();
 		});
 	});
 
 	describe('undo functionality', () => {
-		it('should allow undo after removing pair', () => {
+		it('should allow undo after removing King', () => {
 			const king = CardUtils.createCard(Suit.SPADES, Rank.KING);
 			game.pyramid[6][0] = king;
 			
-			game.removePair(6, 0);
+			game.removeKing(6, 0);
 			expect(game.canUndo).toBe(true);
 		});
 
@@ -268,9 +255,7 @@ describe('PyramidGame', () => {
 			game.pyramid[6][0] = ace;
 			game.pyramid[6][1] = queen;
 			
-			game.selectCard(6, 0);
-			game.selectCard(6, 1);
-			
+			game.removePyramidPair(6, 0, 6, 1);
 			game.undo();
 			
 			expect(game.pyramid[6][0]).not.toBeNull();
@@ -278,11 +263,11 @@ describe('PyramidGame', () => {
 		});
 
 		it('should undo stock draw', () => {
-			const initialStockLength = game.stock.length;
+			const initialIndex = game.stockIndex;
 			game.drawFromStock();
 			game.undo();
 			
-			expect(game.stock.length).toBe(initialStockLength);
+			expect(game.stockIndex).toBe(initialIndex);
 		});
 	});
 

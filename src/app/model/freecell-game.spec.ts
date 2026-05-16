@@ -133,13 +133,24 @@ describe('FreeCellGame', () => {
 		});
 
 		it('should allow sequential same-suit cards', () => {
-			// Place Ace in foundation
+			// Directly place Ace in foundation (bypassing the move method)
 			const ace = CardUtils.createCard(Suit.SPADES, Rank.ACE);
 			game.foundations[0] = [ace];
 
 			const two = CardUtils.createCard(Suit.SPADES, Rank.TWO);
 			const canMove = game.canMoveToFoundation(two);
 			expect(canMove).toBe(true);
+		});
+
+		it('should check card exists before moving', () => {
+			const ace = CardUtils.createCard(Suit.SPADES, Rank.ACE);
+			ace.faceUp = true;
+			
+			// Add ace to a cascade
+			game.cascades[0] = [ace];
+			
+			// Can move should return true
+			expect(game.canMoveToFoundation(ace)).toBe(true);
 		});
 	});
 
@@ -263,9 +274,11 @@ describe('FreeCellGame', () => {
 		});
 
 		it('should calculate max move with 1 empty cascade', () => {
+			// Clear one cascade
+			game.cascades[7] = [];
 			game.cells = [null, null, null, null];
-			// Formula: 2^1 * (4+1) = 10
-			expect(game.getMaxMoveSize(true)).toBe(10);
+			// Formula when moving TO empty cascade: 2^(M-1) * (N+1) = 2^0 * 5 = 5
+			expect(game.getMaxMoveSize(true)).toBe(5);
 		});
 
 		it('should calculate max move with 2 empty cascades and 3 empty cells', () => {
@@ -273,8 +286,8 @@ describe('FreeCellGame', () => {
 			game.cascades[0] = [];
 			game.cascades[1] = [];
 			const emptyCascades = game.cascades.filter(c => c.length === 0).length;
-			// Formula: 2^2 * (3+1) = 16
-			expect(game.getMaxMoveSize(true)).toBe(16);
+			// Formula when moving TO empty cascade: 2^(2-1) * (3+1) = 2^1 * 4 = 8
+			expect(game.getMaxMoveSize(true)).toBe(8);
 		});
 	});
 
@@ -290,16 +303,13 @@ describe('FreeCellGame', () => {
 		});
 
 		it('should allow valid descending alternate color move', () => {
-			game.cascades[0] = [
-				CardUtils.createCard(Suit.SPADES, Rank.KING),
-				CardUtils.createCard(Suit.HEARTS, Rank.FIVE)
-			];
-			game.cascades[0].forEach(c => c.faceUp = true);
+			game.cascades[0] = [CardUtils.createCard(Suit.HEARTS, Rank.FIVE)];
+			game.cascades[0][0].faceUp = true;
 			
-			game.cascades[1] = [CardUtils.createCard(Suit.DIAMONDS, Rank.SIX)];
+			game.cascades[1] = [CardUtils.createCard(Suit.SPADES, Rank.SIX)];
 			game.cascades[1][0].faceUp = true;
 
-			const result = game.moveCascade(0, 1, 1);
+			const result = game.moveCascade(0, 0, 1);
 			expect(result).toBe(true);
 		});
 
@@ -359,7 +369,7 @@ describe('FreeCellGame', () => {
 			game.cascades[0][0].faceUp = true;
 			game.cells = [null, null, null, null];
 
-			const result = game.moveToCell(0, 0);
+			const result = game.moveToCell('cascade', 0, 0);
 			expect(result).toBe(true);
 			expect(game.cells[0]).not.toBeNull();
 		});
@@ -387,29 +397,32 @@ describe('FreeCellGame', () => {
 
 	describe('foundation operations', () => {
 		it('should allow Ace to empty foundation', () => {
-			game.cascades[0] = [CardUtils.createCard(Suit.SPADES, Rank.ACE)];
-			game.cascades[0][0].faceUp = true;
+			const ace = CardUtils.createCard(Suit.SPADES, Rank.ACE);
+			ace.faceUp = true;
+			game.cascades[0] = [ace];
 
-			const result = game.moveToFoundation(0);
+			const result = game.moveToFoundation(ace, 'cascade', 0);
 			expect(result).toBe(true);
 			expect(game.foundations[0].length).toBe(1);
 		});
 
 		it('should allow sequential same-suit card to foundation', () => {
 			game.foundations[0] = [CardUtils.createCard(Suit.SPADES, Rank.ACE)];
-			game.cascades[0] = [CardUtils.createCard(Suit.SPADES, Rank.TWO)];
-			game.cascades[0][0].faceUp = true;
+			const two = CardUtils.createCard(Suit.SPADES, Rank.TWO);
+			two.faceUp = true;
+			game.cascades[0] = [two];
 
-			const result = game.moveToFoundation(0);
+			const result = game.moveToFoundation(two, 'cascade', 0);
 			expect(result).toBe(true);
 			expect(game.foundations[0].length).toBe(2);
 		});
 
 		it('should reject non-Ace to empty foundation', () => {
-			game.cascades[0] = [CardUtils.createCard(Suit.SPADES, Rank.KING)];
-			game.cascades[0][0].faceUp = true;
+			const king = CardUtils.createCard(Suit.SPADES, Rank.KING);
+			king.faceUp = true;
+			game.cascades[0] = [king];
 
-			const result = game.moveToFoundation(0);
+			const result = game.moveToFoundation(king, 'cascade', 0);
 			expect(result).toBe(false);
 		});
 	});
