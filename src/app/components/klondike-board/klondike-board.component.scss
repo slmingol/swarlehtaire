@@ -1,3 +1,8 @@
+:host {
+	display: block;
+	width: 100%;
+}
+
 .klondike-board {
 	min-height: calc(100vh - 72px);
 	padding: var(--board-pad, 20px);

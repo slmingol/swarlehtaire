@@ -1,3 +1,8 @@
+:host {
+	display: block;
+	width: 100%;
+}
+
 .yukon-board {
 	padding: var(--board-pad, 20px);
 	background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
