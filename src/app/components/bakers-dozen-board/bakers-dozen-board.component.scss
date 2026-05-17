@@ -255,5 +255,10 @@
 			font-size: 11px;
 			padding: 5px 8px;
 		}
+
+		.tableau {
+			overflow-x: auto;
+			justify-content: flex-start;
+		}
 	}
 }

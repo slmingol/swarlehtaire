@@ -277,4 +277,12 @@
 		font-size: 11px;
 		padding: 5px 8px;
 	}
+
+	.game-area {
+		overflow-x: auto;
+	}
+
+	.tableau {
+		justify-content: flex-start;
+	}
 }

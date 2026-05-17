@@ -771,17 +771,17 @@ p {
 
 @media (max-width: 499px) {
 	:root {
-		--card-w: 44px;
-		--card-h: 62px;
-		--card-pad: 3px;
-		--card-gap: 3px;
-		--board-pad: 6px;
-		--card-rank-size: 13px;
-		--card-suit-size: 11px;
-		--card-suit-large: 26px;
-		--card-spread-v: 220px;
-		--card-spread-h: 115px;
-		--card-col-offset: -34px;
+		--card-w: 52px;
+		--card-h: 73px;
+		--card-pad: 4px;
+		--card-gap: 2px;
+		--board-pad: 4px;
+		--card-rank-size: 15px;
+		--card-suit-size: 13px;
+		--card-suit-large: 30px;
+		--card-spread-v: 260px;
+		--card-spread-h: 135px;
+		--card-col-offset: -40px;
 		--game-selector-pad: 8px;
 	}
 }
