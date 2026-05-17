@@ -79,36 +79,17 @@ jobs:
 
       - name: Configure Gradle signing
         run: |
-          cd resources/apps/tauri/gen/android
-          
-          echo "=== Directory structure ==="
-          ls -laR
-          
-          echo "=== Looking for gradle files ==="
-          find . -name "*.gradle*" -type f
-          
-          echo "=== Checking if mah directory exists ==="
-          ls -la
-          
-          # The build.gradle is in the mah subdirectory, not app
-          if [ -d "mah" ]; then
-            cd mah
-          elif [ -d "app" ]; then
-            cd app
-          else
-            echo "Neither mah nor app directory found!"
-            exit 1
-          fi
-          
-          echo "=== Current directory ==="
-          pwd
-          ls -la
+          cd resources/apps/tauri/gen/android/app
           
           # Create Python script using base64 to avoid YAML parsing issues
-          echo 'aW1wb3J0IHJlCmltcG9ydCBzeXMKCndpdGggb3BlbignYnVpbGQuZ3JhZGxlJywgJ3InKSBhcyBmOgogICAgY29udGVudCA9IGYucmVhZCgpCgprZXlzdG9yZV9sb2FkaW5nID0gJycnCmRlZiBrZXlzdG9yZVByb3BlcnRpZXNGaWxlID0gcm9vdFByb2plY3QuZmlsZSgia2V5c3RvcmUucHJvcGVydGllcyIpCmRlZiBrZXlzdG9yZVByb3BlcnRpZXMgPSBuZXcgUHJvcGVydGllcygpCmlmIChrZXlzdG9yZVByb3BlcnRpZXNGaWxlLmV4aXN0cygpKSB7CiAgICBrZXlzdG9yZVByb3BlcnRpZXMubG9hZChuZXcgRmlsZUlucHV0U3RyZWFtKGtleXN0b3JlUHJvcGVydGllc0ZpbGUpKQp9CgonJycKCmNvbnRlbnQgPSBrZXlzdG9yZV9sb2FkaW5nICsgY29udGVudAoKc2lnbmluZ19jb25maWdzID0gJycnICAgIHNpZ25pbmdDb25maWdzIHsKICAgICAgICByZWxlYXNlIHsKICAgICAgICAgICAgaWYgKGtleXN0b3JlUHJvcGVydGllc0ZpbGUuZXhpc3RzKCkpIHsKICAgICAgICAgICAgICAgIHN0b3JlRmlsZSBmaWxlKCIuLi8iICsga2V5c3RvcmVQcm9wZXJ0aWVzWydzdG9yZUZpbGUnXSkKICAgICAgICAgICAgICAgIHN0b3JlUGFzc3dvcmQga2V5c3RvcmVQcm9wZXJ0aWVzWydzdG9yZVBhc3N3b3JkJ10KICAgICAgICAgICAgICAgIGtleUFsaWFzIGtleXN0b3JlUHJvcGVydGllc1sna2V5QWxpYXMnXQogICAgICAgICAgICAgICAga2V5UGFzc3dvcmQga2V5c3RvcmVQcm9wZXJ0aWVzWydwYXNzd29yZCddCiAgICAgICAgICAgIH0KICAgICAgICB9CiAgICB9CgonJycKCmNvbnRlbnQgPSByZS5zdWIocichKGFuZHJvaWRccypcXHspJywgcidcMVxuJyArIHNpZ25pbmdfY29uZmlncywgY29udGVudCwgY291bnQ9MSkKCmNvbnRlbnQgPSByZS5zdWIoCiAgICByJyhidWlsZFR5cGVzXHMqXFx7W159XSpyZWxlYXNlXHMqXFx7KScsCiAgICByJ1wxXG4gICAgICAgICAgICBzaWduaW5nQ29uZmlnIHNpZ25pbmdDb25maWdzLnJlbGVhc2UnLAogICAgY29udGVudCwKICAgIGZsYWdzPXJlLkRPVEFMTAopCgp3aXRoIG9wZW4oJ2J1aWxkLmdyYWRsZScsICd3JykgYXMgZjoKICAgIGYud3JpdGUoY29udGVudCkK' | base64 -d > modify_gradle.py
+          # This script modifies build.gradle.kts (Kotlin DSL) files
+          echo 'aW1wb3J0IHJlCgp3aXRoIG9wZW4oJ2J1aWxkLmdyYWRsZS5rdHMnLCAncicpIGFzIGY6CiAgICBjb250ZW50ID0gZi5yZWFkKCkKCmtleXN0b3JlX2xvYWRpbmcgPSAnJycKLy8gTG9hZCBrZXlzdG9yZSBwcm9wZXJ0aWVzCnZhbCBrZXlzdG9yZVByb3BlcnRpZXNGaWxlID0gcm9vdFByb2plY3QuZmlsZSgia2V5c3RvcmUucHJvcGVydGllcyIpCnZhbCBrZXlzdG9yZVByb3BlcnRpZXMgPSBqYXZhLnV0aWwuUHJvcGVydGllcygpCmlmIChrZXlzdG9yZVByb3BlcnRpZXNGaWxlLmV4aXN0cygpKSB7CiAgICBrZXlzdG9yZVByb3BlcnRpZXMubG9hZChqYXZhLmlvLkZpbGVJbnB1dFN0cmVhbShrZXlzdG9yZVByb3BlcnRpZXNGaWxlKSkKfQoKJycnCgpjb250ZW50ID0ga2V5c3RvcmVfbG9hZGluZyArIGNvbnRlbnQKCnNpZ25pbmdfY29uZmlncyA9ICcnJyAgICBzaWduaW5nQ29uZmlncyB7CiAgICAgICAgY3JlYXRlKCJyZWxlYXNlIikgewogICAgICAgICAgICBpZiAoa2V5c3RvcmVQcm9wZXJ0aWVzRmlsZS5leGlzdHMoKSkgewogICAgICAgICAgICAgICAgc3RvcmVGaWxlID0gZmlsZSgiLi4vIiArIGtleXN0b3JlUHJvcGVydGllc1sic3RvcmVGaWxlIl0udG9TdHJpbmcoKSkKICAgICAgICAgICAgICAgIHN0b3JlUGFzc3dvcmQgPSBrZXlzdG9yZVByb3BlcnRpZXNbInN0b3JlUGFzc3dvcmQiXS50b1N0cmluZygpCiAgICAgICAgICAgICAgICBrZXlBbGlhcyA9IGtleXN0b3JlUHJvcGVydGllc1sia2V5QWxpYXMiXS50b1N0cmluZygpCiAgICAgICAgICAgICAgICBrZXlQYXNzd29yZCA9IGtleXN0b3JlUHJvcGVydGllc1sicGFzc3dvcmQiXS50b1N0cmluZygpCiAgICAgICAgICAgIH0KICAgICAgICB9CiAgICB9CgonJycKCiMgSW5zZXJ0IHNpZ25pbmdDb25maWdzIGFmdGVyICdhbmRyb2lkIHsnIGxpbmUKY29udGVudCA9IHJlLnN1YihyJyhhbmRyb2lkXHMqXHspJywgcidcMVxuJyArIHNpZ25pbmdfY29uZmlncywgY29udGVudCwgY291bnQ9MSkKCiMgQWRkIHNpZ25pbmdDb25maWcgdG8gcmVsZWFzZSBidWlsZFR5cGUKY29udGVudCA9IHJlLnN1YigKICAgIHInKHJlbGVhc2VccypceyknLAogICAgcidcMVxuICAgICAgICAgICAgc2lnbmluZ0NvbmZpZyA9IHNpZ25pbmdDb25maWdzLmdldEJ5TmFtZSgicmVsZWFzZSIpJywKICAgIGNvbnRlbnQsCiAgICBjb3VudD0xCikKCndpdGggb3BlbignYnVpbGQuZ3JhZGxlLmt0cycsICd3JykgYXMgZjoKICAgIGYud3JpdGUoY29udGVudCkK' | base64 -d > modify_gradle.py
           
           python3 modify_gradle.py
           rm modify_gradle.py
+          
+          echo "=== Modified build.gradle.kts ==="
+          cat build.gradle.kts
 
       - name: Build Android app
         run: |
