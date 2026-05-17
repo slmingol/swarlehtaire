@@ -106,24 +106,20 @@ export class KlondikeBoardComponent implements OnInit, OnDestroy {
 		this.showRules = !this.showRules;
 	}
 
+	private get isDrawThree(): boolean {
+		return this.gameState?.variant === GameVariant.KLONDIKE_DRAW_3 ||
+			this.gameState?.variant === GameVariant.EASTHAVEN;
+	}
+
 	get wasteSpread(): 'none' | 'right' {
-		return window.innerWidth <= 499 ? 'none' : 'right';
+		return this.isDrawThree ? 'right' : 'none';
 	}
 
 	get visibleWasteCards(): Card[] {
 		if (!this.gameState?.waste || this.gameState.waste.length === 0) return [];
 		const waste = this.gameState.waste;
-
-		// Mobile: show only the top card to keep top-row within viewport
-		if (window.innerWidth <= 499) {
-			return [{ ...waste[waste.length - 1], faceUp: true }];
-		}
-
-		// Desktop: show all waste with top 3 face-up
-		return waste.map((card, index) => {
-			const isTopThree = index >= waste.length - 3;
-			return { ...card, faceUp: isTopThree };
-		});
+		const count = this.isDrawThree ? 3 : 1;
+		return waste.slice(Math.max(0, waste.length - count)).map(card => ({ ...card, faceUp: true }));
 	}
 
 	onNewGame(): void {
@@ -144,30 +140,19 @@ export class KlondikeBoardComponent implements OnInit, OnDestroy {
 		this.klondikeService.drawFromStock();
 	}
 
-	onWasteClick(event: { card: Card; index: number }): void {
+	onWasteClick(_event: { card: Card; index: number }): void {
 		const wasteStack = this.klondikeService.getWasteStack();
-		// Only allow clicking the top card in the waste pile
 		const topCardIndex = wasteStack.cards.length - 1;
-		
-		if (event.index !== topCardIndex) {
-			// Don't allow clicking cards underneath the top card
-			return;
-		}
-		
-		// Try to move to foundation
+		if (topCardIndex < 0) return;
+
 		for (let i = 0; i < 4; i++) {
 			const foundation = this.klondikeService.getFoundationStack(i);
-			if (this.klondikeService.moveCard(wasteStack, foundation, topCardIndex)) {
-				return;
-			}
+			if (this.klondikeService.moveCard(wasteStack, foundation, topCardIndex)) return;
 		}
-		
-		// Try to move to tableau
+
 		for (let i = 0; i < this.gameState.tableau.length; i++) {
 			const tableau = this.klondikeService.getTableauStack(i);
-			if (this.klondikeService.moveCard(wasteStack, tableau, topCardIndex)) {
-				return;
-			}
+			if (this.klondikeService.moveCard(wasteStack, tableau, topCardIndex)) return;
 		}
 	}
 
@@ -236,13 +221,11 @@ export class KlondikeBoardComponent implements OnInit, OnDestroy {
 			sourceStack = this.klondikeService.getTableauStack(this.dragSource.index);
 		} else if (this.dragSource.type === 'waste') {
 			sourceStack = this.klondikeService.getWasteStack();
-			// Only allow dragging the top card from waste
-			const topCardIndex = sourceStack.cards.length - 1;
-			if (this.dragSource.cardIndex !== topCardIndex) {
+			actualCardIndex = sourceStack.cards.length - 1;
+			if (actualCardIndex < 0) {
 				this.dragSource = null;
 				return;
 			}
-			actualCardIndex = topCardIndex;
 		} else if (this.dragSource.type === 'foundation') {
 			sourceStack = this.klondikeService.getFoundationStack(this.dragSource.index);
 		} else {

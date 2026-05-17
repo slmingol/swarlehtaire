@@ -344,6 +344,12 @@
 		margin-top: calc(25vh - 60px);
 	}
 
+	.top-row {
+		flex-direction: column;
+		gap: var(--card-gap, 2px);
+		margin-bottom: 4px;
+	}
+
 	.tableau {
 		justify-content: flex-start;
 	}
