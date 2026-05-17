@@ -36,7 +36,7 @@ make up         # Start production
 make dev        # Start development
 ```
 
-See [DOCKER.md](DOCKER.md) for full Docker documentation.
+See [DOCKER.md](docs/DOCKER.md) for full Docker documentation.
 
 ### Traditional Build
 
@@ -67,7 +67,13 @@ npm run build:prod
 - Golf
 - And more...
 
-## 📝 License
+## � Documentation
+
+- [Getting Started Guide](docs/GETTING_STARTED.md)
+- [Docker Setup](docs/DOCKER.md)
+- [Versioning Strategy](docs/VERSIONING.md)
+
+## �📝 License
 
 MIT License - see [LICENSE](LICENSE)
 
