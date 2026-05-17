@@ -81,54 +81,8 @@ jobs:
         run: |
           cd resources/apps/tauri/gen/android/app
           
-          # Create Python script to modify build.gradle
-          cat > modify_gradle.py << 'PYEOF'
-import re
-
-with open('build.gradle', 'r') as f:
-    content = f.read()
-
-# Add keystore loading at the top
-keystore_loading = """
-// Load keystore properties
-def keystorePropertiesFile = rootProject.file("keystore.properties")
-def keystoreProperties = new Properties()
-if (keystorePropertiesFile.exists()) {
-    keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
-}
-
-"""
-
-content = keystore_loading + content
-
-# Add signingConfigs block inside android block
-signing_configs = """    signingConfigs {
-        release {
-            if (keystorePropertiesFile.exists()) {
-                storeFile file("../" + keystoreProperties['storeFile'])
-                storePassword keystoreProperties['storePassword']
-                keyAlias keystoreProperties['keyAlias']
-                keyPassword keystoreProperties['password']
-            }
-        }
-    }
-
-"""
-
-# Insert signingConfigs after 'android {' line
-content = re.sub(r'(android\s*\{)', r'\1\n' + signing_configs, content, count=1)
-
-# Add signingConfig to release buildType
-content = re.sub(
-    r'(buildTypes\s*\{[^}]*release\s*\{)',
-    r'\1\n            signingConfig signingConfigs.release',
-    content,
-    flags=re.DOTALL
-)
-
-with open('build.gradle', 'w') as f:
-    f.write(content)
-PYEOF
+          # Create Python script using base64 to avoid YAML parsing issues
+          echo 'aW1wb3J0IHJlCmltcG9ydCBzeXMKCndpdGggb3BlbignYnVpbGQuZ3JhZGxlJywgJ3InKSBhcyBmOgogICAgY29udGVudCA9IGYucmVhZCgpCgprZXlzdG9yZV9sb2FkaW5nID0gJycnCmRlZiBrZXlzdG9yZVByb3BlcnRpZXNGaWxlID0gcm9vdFByb2plY3QuZmlsZSgia2V5c3RvcmUucHJvcGVydGllcyIpCmRlZiBrZXlzdG9yZVByb3BlcnRpZXMgPSBuZXcgUHJvcGVydGllcygpCmlmIChrZXlzdG9yZVByb3BlcnRpZXNGaWxlLmV4aXN0cygpKSB7CiAgICBrZXlzdG9yZVByb3BlcnRpZXMubG9hZChuZXcgRmlsZUlucHV0U3RyZWFtKGtleXN0b3JlUHJvcGVydGllc0ZpbGUpKQp9CgonJycKCmNvbnRlbnQgPSBrZXlzdG9yZV9sb2FkaW5nICsgY29udGVudAoKc2lnbmluZ19jb25maWdzID0gJycnICAgIHNpZ25pbmdDb25maWdzIHsKICAgICAgICByZWxlYXNlIHsKICAgICAgICAgICAgaWYgKGtleXN0b3JlUHJvcGVydGllc0ZpbGUuZXhpc3RzKCkpIHsKICAgICAgICAgICAgICAgIHN0b3JlRmlsZSBmaWxlKCIuLi8iICsga2V5c3RvcmVQcm9wZXJ0aWVzWydzdG9yZUZpbGUnXSkKICAgICAgICAgICAgICAgIHN0b3JlUGFzc3dvcmQga2V5c3RvcmVQcm9wZXJ0aWVzWydzdG9yZVBhc3N3b3JkJ10KICAgICAgICAgICAgICAgIGtleUFsaWFzIGtleXN0b3JlUHJvcGVydGllc1sna2V5QWxpYXMnXQogICAgICAgICAgICAgICAga2V5UGFzc3dvcmQga2V5c3RvcmVQcm9wZXJ0aWVzWydwYXNzd29yZCddCiAgICAgICAgICAgIH0KICAgICAgICB9CiAgICB9CgonJycKCmNvbnRlbnQgPSByZS5zdWIocichKGFuZHJvaWRccypcXHspJywgcidcMVxuJyArIHNpZ25pbmdfY29uZmlncywgY29udGVudCwgY291bnQ9MSkKCmNvbnRlbnQgPSByZS5zdWIoCiAgICByJyhidWlsZFR5cGVzXHMqXFx7W159XSpyZWxlYXNlXHMqXFx7KScsCiAgICByJ1wxXG4gICAgICAgICAgICBzaWduaW5nQ29uZmlnIHNpZ25pbmdDb25maWdzLnJlbGVhc2UnLAogICAgY29udGVudCwKICAgIGZsYWdzPXJlLkRPVEFMTAopCgp3aXRoIG9wZW4oJ2J1aWxkLmdyYWRsZScsICd3JykgYXMgZjoKICAgIGYud3JpdGUoY29udGVudCkK' | base64 -d > modify_gradle.py
           
           python3 modify_gradle.py
           rm modify_gradle.py
