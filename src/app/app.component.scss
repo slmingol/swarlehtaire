@@ -23,6 +23,13 @@
 	&::-webkit-scrollbar {
 		display: none;
 	}
+
+	@media (max-width: 499px) {
+		flex-wrap: wrap;
+		overflow-x: visible;
+		gap: 6px;
+		padding: 8px 6px;
+	}
 }
 
 .game-button {
@@ -51,8 +58,9 @@
 	}
 
 	@media (max-width: 499px) {
-		font-size: 12px;
-		padding: 6px 10px;
-		border-radius: 6px;
+		font-size: 11px;
+		padding: 5px 8px;
+		border-radius: 5px;
+		border-width: 1px;
 	}
 }
