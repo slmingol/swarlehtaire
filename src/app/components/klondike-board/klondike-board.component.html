@@ -49,10 +49,10 @@
 							spread="none"
 							(stackClick)="onStockClick()">
 						</app-stack>
-						<app-stack 
-							[cards]="visibleWasteCards" 
+						<app-stack
+							[cards]="visibleWasteCards"
 							stackType="waste"
-							spread="right"
+							[spread]="wasteSpread"
 							(cardClick)="onWasteClick($event)"
 							(cardDragStart)="onDragStart({type: 'waste', index: 0, cardIndex: $event})"
 							(cardDragEnd)="onDragEnd()">

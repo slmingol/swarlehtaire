@@ -106,12 +106,20 @@ export class KlondikeBoardComponent implements OnInit, OnDestroy {
 		this.showRules = !this.showRules;
 	}
 
+	get wasteSpread(): 'none' | 'right' {
+		return window.innerWidth <= 499 ? 'none' : 'right';
+	}
+
 	get visibleWasteCards(): Card[] {
-		// Show all waste cards, but only the top 3 are face-up
-		if (!this.gameState?.waste) return [];
+		if (!this.gameState?.waste || this.gameState.waste.length === 0) return [];
 		const waste = this.gameState.waste;
-		
-		// Create display cards with modified faceUp property
+
+		// Mobile: show only the top card to keep top-row within viewport
+		if (window.innerWidth <= 499) {
+			return [{ ...waste[waste.length - 1], faceUp: true }];
+		}
+
+		// Desktop: show all waste with top 3 face-up
 		return waste.map((card, index) => {
 			const isTopThree = index >= waste.length - 3;
 			return { ...card, faceUp: isTopThree };
