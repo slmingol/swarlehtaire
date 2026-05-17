@@ -46,7 +46,7 @@ export class CardSizeService implements OnDestroy {
         r.setProperty('--card-suit-large', `${Math.max(34, Math.round(70 * scale))}px`);
         r.setProperty('--card-col-offset', `-${Math.round(90 * scale)}px`);
         r.setProperty('--card-spread-v', `${Math.round(cardH * 3.56)}px`);
-        r.setProperty('--card-spread-h', `${Math.round(cardW * 0.85)}px`);
+        r.setProperty('--card-spread-h', `${Math.round(cardW * 0.4)}px`);
         r.setProperty('--board-pad', `${boardPad}px`);
     }
 

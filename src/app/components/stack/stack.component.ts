@@ -182,7 +182,7 @@ export class StackComponent {
 		}
 
 		const scale = this.cardScale;
-		const offset = this.spread === 'down' ? Math.round(35 * scale) : Math.round(44 * scale);
+		const offset = this.spread === 'down' ? Math.round(35 * scale) : Math.round(18 * scale);
 		const faceDownSpacing = Math.max(3, Math.round(6 * scale));
 		const visibleCards = this.cards.filter(c => c.faceUp).length;
 		const faceDownCards = this.cards.length - visibleCards;
