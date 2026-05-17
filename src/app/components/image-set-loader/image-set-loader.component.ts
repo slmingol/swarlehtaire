@@ -25,7 +25,7 @@ export class ImageSetLoaderComponent implements OnChanges {
 		const translate = this.imageSet() === 'kyodai' ? 'translate(25.5,38)' : 'translate(20,36)';
 		for (const row of TILES) {
 			for (const id of row) {
-				sl.push(`<svg id="${id}" width="75" height="100"><use xlink:href="#mah-tile-spinner" transform="${translate}"></use></svg>`);
+				sl.push(`<svg id="${id}" width="75" height="100"><use xlink:href="#tile-spinner" transform="${translate}"></use></svg>`);
 			}
 		}
 		this.setImageSet(`<svg><defs>${sl.join('')}</defs></svg>`);
@@ -46,7 +46,7 @@ export class ImageSetLoaderComponent implements OnChanges {
 		const sl: Array<string> = [svg_error_icon];
 		for (const row of TILES) {
 			for (const id of row) {
-				sl.push(`<svg id="${id}" width="75" height="100"><use xlink:href="#mah-error-icon" transform="translate(8,18)"></use></svg>`);
+				sl.push(`<svg id="${id}" width="75" height="100"><use xlink:href="#tile-error-icon" transform="translate(8,18)"></use></svg>`);
 			}
 		}
 		this.setImageSet(`<svg><defs>${sl.join('')}</defs></svg>`);

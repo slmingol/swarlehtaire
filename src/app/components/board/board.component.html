@@ -13,7 +13,7 @@
 				d="M -4.7687833,775.07096 C -9.6501835,741.99485 -16.84552,674.23676 -1.2788716,652.0641 18.998297,625.94378 233.50094,631.63117 263.31435,653.90999 276.21398,662.64856 70.349579,663.12124 47.099353,691.74479 24.390958,719.11242 0.65060847,818.18718 -4.7687833,775.07096 Z"
 			/>
 		</svg>
-		<clipPath id="mah-image-clip">
+		<clipPath id="tile-image-clip">
 			<rect
 				[attr.x]="imageCut[0]"
 				[attr.y]="imageCut[1]"
@@ -30,7 +30,7 @@
 			transition: transform 120ms ease-in-out;
 		}
 
-		@keyframes mah-wiggle {
+		@keyframes tile-wiggle {
 			0% {
 				transform: rotate(0deg);
 			}
@@ -52,7 +52,7 @@
 		}
 
 		g.wiggle g.tile {
-			animation: mah-wiggle 250ms ease-in-out;
+			animation: tile-wiggle 250ms ease-in-out;
 		}
 
 		g.hinted g.tile {
@@ -64,7 +64,7 @@
 			stroke-width: 3px;
 		}
 
-		@keyframes mah-select-pop {
+		@keyframes tile-select-pop {
 			0% {
 				transform: scale(1);
 			}
@@ -78,7 +78,7 @@
 
 		g.selected g.tile {
 			transform: scale(1.04);
-			animation: mah-select-pop 140ms ease-out;
+			animation: tile-select-pop 140ms ease-out;
 		}
 
 		g.selected g.tile rect.stone {

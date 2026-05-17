@@ -205,7 +205,7 @@ describe('ImageSetLoaderComponent', () => {
 			expect((component as unknown as HackImageSetLoaderComponent).setImageSet).toHaveBeenCalled();
 			const setImageSet = (component as unknown as HackImageSetLoaderComponent).setImageSet;
 			const svgContent = (setImageSet as unknown as jest.SpyInstance<void, [string]>).mock.calls[0][0];
-			expect(svgContent).toContain('mah-tile-spinner');
+			expect(svgContent).toContain('tile-spinner');
 		});
 	});
 
@@ -218,7 +218,7 @@ describe('ImageSetLoaderComponent', () => {
 			expect((component as unknown as HackImageSetLoaderComponent).setImageSet).toHaveBeenCalled();
 			const setImageSet = (component as unknown as HackImageSetLoaderComponent).setImageSet;
 			const svgContent = (setImageSet as unknown as jest.SpyInstance<void, [string]>).mock.calls[0][0];
-			expect(svgContent).toContain('mah-error-icon');
+			expect(svgContent).toContain('tile-error-icon');
 		});
 	});
 
