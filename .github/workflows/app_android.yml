@@ -81,11 +81,28 @@ jobs:
         run: |
           cd resources/apps/tauri/gen/android
           
-          # Find all build.gradle files
-          find . -name "build.gradle" -type f
+          echo "=== Directory structure ==="
+          ls -laR
           
-          # Modify the app build.gradle
-          cd app
+          echo "=== Looking for gradle files ==="
+          find . -name "*.gradle*" -type f
+          
+          echo "=== Checking if mah directory exists ==="
+          ls -la
+          
+          # The build.gradle is in the mah subdirectory, not app
+          if [ -d "mah" ]; then
+            cd mah
+          elif [ -d "app" ]; then
+            cd app
+          else
+            echo "Neither mah nor app directory found!"
+            exit 1
+          fi
+          
+          echo "=== Current directory ==="
+          pwd
+          ls -la
           
           # Create Python script using base64 to avoid YAML parsing issues
           echo 'aW1wb3J0IHJlCmltcG9ydCBzeXMKCndpdGggb3BlbignYnVpbGQuZ3JhZGxlJywgJ3InKSBhcyBmOgogICAgY29udGVudCA9IGYucmVhZCgpCgprZXlzdG9yZV9sb2FkaW5nID0gJycnCmRlZiBrZXlzdG9yZVByb3BlcnRpZXNGaWxlID0gcm9vdFByb2plY3QuZmlsZSgia2V5c3RvcmUucHJvcGVydGllcyIpCmRlZiBrZXlzdG9yZVByb3BlcnRpZXMgPSBuZXcgUHJvcGVydGllcygpCmlmIChrZXlzdG9yZVByb3BlcnRpZXNGaWxlLmV4aXN0cygpKSB7CiAgICBrZXlzdG9yZVByb3BlcnRpZXMubG9hZChuZXcgRmlsZUlucHV0U3RyZWFtKGtleXN0b3JlUHJvcGVydGllc0ZpbGUpKQp9CgonJycKCmNvbnRlbnQgPSBrZXlzdG9yZV9sb2FkaW5nICsgY29udGVudAoKc2lnbmluZ19jb25maWdzID0gJycnICAgIHNpZ25pbmdDb25maWdzIHsKICAgICAgICByZWxlYXNlIHsKICAgICAgICAgICAgaWYgKGtleXN0b3JlUHJvcGVydGllc0ZpbGUuZXhpc3RzKCkpIHsKICAgICAgICAgICAgICAgIHN0b3JlRmlsZSBmaWxlKCIuLi8iICsga2V5c3RvcmVQcm9wZXJ0aWVzWydzdG9yZUZpbGUnXSkKICAgICAgICAgICAgICAgIHN0b3JlUGFzc3dvcmQga2V5c3RvcmVQcm9wZXJ0aWVzWydzdG9yZVBhc3N3b3JkJ10KICAgICAgICAgICAgICAgIGtleUFsaWFzIGtleXN0b3JlUHJvcGVydGllc1sna2V5QWxpYXMnXQogICAgICAgICAgICAgICAga2V5UGFzc3dvcmQga2V5c3RvcmVQcm9wZXJ0aWVzWydwYXNzd29yZCddCiAgICAgICAgICAgIH0KICAgICAgICB9CiAgICB9CgonJycKCmNvbnRlbnQgPSByZS5zdWIocichKGFuZHJvaWRccypcXHspJywgcidcMVxuJyArIHNpZ25pbmdfY29uZmlncywgY29udGVudCwgY291bnQ9MSkKCmNvbnRlbnQgPSByZS5zdWIoCiAgICByJyhidWlsZFR5cGVzXHMqXFx7W159XSpyZWxlYXNlXHMqXFx7KScsCiAgICByJ1wxXG4gICAgICAgICAgICBzaWduaW5nQ29uZmlnIHNpZ25pbmdDb25maWdzLnJlbGVhc2UnLAogICAgY29udGVudCwKICAgIGZsYWdzPXJlLkRPVEFMTAopCgp3aXRoIG9wZW4oJ2J1aWxkLmdyYWRsZScsICd3JykgYXMgZjoKICAgIGYud3JpdGUoY29udGVudCkK' | base64 -d > modify_gradle.py
