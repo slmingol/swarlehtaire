@@ -77,6 +77,29 @@ jobs:
           echo "storePassword=${{ secrets.SIGNING_STORE_PASSWORD }}" >> keystore.properties
           echo "storeFile=swarlehtaire_keystore.jks" >> keystore.properties
 
+      - name: Configure Gradle signing
+        run: |
+          cd resources/apps/tauri/gen/android/app
+          cat >> build.gradle << 'EOF'
+
+          // Add signing configuration
+          def keystorePropertiesFile = rootProject.file("keystore.properties")
+          if (keystorePropertiesFile.exists()) {
+              def keystoreProperties = new Properties()
+              keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+              
+              android.signingConfigs {
+                  release {
+                      storeFile file(keystoreProperties['storeFile'])
+                      storePassword keystoreProperties['storePassword']
+                      keyAlias keystoreProperties['keyAlias']
+                      keyPassword keystoreProperties['password']
+                  }
+              }
+              
+              android.buildTypes.release.signingConfig = android.signingConfigs.release
+          }
+          EOF
 
       - name: Build Android app
         run: |
