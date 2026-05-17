@@ -90,7 +90,15 @@ jobs:
           NEW_VERSION=${{ steps.version.outputs.new_version }}
           git tag -a "${NEW_VERSION}" -m "Release ${NEW_VERSION}"
           git push origin main --tags
-      
+
+      - name: Create GitHub release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create "${{ steps.version.outputs.new_version }}" \
+            --title "${{ steps.version.outputs.new_version }}" \
+            --notes "Release ${{ steps.version.outputs.new_version }}"
+
       - name: Summary
         run: |
           echo "✅ Version bumped to ${{ steps.version.outputs.new_version }}"
