@@ -318,10 +318,12 @@ export class KlondikeGame {
 		
 		lastMove.from.addCards(cards);
 
-		// Restore face-down state if needed
-		const cardBelow = lastMove.from.peek();
-		if (cardBelow && lastMove.from.type === StackType.TABLEAU) {
-			if (!lastMove.fromFaceUp && cardBelow.faceUp) {
+		// Restore face-down state of card below the moved cards if needed
+		if (lastMove.from.type === StackType.TABLEAU && lastMove.from.count > cards.length) {
+			// Get the card that's now below the returned cards
+			const cardBelowIndex = lastMove.from.count - cards.length - 1;
+			const cardBelow = lastMove.from.cards[cardBelowIndex];
+			if (cardBelow && !lastMove.fromFaceUp && cardBelow.faceUp) {
 				cardBelow.faceUp = false;
 			}
 		}
