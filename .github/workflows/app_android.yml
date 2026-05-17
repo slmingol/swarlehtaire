@@ -80,26 +80,38 @@ jobs:
       - name: Configure Gradle signing
         run: |
           cd resources/apps/tauri/gen/android/app
-          cat >> build.gradle << 'EOF'
+          # Insert signing configuration at the top of build.gradle after any existing code
+          cat > signing_config.txt << 'EOF'
 
-          // Add signing configuration
-          def keystorePropertiesFile = rootProject.file("keystore.properties")
-          if (keystorePropertiesFile.exists()) {
-              def keystoreProperties = new Properties()
-              keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
-              
-              android.signingConfigs {
-                  release {
-                      storeFile file(keystoreProperties['storeFile'])
-                      storePassword keystoreProperties['storePassword']
-                      keyAlias keystoreProperties['keyAlias']
-                      keyPassword keystoreProperties['password']
-                  }
-              }
-              
-              android.buildTypes.release.signingConfig = android.signingConfigs.release
-          }
-          EOF
+// Load keystore properties
+def keystorePropertiesFile = rootProject.file("keystore.properties")
+def keystoreProperties = new Properties()
+if (keystorePropertiesFile.exists()) {
+    keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+}
+
+EOF
+          # Prepend to build.gradle
+          cat signing_config.txt build.gradle > build.gradle.tmp && mv build.gradle.tmp build.gradle
+          rm signing_config.txt
+          
+          # Now modify the android block to add signingConfigs and use it in release buildType
+          # This will be done by adding after 'android {' line
+          sed -i '/^android {/a\
+    signingConfigs {\
+        release {\
+            if (keystorePropertiesFile.exists()) {\
+                storeFile file("../" + keystoreProperties["storeFile"])\
+                storePassword keystoreProperties["storePassword"]\
+                keyAlias keystoreProperties["keyAlias"]\
+                keyPassword keystoreProperties["password"]\
+            }\
+        }\
+    }' build.gradle
+          
+          # Modify release buildType to use signing config
+          sed -i 's/release {/release {\
+            signingConfig signingConfigs.release/' build.gradle
 
       - name: Build Android app
         run: |
