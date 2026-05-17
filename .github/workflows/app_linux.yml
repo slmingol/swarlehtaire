@@ -69,8 +69,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          shopt -s globstar
-          gh release upload "$GITHUB_REF_NAME" \
-            resources/apps/tauri/target/release/bundle/**/*.rpm \
-            resources/apps/tauri/target/release/bundle/**/*.deb \
-            resources/apps/tauri/target/release/bundle/**/*.AppImage
+          find resources/apps/tauri/target/release/bundle \
+            \( -name '*.rpm' -o -name '*.deb' -o -name '*.AppImage' \) \
+            -exec gh release upload "$GITHUB_REF_NAME" --clobber {} \;
