@@ -101,3 +101,42 @@
 	border-radius: 12px;
 	background: rgba(255, 255, 255, 0.05);
 }
+
+@media (max-width: 499px) {
+	.card {
+		border-radius: 6px;
+		box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
+
+		&.face-up {
+			border-width: 1.5px;
+		}
+
+		&.face-up.red {
+			background: #fff5f5;
+		}
+
+		&:hover {
+			transform: translateY(-3px);
+		}
+	}
+
+	.card-center {
+		display: none;
+	}
+
+	.card-corner {
+		line-height: 1.1;
+	}
+
+	.card-back {
+		border-radius: 5px;
+		background:
+			linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+		border: 2px solid rgba(255, 255, 255, 0.25);
+	}
+
+	.card-placeholder {
+		border-radius: 6px;
+		border-width: 2px;
+	}
+}
