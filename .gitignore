@@ -6,6 +6,9 @@ stats.html
 # custom config
 custom-build-config.json
 
+# sessions/work logs
+/sessions
+
 # Android signing
 *.keystore
 *.jks
