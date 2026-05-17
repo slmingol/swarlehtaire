@@ -1,16 +1,16 @@
 .stack {
 	position: relative;
-	min-width: 116px;
-	min-height: 163px;
+	min-width: var(--card-w, 116px);
+	min-height: var(--card-h, 163px);
 	cursor: pointer;
 	transition: all 0.2s;
 
 	&.spread-down {
-		padding-bottom: 582px; // Space for cascading cards
+		padding-bottom: var(--card-spread-v, 582px);
 	}
 
 	&.spread-right {
-		padding-right: 291px; // Space for spread cards
+		padding-right: var(--card-spread-h, 291px);
 		display: flex;
 	}
 
@@ -34,13 +34,11 @@
 	position: absolute;
 	top: 0;
 	left: 0;
-	
-	// Allow drag/click on any face-up card in cascaded stacks
-	// Z-index ensures proper layering so you can grab exposed portions
+
 	.spread-down & {
 		pointer-events: auto;
 	}
-	
+
 	.spread-right & {
 		position: relative;
 		display: inline-block;

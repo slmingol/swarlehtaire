@@ -64,21 +64,27 @@ export class StackComponent {
 		this.stackDrop.emit();
 	}
 
+	private get cardScale(): number {
+		const cardW = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--card-w').trim()) || 116;
+		return cardW / 116;
+	}
+
 	getCardStyle(index: number): { [key: string]: string } {
 		if (this.spread === 'none') {
 			return {};
 		}
 
-		const offset = this.spread === 'down' ? 35 : 44;
+		const scale = this.cardScale;
+		const offset = this.spread === 'down' ? Math.round(35 * scale) : Math.round(44 * scale);
+		const faceDownSpacing = Math.max(3, Math.round(6 * scale));
 		const visibleCards = this.cards.filter(c => c.faceUp).length;
 		const faceDownCards = this.cards.length - visibleCards;
-		
-		// Tighter spacing for face-down cards
+
 		let position: number;
 		if (index < faceDownCards) {
-			position = index * 6; // 6px spacing for face-down
+			position = index * faceDownSpacing;
 		} else {
-			position = (faceDownCards * 6) + ((index - faceDownCards) * offset);
+			position = (faceDownCards * faceDownSpacing) + ((index - faceDownCards) * offset);
 		}
 
 		return {

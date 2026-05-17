@@ -1,6 +1,6 @@
 .card {
-	width: 116px;
-	height: 163px;
+	width: var(--card-w, 116px);
+	height: var(--card-h, 163px);
 	border-radius: 12px;
 	box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
 	position: relative;
@@ -17,7 +17,7 @@
 		cursor: grabbing;
 	}
 
-	&[draggable=\"true\"] {
+	&[draggable="true"] {
 		cursor: grab;
 	}
 
@@ -33,7 +33,7 @@
 }
 
 .card-content {
-	padding: 9px;
+	padding: var(--card-pad, 9px);
 	height: 100%;
 	display: flex;
 	flex-direction: column;
@@ -45,23 +45,23 @@
 	line-height: 1;
 
 	&.top-left {
-		align-items: flex-start; // Left align
+		align-items: flex-start;
 	}
 
 	&.bottom-right {
-		align-items: flex-start; // Left align (becomes right after 180° rotation)
+		align-items: flex-start;
 		transform: rotate(180deg);
-		margin-top: auto; // Push to bottom
+		margin-top: auto;
 	}
 }
 
 .rank {
-	font-size: 26px;
+	font-size: var(--card-rank-size, 26px);
 	font-weight: bold;
 }
 
 .suit {
-	font-size: 23px;
+	font-size: var(--card-suit-size, 23px);
 }
 
 .card-center {
@@ -73,7 +73,7 @@
 }
 
 .suit-large {
-	font-size: 70px;
+	font-size: var(--card-suit-large, 70px);
 }
 
 .red {
@@ -88,15 +88,15 @@
 	width: 100%;
 	height: 100%;
 	border-radius: 11px;
-	background: 
+	background:
 		repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255,255,255,0.1) 10px, rgba(255,255,255,0.1) 20px),
 		linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
 	border: 2px solid rgba(255, 255, 255, 0.2);
 }
 
 .card-placeholder {
-	width: 116px;
-	height: 163px;
+	width: var(--card-w, 116px);
+	height: var(--card-h, 163px);
 	border: 3px dashed rgba(255, 255, 255, 0.3);
 	border-radius: 12px;
 	background: rgba(255, 255, 255, 0.05);

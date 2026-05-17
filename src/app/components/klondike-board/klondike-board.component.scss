@@ -1,18 +1,18 @@
 .klondike-board {
 	min-height: calc(100vh - 72px);
-	padding: 20px;
+	padding: var(--board-pad, 20px);
 }
 
 .game-header {
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
-	margin-bottom: 30px;
+	margin-bottom: max(10px, var(--board-pad, 20px));
 	color: white;
 
 	h1 {
 		margin: 0;
-		font-size: 2rem;
+		font-size: clamp(1rem, 4vw, 2rem);
 	}
 }
 
@@ -210,22 +210,22 @@
 .top-row {
 	display: flex;
 	justify-content: space-between;
-	margin-bottom: 40px;
+	margin-bottom: max(12px, var(--card-gap, 12px) * 2);
 }
 
 .stock-waste {
 	display: flex;
-	gap: 20px;
+	gap: var(--card-gap, 12px);
 }
 
 .foundations {
 	display: flex;
-	gap: 12px;
+	gap: var(--card-gap, 12px);
 }
 
 .tableau {
 	display: flex;
-	gap: 12px;
+	gap: var(--card-gap, 12px);
 	justify-content: center;
 }
 

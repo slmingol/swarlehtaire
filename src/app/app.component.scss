@@ -12,21 +12,30 @@
 .game-selector {
 	display: flex;
 	justify-content: center;
-	gap: 12px;
-	padding: 20px;
+	gap: 8px;
+	padding: var(--game-selector-pad, 20px);
 	background: rgba(0, 0, 0, 0.2);
+	overflow-x: auto;
+	-webkit-overflow-scrolling: touch;
+	scrollbar-width: none;
+
+	&::-webkit-scrollbar {
+		display: none;
+	}
 }
 
 .game-button {
-	padding: 12px 24px;
+	padding: 10px 18px;
 	border: 2px solid rgba(255, 255, 255, 0.3);
 	border-radius: 8px;
 	background: rgba(255, 255, 255, 0.1);
 	color: white;
-	font-size: 16px;
+	font-size: 14px;
 	font-weight: 600;
 	cursor: pointer;
 	transition: all 0.2s;
+	white-space: nowrap;
+	flex-shrink: 0;
 
 	&:hover {
 		background: rgba(255, 255, 255, 0.2);
@@ -38,5 +47,11 @@
 		background: #4CAF50;
 		border-color: #4CAF50;
 		transform: scale(1.05);
+	}
+
+	@media (max-width: 499px) {
+		font-size: 12px;
+		padding: 6px 10px;
+		border-radius: 6px;
 	}
 }

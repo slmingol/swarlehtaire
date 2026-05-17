@@ -1,12 +1,12 @@
 .yukon-board {
-	padding: 20px;
+	padding: var(--board-pad, 20px);
 	background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 	min-height: 100vh;
 
 	.header {
 		display: flex;
-		gap: 20px;
-		margin-bottom: 30px;
+		gap: max(8px, calc(var(--board-pad, 20px) / 2));
+		margin-bottom: max(10px, var(--board-pad, 20px));
 		align-items: center;
 
 		.header-left {
@@ -24,16 +24,16 @@
 
 		.foundations {
 			display: flex;
-			gap: 10px;
+			gap: var(--card-gap, 12px);
 			margin-left: auto;
 
 			.foundation {
-				width: 80px;
-				height: 112px;
+				width: var(--card-w, 116px);
+				height: var(--card-h, 163px);
 
 				.empty-foundation {
-					width: 80px;
-					height: 112px;
+					width: var(--card-w, 116px);
+					height: var(--card-h, 163px);
 					border: 2px dashed rgba(255, 255, 255, 0.5);
 					border-radius: 8px;
 					display: flex;
@@ -138,19 +138,19 @@
 
 	.tableau {
 		display: flex;
-		gap: 15px;
+		gap: var(--card-gap, 12px);
 		justify-content: center;
 
 		.column {
-			min-height: 600px;
-			min-width: 100px;
+			min-height: calc(var(--card-h, 163px) * 3.7);
+			min-width: var(--card-w, 116px);
 			padding: 10px;
 			background: rgba(255, 255, 255, 0.1);
 			border-radius: 8px;
 
 			.empty-column {
-				width: 80px;
-				height: 112px;
+				width: var(--card-w, 116px);
+				height: var(--card-h, 163px);
 				border: 2px dashed rgba(255, 255, 255, 0.5);
 				border-radius: 8px;
 				display: flex;
@@ -162,7 +162,7 @@
 			}
 
 			.card-container {
-				margin-top: -90px;
+				margin-top: var(--card-col-offset, -90px);
 
 				&:first-child {
 					margin-top: 0;

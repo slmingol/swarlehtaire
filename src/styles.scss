@@ -754,6 +754,55 @@ p {
 	}
 }
 
+:root {
+	--card-w: 116px;
+	--card-h: 163px;
+	--card-pad: 9px;
+	--card-gap: 12px;
+	--board-pad: 20px;
+	--card-rank-size: 26px;
+	--card-suit-size: 23px;
+	--card-suit-large: 70px;
+	--card-spread-v: 582px;
+	--card-spread-h: 291px;
+	--card-col-offset: -90px;
+	--game-selector-pad: 20px;
+}
+
+@media (max-width: 499px) {
+	:root {
+		--card-w: 44px;
+		--card-h: 62px;
+		--card-pad: 3px;
+		--card-gap: 3px;
+		--board-pad: 6px;
+		--card-rank-size: 10px;
+		--card-suit-size: 9px;
+		--card-suit-large: 26px;
+		--card-spread-v: 220px;
+		--card-spread-h: 115px;
+		--card-col-offset: -34px;
+		--game-selector-pad: 8px;
+	}
+}
+
+@media (min-width: 500px) and (max-width: 699px) {
+	:root {
+		--card-w: 76px;
+		--card-h: 107px;
+		--card-pad: 6px;
+		--card-gap: 8px;
+		--board-pad: 14px;
+		--card-rank-size: 17px;
+		--card-suit-size: 15px;
+		--card-suit-large: 46px;
+		--card-spread-v: 380px;
+		--card-spread-h: 190px;
+		--card-col-offset: -59px;
+		--game-selector-pad: 12px;
+	}
+}
+
 %clearfix:after {
 	display: block;
 	clear: both;

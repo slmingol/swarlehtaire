@@ -1,18 +1,18 @@
 .spider-board {
 	min-height: calc(100vh - 72px);
-	padding: 20px;
+	padding: var(--board-pad, 20px);
 }
 
 .game-header {
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
-	margin-bottom: 30px;
+	margin-bottom: max(10px, var(--board-pad, 20px));
 	color: white;
 
 	h1 {
 		margin: 0;
-		font-size: 2rem;
+		font-size: clamp(1rem, 4vw, 2rem);
 	}
 }
 
@@ -209,7 +209,7 @@
 
 .tableau {
 	display: flex;
-	gap: 10px;
+	gap: var(--card-gap, 12px);
 	justify-content: center;
 }
 

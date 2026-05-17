@@ -1,5 +1,5 @@
 .pyramid-board {
-	padding: 20px;
+	padding: var(--board-pad, 20px);
 	background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
 	min-height: 100vh;
 
@@ -7,7 +7,7 @@
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
-		margin-bottom: 30px;
+		margin-bottom: max(10px, var(--board-pad, 20px));
 
 		.header-left {
 			display: flex;
@@ -125,17 +125,17 @@
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-		gap: 40px;
+		gap: max(16px, calc(var(--board-pad, 20px) * 2));
 	}
 
 	.pyramid {
 		display: flex;
 		flex-direction: column;
-		gap: 10px;
+		gap: var(--card-gap, 12px);
 
 		.pyramid-row {
 			display: flex;
-			gap: 10px;
+			gap: var(--card-gap, 12px);
 			justify-content: center;
 		}
 
@@ -172,14 +172,14 @@
 		}
 
 		.card-placeholder {
-			width: 80px;
-			height: 112px;
+			width: var(--card-w, 116px);
+			height: var(--card-h, 163px);
 		}
 	}
 
 	.bottom-area {
 		display: flex;
-		gap: 40px;
+		gap: max(16px, calc(var(--board-pad, 20px) * 2));
 		align-items: center;
 
 		.stock-area,
@@ -194,8 +194,8 @@
 
 		.empty-stock,
 		.empty-waste {
-			width: 80px;
-			height: 112px;
+			width: var(--card-w, 116px);
+			height: var(--card-h, 163px);
 			border: 2px dashed rgba(255, 255, 255, 0.5);
 			border-radius: 8px;
 			display: flex;
