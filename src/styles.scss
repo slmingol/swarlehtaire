@@ -803,6 +803,12 @@ p {
 	}
 }
 
+@media (max-width: 499px) {
+	app-version-display {
+		display: none;
+	}
+}
+
 %clearfix:after {
 	display: block;
 	clear: both;

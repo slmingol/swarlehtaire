@@ -231,26 +231,62 @@
 
 @media (max-width: 499px) {
 	.yukon-board {
+		padding: 4px var(--board-pad, 4px) var(--board-pad, 4px);
+
 		.header {
-			flex-direction: column;
-			align-items: flex-start;
-			gap: 6px;
+			flex-direction: row;
+			align-items: center;
+			gap: 4px;
+			margin-bottom: 6px;
+			flex-wrap: nowrap;
+		}
+
+		.header-left {
+			gap: 4px;
+			align-items: center;
+			flex-shrink: 1;
+		}
+
+		.info-controls {
+			gap: 4px;
+		}
+
+		.wikipedia-link,
+		.rules-button {
+			width: 26px;
+			height: 26px;
+			font-size: 14px;
+			border-width: 1px;
+		}
+
+		.rules-panel {
+			min-width: auto;
+			width: calc(100vw - 24px);
+			max-width: 320px;
+			font-size: 12px;
+			padding: 12px;
 		}
 
 		.controls {
 			display: flex;
-			flex-wrap: wrap;
 			gap: 4px;
+			flex-shrink: 0;
+
+			button:nth-child(n+3) {
+				display: none;
+			}
 		}
 
 		.btn {
 			font-size: 11px;
 			padding: 5px 8px;
+			white-space: nowrap;
 		}
 
 		.move-counter {
 			font-size: 11px;
 			padding: 5px 8px;
+			white-space: nowrap;
 		}
 
 		.tableau {

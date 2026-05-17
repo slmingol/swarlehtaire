@@ -268,30 +268,75 @@
 }
 
 @media (max-width: 499px) {
-	.game-header {
-		flex-direction: column;
-		align-items: flex-start;
-		gap: 6px;
+	.klondike-board {
+		padding: 4px var(--board-pad, 4px) var(--board-pad, 4px);
 	}
 
-	.game-controls {
-		flex-wrap: wrap;
+	.game-header {
+		flex-direction: row;
+		align-items: center;
+		gap: 4px;
+		margin-bottom: 6px;
+		flex-wrap: nowrap;
+	}
+
+	h1 {
+		display: none;
+	}
+
+	.header-left {
+		gap: 4px;
+		align-items: center;
+		flex-shrink: 1;
+		min-width: 0;
+	}
+
+	.variant-controls {
 		gap: 4px;
 	}
 
 	.variant-selector {
 		font-size: 11px;
 		padding: 4px 6px;
+		max-width: 130px;
+	}
+
+	.wikipedia-link,
+	.rules-button {
+		width: 26px;
+		height: 26px;
+		font-size: 14px;
+		border-width: 1px;
+		flex-shrink: 0;
+	}
+
+	.rules-panel {
+		min-width: auto;
+		width: calc(100vw - 24px);
+		max-width: 320px;
+		font-size: 12px;
+		padding: 12px;
+	}
+
+	.game-controls {
+		gap: 4px;
+		flex-shrink: 0;
+
+		button:nth-child(n+3) {
+			display: none;
+		}
 	}
 
 	.btn {
 		font-size: 11px;
 		padding: 5px 8px;
+		white-space: nowrap;
 	}
 
 	.move-counter {
 		font-size: 11px;
 		padding: 5px 8px;
+		white-space: nowrap;
 	}
 
 	.game-area {

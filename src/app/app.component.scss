@@ -9,6 +9,10 @@
 	min-height: 100vh;
 	padding-top: env(safe-area-inset-top, 0px);
 	background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+
+	@media (max-width: 499px) {
+		padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px));
+	}
 }
 
 .game-selector {
@@ -26,11 +30,20 @@
 	}
 
 	@media (max-width: 499px) {
+		position: fixed;
+		bottom: 0;
+		left: 0;
+		right: 0;
+		z-index: 200;
 		display: grid;
 		grid-template-columns: repeat(4, 1fr);
-		overflow-x: visible;
 		gap: 4px;
 		padding: 6px;
+		padding-bottom: max(6px, env(safe-area-inset-bottom, 6px));
+		background: rgba(10, 20, 50, 0.97);
+		border-top: 1px solid rgba(255, 255, 255, 0.2);
+		box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.5);
+		overflow-x: visible;
 	}
 }
 
@@ -61,7 +74,7 @@
 
 	@media (max-width: 499px) {
 		font-size: 10px;
-		padding: 6px 2px;
+		padding: 8px 2px;
 		border-radius: 5px;
 		border-width: 1px;
 		white-space: normal;
