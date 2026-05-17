@@ -136,13 +136,18 @@ export class KlondikeBoardComponent implements OnInit, OnDestroy {
 
 	onWasteClick(event: { card: Card; index: number }): void {
 		const wasteStack = this.klondikeService.getWasteStack();
-		// Use the actual index since we're showing all cards
-		const actualIndex = event.index;
+		// Only allow clicking the top card in the waste pile
+		const topCardIndex = wasteStack.cards.length - 1;
+		
+		if (event.index !== topCardIndex) {
+			// Don't allow clicking cards underneath the top card
+			return;
+		}
 		
 		// Try to move to foundation
 		for (let i = 0; i < 4; i++) {
 			const foundation = this.klondikeService.getFoundationStack(i);
-			if (this.klondikeService.moveCard(wasteStack, foundation, actualIndex)) {
+			if (this.klondikeService.moveCard(wasteStack, foundation, topCardIndex)) {
 				return;
 			}
 		}
@@ -150,7 +155,7 @@ export class KlondikeBoardComponent implements OnInit, OnDestroy {
 		// Try to move to tableau
 		for (let i = 0; i < this.gameState.tableau.length; i++) {
 			const tableau = this.klondikeService.getTableauStack(i);
-			if (this.klondikeService.moveCard(wasteStack, tableau, actualIndex)) {
+			if (this.klondikeService.moveCard(wasteStack, tableau, topCardIndex)) {
 				return;
 			}
 		}
@@ -221,8 +226,13 @@ export class KlondikeBoardComponent implements OnInit, OnDestroy {
 			sourceStack = this.klondikeService.getTableauStack(this.dragSource.index);
 		} else if (this.dragSource.type === 'waste') {
 			sourceStack = this.klondikeService.getWasteStack();
-			// Use the actual index since we're showing all cards
-			actualCardIndex = this.dragSource.cardIndex;
+			// Only allow dragging the top card from waste
+			const topCardIndex = sourceStack.cards.length - 1;
+			if (this.dragSource.cardIndex !== topCardIndex) {
+				this.dragSource = null;
+				return;
+			}
+			actualCardIndex = topCardIndex;
 		} else if (this.dragSource.type === 'foundation') {
 			sourceStack = this.klondikeService.getFoundationStack(this.dragSource.index);
 		} else {
