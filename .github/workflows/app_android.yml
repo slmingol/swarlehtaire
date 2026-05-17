@@ -66,7 +66,7 @@ jobs:
         env:
           ENCODED_STRING: ${{ secrets.KEYSTORE }}
         run: |
-          echo $ENCODED_STRING | base64 -di > resources/apps/tauri/gen/android/app/swarlehtaire_keystore.jks
+          echo $ENCODED_STRING | base64 -di > resources/apps/tauri/gen/android/swarlehtaire_keystore.jks
 
 
       - name: Setup Android signing
