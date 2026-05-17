@@ -4,6 +4,7 @@ import { Subject, takeUntil } from 'rxjs';
 import { FreeCellService, FreeCellGameState } from '../../service/freecell.service';
 import { StackComponent } from '../stack/stack.component';
 import { Card } from '../../model/card';
+import { CardSizeService } from '../../service/card-size.service';
 
 @Component({
 	selector: 'app-freecell-board',
@@ -30,9 +31,10 @@ export class FreeCellBoardComponent implements OnInit, OnDestroy {
 		]
 	};
 
-	constructor(private freecellService: FreeCellService) {}
+	constructor(private freecellService: FreeCellService, private cardSizeService: CardSizeService) {}
 
 	ngOnInit(): void {
+		this.cardSizeService.setColumns(8);
 		this.freecellService.state$
 			.pipe(takeUntil(this.destroy$))
 			.subscribe(state => this.gameState = state);

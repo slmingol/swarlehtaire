@@ -4,6 +4,7 @@ import { Subject, takeUntil } from 'rxjs';
 import { PyramidService, PyramidGameState } from '../../service/pyramid.service';
 import { StackComponent } from '../stack/stack.component';
 import { Card } from '../../model/card';
+import { CardSizeService } from '../../service/card-size.service';
 
 @Component({
 	selector: 'app-pyramid-board',
@@ -29,9 +30,10 @@ export class PyramidBoardComponent implements OnInit, OnDestroy {
 		]
 	};
 
-	constructor(private pyramidService: PyramidService) {}
+	constructor(private pyramidService: PyramidService, private cardSizeService: CardSizeService) {}
 
 	ngOnInit(): void {
+		this.cardSizeService.setColumns(7);
 		this.pyramidService.getGameState()
 			.pipe(takeUntil(this.destroy$))
 			.subscribe(state => this.gameState = state);

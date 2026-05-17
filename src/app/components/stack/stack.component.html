@@ -15,11 +15,15 @@
 		<app-card></app-card>
 	} @else {
 		@for (card of cards; track card.id; let i = $index) {
-			<div class="card-wrapper" 
+			<div class="card-wrapper"
 				[style]="getCardStyle(i)"
-				(click)="onCardClick(card, i); $event.stopPropagation()">
-				<app-card 
-					[card]="card" 
+				(click)="onCardClick(card, i); $event.stopPropagation()"
+				(pointerdown)="onPointerDown($event, i)"
+				(pointermove)="onPointerMove($event)"
+				(pointerup)="onPointerUp($event)"
+				(pointercancel)="onPointerCancel()">
+				<app-card
+					[card]="card"
 					[draggable]="card.faceUp"
 					(dragStart)="onCardDragStart(i)"
 					(dragEnd)="onCardDragEnd()"></app-card>

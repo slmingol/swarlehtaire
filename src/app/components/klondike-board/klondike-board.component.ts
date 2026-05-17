@@ -5,6 +5,7 @@ import { KlondikeService, GameState } from '../../service/klondike.service';
 import { StackComponent } from '../stack/stack.component';
 import { Card } from '../../model/card';
 import { GameVariant } from '../../model/klondike-game';
+import { CardSizeService } from '../../service/card-size.service';
 
 export interface VariantInfo {
 	wikipediaUrl: string;
@@ -81,9 +82,10 @@ export class KlondikeBoardComponent implements OnInit, OnDestroy {
 		}
 	};
 
-	constructor(private klondikeService: KlondikeService) {}
+	constructor(private klondikeService: KlondikeService, private cardSizeService: CardSizeService) {}
 
 	ngOnInit(): void {
+		this.cardSizeService.setColumns(7);
 		this.klondikeService.state$
 			.pipe(takeUntil(this.destroy$))
 			.subscribe(state => {

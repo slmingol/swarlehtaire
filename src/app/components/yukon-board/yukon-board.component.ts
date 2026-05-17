@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Subject, takeUntil } from 'rxjs';
 import { YukonService, YukonGameState } from '../../service/yukon.service';
 import { StackComponent } from '../stack/stack.component';
+import { CardSizeService } from '../../service/card-size.service';
 
 @Component({
 	selector: 'app-yukon-board',
@@ -28,9 +29,10 @@ export class YukonBoardComponent implements OnInit, OnDestroy {
 		]
 	};
 
-	constructor(private yukonService: YukonService) {}
+	constructor(private yukonService: YukonService, private cardSizeService: CardSizeService) {}
 
 	ngOnInit(): void {
+		this.cardSizeService.setColumns(7);
 		this.yukonService.getGameState()
 			.pipe(takeUntil(this.destroy$))
 			.subscribe(state => this.gameState = state);

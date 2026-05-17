@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Subject, takeUntil } from 'rxjs';
 import { BakersDozenService, BakersDozenGameState } from '../../service/bakers-dozen.service';
 import { StackComponent } from '../stack/stack.component';
+import { CardSizeService } from '../../service/card-size.service';
 
 @Component({
 	selector: 'app-bakers-dozen-board',
@@ -28,9 +29,10 @@ export class BakersDozenBoardComponent implements OnInit, OnDestroy {
 		]
 	};
 
-	constructor(private bakersDozenService: BakersDozenService) {}
+	constructor(private bakersDozenService: BakersDozenService, private cardSizeService: CardSizeService) {}
 
 	ngOnInit(): void {
+		this.cardSizeService.setColumns(13);
 		this.bakersDozenService.getGameState()
 			.pipe(takeUntil(this.destroy$))
 			.subscribe(state => this.gameState = state);

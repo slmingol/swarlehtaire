@@ -5,6 +5,7 @@ import { SpiderService, SpiderGameState } from '../../service/spider.service';
 import { StackComponent } from '../stack/stack.component';
 import { Card } from '../../model/card';
 import { SpiderVariant } from '../../model/spider-game';
+import { CardSizeService } from '../../service/card-size.service';
 
 export interface VariantInfo {
 	wikipediaUrl: string;
@@ -70,9 +71,10 @@ export class SpiderBoardComponent implements OnInit, OnDestroy {
 		}
 	};
 
-	constructor(private spiderService: SpiderService) {}
+	constructor(private spiderService: SpiderService, private cardSizeService: CardSizeService) {}
 
 	ngOnInit(): void {
+		this.cardSizeService.setColumns(10);
 		this.spiderService.state$
 			.pipe(takeUntil(this.destroy$))
 			.subscribe(state => {

@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Subject, takeUntil } from 'rxjs';
 import { ScorpionService, ScorpionGameState } from '../../service/scorpion.service';
 import { StackComponent } from '../stack/stack.component';
+import { CardSizeService } from '../../service/card-size.service';
 
 @Component({
 	selector: 'app-scorpion-board',
@@ -28,9 +29,10 @@ export class ScorpionBoardComponent implements OnInit, OnDestroy {
 		]
 	};
 
-	constructor(private scorpionService: ScorpionService) {}
+	constructor(private scorpionService: ScorpionService, private cardSizeService: CardSizeService) {}
 
 	ngOnInit(): void {
+		this.cardSizeService.setColumns(7);
 		this.scorpionService.getGameState()
 			.pipe(takeUntil(this.destroy$))
 			.subscribe(state => this.gameState = state);
