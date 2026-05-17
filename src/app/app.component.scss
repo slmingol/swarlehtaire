@@ -7,6 +7,7 @@
 .app-container {
 	width: 100%;
 	min-height: 100vh;
+	padding-top: env(safe-area-inset-top, 0px);
 	background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
 }
 
@@ -25,10 +26,11 @@
 	}
 
 	@media (max-width: 499px) {
-		flex-wrap: wrap;
+		display: grid;
+		grid-template-columns: repeat(4, 1fr);
 		overflow-x: visible;
-		gap: 6px;
-		padding: 8px 6px;
+		gap: 4px;
+		padding: 6px;
 	}
 }
 
@@ -58,9 +60,12 @@
 	}
 
 	@media (max-width: 499px) {
-		font-size: 11px;
-		padding: 5px 8px;
+		font-size: 10px;
+		padding: 6px 2px;
 		border-radius: 5px;
 		border-width: 1px;
+		white-space: normal;
+		text-align: center;
+		line-height: 1.2;
 	}
 }

@@ -246,3 +246,31 @@
 		color: #333;
 	}
 }
+
+@media (max-width: 499px) {
+	.game-header {
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 6px;
+	}
+
+	.controls {
+		flex-wrap: wrap;
+		gap: 4px;
+	}
+
+	.btn {
+		font-size: 11px;
+		padding: 5px 8px;
+	}
+
+	.move-counter {
+		font-size: 11px;
+		padding: 5px 8px;
+	}
+
+	.info-text {
+		font-size: 10px;
+		padding: 5px 6px;
+	}
+}

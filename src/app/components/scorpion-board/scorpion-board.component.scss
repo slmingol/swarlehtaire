@@ -211,3 +211,29 @@
 		}
 	}
 }
+
+@media (max-width: 499px) {
+	.scorpion-board {
+		.header {
+			flex-direction: column;
+			align-items: flex-start;
+			gap: 6px;
+		}
+
+		.controls {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 4px;
+		}
+
+		.btn {
+			font-size: 11px;
+			padding: 5px 8px;
+		}
+
+		.move-counter {
+			font-size: 11px;
+			padding: 5px 8px;
+		}
+	}
+}
