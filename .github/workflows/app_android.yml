@@ -111,7 +111,12 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          shopt -s globstar
-          gh release upload "$GITHUB_REF_NAME" \
-            resources/apps/tauri/gen/android/app/build/outputs/apk/**/*.apk \
-            resources/apps/tauri/gen/android/app/build/outputs/bundle/**/*.aab
+          shopt -s globstar nullglob
+          # Upload APK files
+          for apk in resources/apps/tauri/gen/android/app/build/outputs/apk/**/*.apk; do
+            [ -f "$apk" ] && gh release upload "$GITHUB_REF_NAME" "$apk"
+          done
+          # Upload AAB files if they exist
+          for aab in resources/apps/tauri/gen/android/app/build/outputs/bundle/**/*.aab; do
+            [ -f "$aab" ] && gh release upload "$GITHUB_REF_NAME" "$aab"
+          done
