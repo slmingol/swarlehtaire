@@ -112,6 +112,7 @@ export class KlondikeBoardComponent implements OnInit, OnDestroy {
 	}
 
 	get wasteSpread(): 'none' | 'right' {
+		if (window.innerWidth <= 499) return 'none';
 		return this.isDrawThree ? 'right' : 'none';
 	}
 
