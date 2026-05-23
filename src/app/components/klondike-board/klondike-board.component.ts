@@ -29,6 +29,9 @@ export class KlondikeBoardComponent implements OnInit, OnDestroy {
 	// Rules panel state
 	showRules = false;
 
+	// Win animation
+	rainItems: { id: number; suit: string; left: string; delay: string; duration: string }[] = [];
+
 	// Expose GameVariant enum to template
 	GameVariant = GameVariant;
 	variants = [
@@ -89,6 +92,11 @@ export class KlondikeBoardComponent implements OnInit, OnDestroy {
 		this.klondikeService.state$
 			.pipe(takeUntil(this.destroy$))
 			.subscribe(state => {
+				if (state.isWon && !this.gameState?.isWon) {
+					this.rainItems = this.generateRainItems();
+				} else if (!state.isWon) {
+					this.rainItems = [];
+				}
 				this.gameState = state;
 			});
 	}
@@ -192,6 +200,17 @@ export class KlondikeBoardComponent implements OnInit, OnDestroy {
 				this.klondikeService.moveCard(waste, tableau, waste.cards.length - 1);
 			}
 		}
+	}
+
+	private generateRainItems() {
+		const suits = ['♠', '♥', '♦', '♣'];
+		return Array.from({ length: 35 }, (_, i) => ({
+			id: i,
+			suit: suits[i % 4],
+			left: `${Math.random() * 94}%`,
+			delay: `${(Math.random() * 4).toFixed(2)}s`,
+			duration: `${(2 + Math.random() * 2).toFixed(2)}s`
+		}));
 	}
 
 	onAutoComplete(): void {

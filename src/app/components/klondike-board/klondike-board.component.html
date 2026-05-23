@@ -92,8 +92,13 @@
 
 			@if (gameState.isWon) {
 				<div class="win-message">
+					<div class="suit-rain">
+						@for (item of rainItems; track item.id) {
+							<span class="suit-drop" [style.left]="item.left" [style.animation-delay]="item.delay" [style.animation-duration]="item.duration">{{ item.suit }}</span>
+						}
+					</div>
 					<div class="win-content">
-						<h2>🎉 Congratulations! 🎉</h2>
+						<h2>Congratulations!</h2>
 						<p>You won in {{ gameState.moveCount }} moves!</p>
 						<button (click)="onNewGame()" class="btn btn-primary btn-large">Play Again</button>
 					</div>
