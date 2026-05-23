@@ -13,7 +13,7 @@ function loadJsonIfExists(filePath) {
 }
 
 export function createIndexHtmlTransformer(config = {}) {
-	const fallback = "Mah Jong";
+	const fallback = "Swarlehtaire";
 	const values = {
 		APP_NAME: config.name ?? fallback,
 		APP_DESC: config.description ?? fallback,
@@ -31,7 +31,7 @@ export function createIndexHtmlTransformer(config = {}) {
 }
 
 export function buildDefine(config = {}, packageJson = {}) {
-	const name = "Mah Jong";
+	const name = "Swarlehtaire";
 	return {
 		APP_VERSION: JSON.stringify(packageJson.version ?? "DEV"),
 		APP_NAME: JSON.stringify(config.name ?? name),
