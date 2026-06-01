@@ -85,7 +85,7 @@ MIT License - see [LICENSE](LICENSE)
 
 ### Project Structure
 
-\`\`\`
+```
 src/
 ├── app/
 │   ├── components/         # UI components
@@ -118,14 +118,14 @@ src/
 ├── index.html
 ├── main.ts
 └── styles.scss
-\`\`\`
+```
 
 ### Adding a New Game
 
-1. Add game engine to \`src/app/model/<game>-game.ts\`
-2. Add state service to \`src/app/service/<game>.service.ts\`
-3. Create board component in \`src/app/components/<game>-board/\`
-4. Register in \`app.component.ts\` (\`GameType\` enum + selector switch)
+1. Add game engine to `src/app/model/<game>-game.ts`
+2. Add state service to `src/app/service/<game>.service.ts`
+3. Create board component in `src/app/components/<game>-board/`
+4. Register in `app.component.ts` (`GameType` enum + selector switch)
 
 ## 🤝 Contributing
 
