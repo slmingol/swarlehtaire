@@ -81,6 +81,8 @@ export class AppComponent {
 			this.drawFromStock();
 		} else if (key === 'a') {
 			this.autoComplete();
+		} else if (key === 'w') {
+			this.placeWasteCard();
 		} else {
 			return;
 		}
@@ -114,6 +116,20 @@ export class AppComponent {
 		switch (this.currentGame) {
 			case GameType.KLONDIKE: this.klondike.drawFromStock(); break;
 			case GameType.PYRAMID: this.pyramid.drawFromStock(); break;
+		}
+	}
+
+	private placeWasteCard(): void {
+		if (this.currentGame !== GameType.KLONDIKE) return;
+		const waste = this.klondike.getWasteStack();
+		const topIndex = waste.cards.length - 1;
+		if (topIndex < 0) return;
+		for (let i = 0; i < 4; i++) {
+			if (this.klondike.moveCard(waste, this.klondike.getFoundationStack(i), topIndex)) return;
+		}
+		const tableauCount = this.klondike.currentState.tableau.length;
+		for (let i = 0; i < tableauCount; i++) {
+			if (this.klondike.moveCard(waste, this.klondike.getTableauStack(i), topIndex)) return;
 		}
 	}
 
