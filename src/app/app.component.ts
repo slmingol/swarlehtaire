@@ -39,6 +39,7 @@ export class AppComponent {
 	currentGame: GameType = GameType.KLONDIKE;
 	GameType = GameType;
 	gameTypes = [GameType.KLONDIKE, GameType.SPIDER, GameType.FREECELL, GameType.PYRAMID, GameType.SCORPION, GameType.YUKON, GameType.BAKERS_DOZEN];
+	showHelp = false;
 
 	private klondike = inject(KlondikeService);
 	private freeCell = inject(FreeCellService);
@@ -55,6 +56,19 @@ export class AppComponent {
 	handleKeyDown(event: KeyboardEvent): void {
 		const target = event.target;
 		if (target instanceof Element && target.nodeName.toLowerCase() === 'input') return;
+
+		if (event.key === 'Escape') {
+			this.showHelp = false;
+			return;
+		}
+
+		if (event.key === '?') {
+			this.showHelp = !this.showHelp;
+			event.preventDefault();
+			return;
+		}
+
+		if (this.showHelp) return;
 
 		const key = event.key.toLowerCase();
 		const isUndo = key === 'u' || (event.ctrlKey && key === 'z');
