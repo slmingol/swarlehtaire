@@ -57,15 +57,13 @@ npm run build:prod
 
 ## 🎮 Games
 
-### Implemented
-- **Klondike** - The classic solitaire game
-
-### Planned
-- Spider
-- FreeCell
-- Pyramid
-- Golf
-- And more...
+- **Klondike** - Classic solitaire (Draw 1, Draw 3, Easthaven, Westcliff variants)
+- **Spider** - Multi-suit patience game
+- **FreeCell** - Skill-based solitaire with free cells
+- **Pyramid** - Card-pairing solitaire
+- **Scorpion** - 7-column tableau game
+- **Yukon** - Move face-up sequences regardless of order
+- **Baker's Dozen** - 13-column tableau, no empty columns
 
 ## � Documentation
 
@@ -90,20 +88,44 @@ MIT License - see [LICENSE](LICENSE)
 \`\`\`
 src/
 ├── app/
-│   ├── components/     # UI components
-│   ├── models/         # Game models (Card, Deck, Stack, etc.)
-│   ├── services/       # Game services
-│   └── games/          # Game implementations (Klondike, etc.)
-├── assets/             # Images, sounds, etc.
-└── styles/             # Global styles
+│   ├── components/         # UI components
+│   │   ├── *-board/        # Per-game board components
+│   │   ├── card/           # Playing card renderer
+│   │   ├── stack/          # Card stack component
+│   │   ├── icons/          # SVG icon components
+│   │   └── ...             # Dialog, settings, help, tutorial, etc.
+│   ├── directives/         # Angular directives
+│   ├── model/              # Game logic and data models
+│   │   ├── *-game.ts       # Game engines (one per game type)
+│   │   ├── card.ts         # Card model
+│   │   ├── card-stack.ts   # Card stack model
+│   │   ├── deck.ts         # Deck model
+│   │   └── solver/         # Solver engine (web worker)
+│   ├── modules/
+│   │   └── editor/         # Layout editor (Mahjong boards)
+│   ├── pipes/              # Angular pipes
+│   ├── service/            # State management services (one per game type)
+│   ├── style/              # Shared component styles
+│   └── worker/             # Web worker entry points
+├── assets/
+│   ├── data/               # Mahjong layout definitions
+│   ├── i18n/               # Translations
+│   ├── patterns/           # Background pattern definitions (JSON)
+│   ├── sounds/             # Audio assets
+│   └── svg/                # Tile/card SVG sets
+├── environments/           # Build environment configs
+├── fonts/                  # Bundled fonts
+├── index.html
+├── main.ts
+└── styles.scss
 \`\`\`
 
 ### Adding a New Game
 
-1. Create game rules in \`src/app/games/\`
-2. Define card stack layouts
-3. Implement game logic and validation
-4. Add to game selector
+1. Add game engine to \`src/app/model/<game>-game.ts\`
+2. Add state service to \`src/app/service/<game>.service.ts\`
+3. Create board component in \`src/app/components/<game>-board/\`
+4. Register in \`app.component.ts\` (\`GameType\` enum + selector switch)
 
 ## 🤝 Contributing
 
