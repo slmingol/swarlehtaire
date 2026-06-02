@@ -2,6 +2,9 @@ name: 'app-android'
 
 on:
   workflow_dispatch:
+  workflow_run:
+    workflows: ["Auto Version Bump"]
+    types: [completed]
   push:
     tags:
       - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
@@ -12,11 +15,28 @@ permissions:
 jobs:
   build-android:
     runs-on: ubuntu-latest
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
     steps:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           persist-credentials: false
+          fetch-depth: 0
+
+      - name: Determine release tag
+        id: release
+        run: |
+          if [ "${{ github.ref_type }}" == "tag" ]; then
+            echo "tag=${{ github.ref_name }}" >> $GITHUB_OUTPUT
+            echo "is_release=true" >> $GITHUB_OUTPUT
+          elif [ "${{ github.event_name }}" == "workflow_run" ]; then
+            TAG=$(git describe --tags --abbrev=0)
+            echo "tag=${TAG}" >> $GITHUB_OUTPUT
+            echo "is_release=true" >> $GITHUB_OUTPUT
+          else
+            echo "tag=" >> $GITHUB_OUTPUT
+            echo "is_release=false" >> $GITHUB_OUTPUT
+          fi
 
       - name: Setup Java
         uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5.2.0
@@ -97,7 +117,7 @@ jobs:
 
       - name: Upload Android artifacts
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
-        if: github.ref_type != 'tag'
+        if: steps.release.outputs.is_release != 'true'
         with:
           name: android
           retention-days: 10
@@ -106,28 +126,28 @@ jobs:
             resources/apps/tauri/gen/android/app/build/outputs/bundle/**/*.aab
 
       - name: Wait for release
-        if: github.ref_type == 'tag'
+        if: steps.release.outputs.is_release == 'true'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          TAG="${{ steps.release.outputs.tag }}"
           for i in $(seq 1 20); do
-            gh release view "$GITHUB_REF_NAME" > /dev/null 2>&1 && exit 0
+            gh release view "$TAG" > /dev/null 2>&1 && exit 0
             echo "Waiting for release to be created ($i/20)..."
             sleep 30
           done
           echo "Release not found after waiting" && exit 1
 
       - name: Upload release
-        if: github.ref_type == 'tag'
+        if: steps.release.outputs.is_release == 'true'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          TAG="${{ steps.release.outputs.tag }}"
           shopt -s globstar nullglob
-          # Upload APK files
           for apk in resources/apps/tauri/gen/android/app/build/outputs/apk/**/*.apk; do
-            [ -f "$apk" ] && gh release upload "$GITHUB_REF_NAME" "$apk"
+            [ -f "$apk" ] && gh release upload "$TAG" "$apk"
           done
-          # Upload AAB files if they exist
           for aab in resources/apps/tauri/gen/android/app/build/outputs/bundle/**/*.aab; do
-            [ -f "$aab" ] && gh release upload "$GITHUB_REF_NAME" "$aab"
+            [ -f "$aab" ] && gh release upload "$TAG" "$aab"
           done
