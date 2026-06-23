@@ -64,7 +64,7 @@
 							</div>
 						}
 						@if (getTopCard(pile, i === gameState.currentPileIndex && gameState.gamePhase === 'playing'); as card) {
-							<app-stack [cards]="[card]" [spread]="'none'" [passClickThrough]="true"></app-stack>
+							<app-stack [cards]="[card]" [spread]="'none'" [passClickThrough]="true" (cardDragEnd)="onClockFaceClick()"></app-stack>
 						} @else {
 							<div class="empty-slot"></div>
 						}
