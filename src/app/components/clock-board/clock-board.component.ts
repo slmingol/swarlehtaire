@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewInit, ViewChild, ElementRef, NgZone } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Subject, takeUntil } from 'rxjs';
 import { ClockSolitaireService, ClockSolitaireGameState } from '../../service/clock-solitaire.service';
@@ -48,7 +48,8 @@ export class ClockBoardComponent implements OnInit, AfterViewInit, OnDestroy {
 
 	constructor(
 		private clockService: ClockSolitaireService,
-		private cardSizeService: CardSizeService
+		private cardSizeService: CardSizeService,
+		private ngZone: NgZone
 	) {}
 
 	ngOnInit(): void {
@@ -59,12 +60,14 @@ export class ClockBoardComponent implements OnInit, AfterViewInit, OnDestroy {
 	}
 
 	ngAfterViewInit(): void {
-		// Use capture-phase listener so stopPropagation in StackComponent's bubble
-		// phase cannot block us from receiving the click.
+		// Capture-phase listener: fires before StackComponent's bubble-phase
+		// stopPropagation can block it. NgZone.run() ensures change detection fires.
 		this.clickHandler = () => {
-			if (this.gameState?.gamePhase === 'playing') {
-				this.clockService.step();
-			}
+			this.ngZone.run(() => {
+				if (this.gameState?.gamePhase === 'playing') {
+					this.clockService.step();
+				}
+			});
 		};
 		this.clockFaceRef.nativeElement.addEventListener('click', this.clickHandler, true);
 	}

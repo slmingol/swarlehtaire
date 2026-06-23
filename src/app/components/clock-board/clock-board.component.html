@@ -42,8 +42,8 @@
 		}
 	</div>
 
-	@if (gameState) {
-		<div class="clock-face" #clockFace>
+	<div class="clock-face" #clockFace>
+		@if (gameState) {
 			@for (pile of gameState.piles; track $index; let i = $index) {
 				<div class="clock-pile"
 				     [class.active]="i === gameState.currentPileIndex && gameState.gamePhase === 'playing'"
@@ -63,22 +63,22 @@
 					</div>
 				</div>
 			}
-		</div>
-
-		@if (gameState.gamePhase !== 'playing') {
-			<div class="modal-overlay">
-				<div class="result-modal" [class.won]="gameState.gamePhase === 'won'">
-					@if (gameState.gamePhase === 'won') {
-						<h2>You Won!</h2>
-						<p>Incredibly lucky &mdash; only ~1 in 13 games can be won!</p>
-					} @else {
-						<h2>Game Over</h2>
-						<p>All 4 Kings revealed with {{ 52 - gameState.moveCount }} cards still face-down.</p>
-					}
-					<p class="move-summary">{{ gameState.moveCount }} moves</p>
-					<button class="btn btn-primary" (click)="newGame()">Play Again</button>
-				</div>
-			</div>
 		}
+	</div>
+
+	@if (gameState && gameState.gamePhase !== 'playing') {
+		<div class="modal-overlay">
+			<div class="result-modal" [class.won]="gameState.gamePhase === 'won'">
+				@if (gameState.gamePhase === 'won') {
+					<h2>You Won!</h2>
+					<p>Incredibly lucky &mdash; only ~1 in 13 games can be won!</p>
+				} @else {
+					<h2>Game Over</h2>
+					<p>All 4 Kings revealed with {{ 52 - gameState.moveCount }} cards still face-down.</p>
+				}
+				<p class="move-summary">{{ gameState.moveCount }} moves</p>
+				<button class="btn btn-primary" (click)="newGame()">Play Again</button>
+			</div>
+		</div>
 	}
 </div>
