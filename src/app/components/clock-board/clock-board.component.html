@@ -1,0 +1,84 @@
+<div class="clock-board">
+	<div class="header">
+		<div class="header-left">
+			<button class="btn btn-primary" (click)="newGame()">New Game</button>
+			<div class="info-controls">
+				<a [href]="rulesInfo.wikipediaUrl" target="_blank" rel="noopener noreferrer"
+				   class="wikipedia-link" title="How to play on Wikipedia">
+					📖
+				</a>
+				<button (click)="toggleRules()" class="rules-button" title="Show/hide rules">
+					{{ showRules ? '✕' : '❓' }}
+				</button>
+			</div>
+			@if (showRules) {
+				<div class="rules-panel">
+					<h3>Clock Solitaire - Rules</h3>
+					<ul>
+						@for (rule of rulesInfo.rules; track rule) {
+							<li>{{ rule }}</li>
+						}
+					</ul>
+				</div>
+			}
+		</div>
+
+		@if (gameState) {
+			<div class="status">
+				<span class="kings-count">Kings: {{ gameState.kingsCount }}/4</span>
+				<span class="move-counter">Moves: {{ gameState.moveCount }}</span>
+				@if (gameState.lastCard) {
+					<span class="last-card">Last: {{ pileLabel((gameState.lastCard.rank - 1) ) }}</span>
+				}
+			</div>
+			<div class="controls">
+				<button class="btn btn-secondary"
+				        [disabled]="gameState.gamePhase !== 'playing'"
+				        (click)="step()">Step</button>
+				<button class="btn btn-secondary"
+				        [disabled]="gameState.gamePhase !== 'playing'"
+				        (click)="playAll()">Auto-play</button>
+			</div>
+		}
+	</div>
+
+	@if (gameState) {
+		<div class="clock-face" (click)="onClockFaceClick()">
+			@for (pile of gameState.piles; track $index; let i = $index) {
+				<div class="clock-pile"
+				     [class.active]="i === gameState.currentPileIndex && gameState.gamePhase === 'playing'"
+				     [class.center-pile]="i === 12"
+				     [style.left]="pilePositions[i].left"
+				     [style.top]="pilePositions[i].top">
+					<div class="pile-label">{{ pileLabels[i] }}</div>
+					<div class="pile-slot">
+						@if (getTopCard(pile); as card) {
+							<app-stack [cards]="[card]" [spread]="'none'"></app-stack>
+						} @else {
+							<div class="empty-slot"></div>
+						}
+						@if (pile.faceDown.length > 0) {
+							<div class="face-down-badge">{{ pile.faceDown.length }}</div>
+						}
+					</div>
+				</div>
+			}
+		</div>
+
+		@if (gameState.gamePhase !== 'playing') {
+			<div class="modal-overlay">
+				<div class="result-modal" [class.won]="gameState.gamePhase === 'won'">
+					@if (gameState.gamePhase === 'won') {
+						<h2>You Won!</h2>
+						<p>Incredibly lucky &mdash; only ~1 in 13 games can be won!</p>
+					} @else {
+						<h2>Game Over</h2>
+						<p>All 4 Kings revealed with {{ 52 - gameState.moveCount }} cards still face-down.</p>
+					}
+					<p class="move-summary">{{ gameState.moveCount }} moves</p>
+					<button class="btn btn-primary" (click)="newGame()">Play Again</button>
+				</div>
+			</div>
+		}
+	}
+</div>

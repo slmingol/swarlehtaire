@@ -7,6 +7,7 @@ import { PyramidBoardComponent } from './components/pyramid-board/pyramid-board.
 import { ScorpionBoardComponent } from './components/scorpion-board/scorpion-board.component';
 import { YukonBoardComponent } from './components/yukon-board/yukon-board.component';
 import { BakersDozenBoardComponent } from './components/bakers-dozen-board/bakers-dozen-board.component';
+import { ClockBoardComponent } from './components/clock-board/clock-board.component';
 import { VersionDisplayComponent } from './components/version-display/version-display.component';
 import { KlondikeService } from './service/klondike.service';
 import { FreeCellService } from './service/freecell.service';
@@ -15,6 +16,7 @@ import { SpiderService } from './service/spider.service';
 import { ScorpionService } from './service/scorpion.service';
 import { YukonService } from './service/yukon.service';
 import { BakersDozenService } from './service/bakers-dozen.service';
+import { ClockSolitaireService } from './service/clock-solitaire.service';
 
 export enum GameType {
 	KLONDIKE = 'Klondike',
@@ -23,7 +25,8 @@ export enum GameType {
 	PYRAMID = 'Pyramid',
 	SCORPION = 'Scorpion',
 	YUKON = 'Yukon',
-	BAKERS_DOZEN = 'Baker\'s Dozen'
+	BAKERS_DOZEN = 'Baker\'s Dozen',
+	CLOCK = 'Clock'
 }
 
 @Component({
@@ -32,13 +35,13 @@ export enum GameType {
 	styleUrls: ['./app.component.scss'],
 	standalone: true,
 	host: { '(document:keydown)': 'handleKeyDown($event)' },
-	imports: [CommonModule, KlondikeBoardComponent, SpiderBoardComponent, FreeCellBoardComponent, PyramidBoardComponent, ScorpionBoardComponent, YukonBoardComponent, BakersDozenBoardComponent, VersionDisplayComponent]
+	imports: [CommonModule, KlondikeBoardComponent, SpiderBoardComponent, FreeCellBoardComponent, PyramidBoardComponent, ScorpionBoardComponent, YukonBoardComponent, BakersDozenBoardComponent, ClockBoardComponent, VersionDisplayComponent]
 })
 export class AppComponent {
 	title = 'Swarlehtaire';
 	currentGame: GameType = GameType.KLONDIKE;
 	GameType = GameType;
-	gameTypes = [GameType.KLONDIKE, GameType.SPIDER, GameType.FREECELL, GameType.PYRAMID, GameType.SCORPION, GameType.YUKON, GameType.BAKERS_DOZEN];
+	gameTypes = [GameType.KLONDIKE, GameType.SPIDER, GameType.FREECELL, GameType.PYRAMID, GameType.SCORPION, GameType.YUKON, GameType.BAKERS_DOZEN, GameType.CLOCK];
 	showHelp = false;
 
 	private klondike = inject(KlondikeService);
@@ -48,6 +51,7 @@ export class AppComponent {
 	private scorpion = inject(ScorpionService);
 	private yukon = inject(YukonService);
 	private bakersDozen = inject(BakersDozenService);
+	private clockSolitaire = inject(ClockSolitaireService);
 
 	selectGame(game: GameType): void {
 		this.currentGame = game;
@@ -98,6 +102,7 @@ export class AppComponent {
 			case GameType.SCORPION: this.scorpion.newGame(); break;
 			case GameType.YUKON: this.yukon.newGame(); break;
 			case GameType.BAKERS_DOZEN: this.bakersDozen.newGame(); break;
+			case GameType.CLOCK: this.clockSolitaire.newGame(); break;
 		}
 	}
 
@@ -116,6 +121,7 @@ export class AppComponent {
 		switch (this.currentGame) {
 			case GameType.KLONDIKE: this.klondike.drawFromStock(); break;
 			case GameType.PYRAMID: this.pyramid.drawFromStock(); break;
+			case GameType.CLOCK: this.clockSolitaire.step(); break;
 		}
 	}
 
@@ -144,6 +150,7 @@ export class AppComponent {
 				while (this.freeCell.autoMoveToFoundations()) {}
 				break;
 			}
+			case GameType.CLOCK: this.clockSolitaire.playAll(); break;
 		}
 	}
 }

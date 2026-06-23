@@ -37,6 +37,10 @@
 	@if (currentGame === GameType.BAKERS_DOZEN) {
 		<app-bakers-dozen-board></app-bakers-dozen-board>
 	}
+
+	@if (currentGame === GameType.CLOCK) {
+		<app-clock-board></app-clock-board>
+	}
 </div>
 
 <app-version-display></app-version-display>
@@ -69,13 +73,13 @@
 					</tr>
 					<tr>
 						<td><kbd>D</kbd> / <kbd>Space</kbd></td>
-						<td>Draw from stock</td>
-						<td>Klondike, Pyramid</td>
+						<td>Draw from stock / Step</td>
+						<td>Klondike, Pyramid, Clock</td>
 					</tr>
 					<tr>
 						<td><kbd>A</kbd></td>
-						<td>Auto-complete to foundations</td>
-						<td>Klondike, FreeCell</td>
+						<td>Auto-complete to foundations / Auto-play</td>
+						<td>Klondike, FreeCell, Clock</td>
 					</tr>
 					<tr>
 						<td><kbd>W</kbd></td>

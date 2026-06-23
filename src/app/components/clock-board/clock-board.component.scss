@@ -1,0 +1,348 @@
+:host {
+	display: block;
+	width: 100%;
+}
+
+.clock-board {
+	padding: var(--board-pad, 20px);
+	background: linear-gradient(160deg, #0d2010 0%, #081408 50%, #040c04 100%);
+	min-height: 100vh;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+
+	.header {
+		display: flex;
+		gap: max(8px, calc(var(--board-pad, 20px) / 2));
+		margin-bottom: max(10px, var(--board-pad, 20px));
+		align-items: center;
+		width: 100%;
+		flex-wrap: wrap;
+
+		.header-left {
+			display: flex;
+			align-items: flex-start;
+			gap: 12px;
+			position: relative;
+		}
+
+		.info-controls {
+			display: flex;
+			align-items: center;
+			gap: 8px;
+		}
+
+		.status {
+			display: flex;
+			gap: 16px;
+			align-items: center;
+			color: rgba(255, 255, 255, 0.8);
+			font-size: 14px;
+
+			.kings-count {
+				font-weight: bold;
+				color: #ffd700;
+			}
+		}
+
+		.controls {
+			display: flex;
+			gap: 8px;
+			margin-left: auto;
+		}
+	}
+
+	.wikipedia-link {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: 36px;
+		height: 36px;
+		background: rgba(255, 255, 255, 0.1);
+		border: 2px solid rgba(255, 255, 255, 0.3);
+		border-radius: 6px;
+		text-decoration: none;
+		font-size: 18px;
+		transition: all 0.2s;
+
+		&:hover {
+			background: rgba(255, 255, 255, 0.2);
+			border-color: rgba(255, 255, 255, 0.5);
+			transform: translateY(-2px);
+		}
+	}
+
+	.rules-button {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: 36px;
+		height: 36px;
+		background: rgba(255, 255, 255, 0.1);
+		border: 2px solid rgba(255, 255, 255, 0.3);
+		border-radius: 6px;
+		color: white;
+		font-size: 18px;
+		cursor: pointer;
+		transition: all 0.2s;
+
+		&:hover {
+			background: rgba(255, 255, 255, 0.2);
+			border-color: rgba(255, 255, 255, 0.5);
+			transform: translateY(-2px);
+		}
+	}
+
+	.rules-panel {
+		position: absolute;
+		top: 50px;
+		left: 0;
+		background: rgba(255, 255, 255, 0.95);
+		color: #333;
+		padding: 20px;
+		border-radius: 8px;
+		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+		min-width: 420px;
+		z-index: 100;
+		animation: slideDown 0.2s ease-out;
+
+		h3 {
+			margin: 0 0 12px;
+			font-size: 16px;
+			color: #2c6e49;
+			border-bottom: 2px solid #2c6e49;
+			padding-bottom: 8px;
+		}
+
+		ul {
+			margin: 0;
+			padding-left: 20px;
+			list-style: disc;
+
+			li {
+				margin-bottom: 8px;
+				font-size: 14px;
+				line-height: 1.4;
+
+				&:last-child { margin-bottom: 0; }
+			}
+		}
+	}
+
+	@keyframes slideDown {
+		from { opacity: 0; transform: translateY(-10px); }
+		to   { opacity: 1; transform: translateY(0); }
+	}
+
+	.clock-face {
+		position: relative;
+		width: min(88vmin, 640px);
+		height: min(88vmin, 640px);
+		background: radial-gradient(circle, #152815 0%, #0a1a0a 70%);
+		border-radius: 50%;
+		border: 3px solid rgba(255, 255, 255, 0.15);
+		box-shadow:
+			0 0 40px rgba(0, 0, 0, 0.6),
+			inset 0 0 60px rgba(0, 0, 0, 0.3);
+		cursor: pointer;
+		flex-shrink: 0;
+
+		&:hover {
+			border-color: rgba(255, 255, 255, 0.25);
+		}
+	}
+
+	.clock-pile {
+		position: absolute;
+		transform: translate(-50%, -50%);
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 3px;
+		pointer-events: none;
+
+		&.active .pile-slot {
+			box-shadow: 0 0 0 2px #ffd700, 0 0 16px 4px rgba(255, 215, 0, 0.5);
+			border-radius: 6px;
+		}
+
+		&.center-pile .pile-label {
+			color: #ffd700;
+			font-size: 0.7rem;
+		}
+	}
+
+	.pile-label {
+		font-size: 0.6rem;
+		color: rgba(255, 255, 255, 0.5);
+		font-weight: bold;
+		letter-spacing: 0.05em;
+		line-height: 1;
+	}
+
+	.pile-slot {
+		position: relative;
+
+		app-stack {
+			display: block;
+		}
+	}
+
+	.empty-slot {
+		width: var(--card-w, 80px);
+		height: var(--card-h, 112px);
+		border: 1px dashed rgba(255, 255, 255, 0.15);
+		border-radius: 6px;
+	}
+
+	.face-down-badge {
+		position: absolute;
+		top: -6px;
+		right: -6px;
+		background: #0a1a0a;
+		border: 1px solid rgba(255, 255, 255, 0.3);
+		color: rgba(255, 255, 255, 0.7);
+		font-size: 0.55rem;
+		font-weight: bold;
+		border-radius: 50%;
+		width: 16px;
+		height: 16px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		z-index: 1;
+	}
+
+	.modal-overlay {
+		position: fixed;
+		inset: 0;
+		background: rgba(0, 0, 0, 0.75);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		z-index: 1000;
+
+		.result-modal {
+			background: #0d1f0d;
+			border: 2px solid rgba(255, 255, 255, 0.2);
+			border-radius: 12px;
+			padding: 2.5rem;
+			text-align: center;
+			max-width: 340px;
+			width: 90vw;
+			color: rgba(255, 255, 255, 0.9);
+
+			h2 {
+				margin: 0 0 0.75rem;
+				font-size: 1.8rem;
+				color: rgba(255, 255, 255, 0.7);
+			}
+
+			p {
+				color: rgba(255, 255, 255, 0.6);
+				margin: 0.4rem 0;
+				font-size: 0.95rem;
+				line-height: 1.4;
+			}
+
+			.move-summary {
+				margin: 1.25rem 0;
+				font-size: 1.1rem;
+				color: rgba(255, 255, 255, 0.5);
+			}
+
+			&.won {
+				border-color: #ffd700;
+
+				h2 { color: #ffd700; }
+			}
+		}
+	}
+
+	.btn {
+		padding: 10px 20px;
+		border: none;
+		border-radius: 6px;
+		font-size: 15px;
+		font-weight: bold;
+		cursor: pointer;
+		transition: all 0.2s;
+
+		&.btn-primary {
+			background: #2c6e49;
+			color: white;
+
+			&:hover { background: #3a8a5c; }
+		}
+
+		&.btn-secondary {
+			background: rgba(255, 255, 255, 0.1);
+			color: white;
+			border: 1px solid rgba(255, 255, 255, 0.3);
+
+			&:hover:not(:disabled) { background: rgba(255, 255, 255, 0.2); }
+
+			&:disabled {
+				opacity: 0.4;
+				cursor: not-allowed;
+			}
+		}
+	}
+}
+
+@media (max-width: 499px) {
+	.clock-board {
+		padding: 8px 4px;
+
+		.header {
+			gap: 6px;
+			margin-bottom: 8px;
+			flex-wrap: nowrap;
+
+			.header-left { gap: 4px; }
+
+			.wikipedia-link,
+			.rules-button {
+				width: 26px;
+				height: 26px;
+				font-size: 14px;
+				border-width: 1px;
+			}
+
+			.rules-panel {
+				min-width: auto;
+				width: calc(100vw - 24px);
+				max-width: 320px;
+				font-size: 12px;
+				padding: 12px;
+			}
+
+			.status {
+				font-size: 11px;
+				gap: 8px;
+			}
+
+			.controls { gap: 4px; }
+
+			.btn {
+				font-size: 11px;
+				padding: 5px 8px;
+			}
+		}
+
+		.clock-face {
+			width: 96vmin;
+			height: 96vmin;
+		}
+
+		.pile-label { font-size: 0.5rem; }
+
+		.face-down-badge {
+			width: 12px;
+			height: 12px;
+			font-size: 0.45rem;
+			top: -4px;
+			right: -4px;
+		}
+	}
+}
