@@ -52,7 +52,7 @@
 				     [style.top]="pilePositions[i].top">
 					<div class="pile-label">{{ pileLabels[i] }}</div>
 					<div class="pile-slot">
-						@if (getTopCard(pile); as card) {
+						@if (getTopCard(pile, i === gameState.currentPileIndex && gameState.gamePhase === 'playing'); as card) {
 							<app-stack [cards]="[card]" [spread]="'none'" [passClickThrough]="true"></app-stack>
 						} @else {
 							<div class="empty-slot"></div>
