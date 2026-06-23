@@ -159,7 +159,6 @@
 		flex-direction: column;
 		align-items: center;
 		gap: 3px;
-		pointer-events: none;
 
 		&.active .pile-slot {
 			box-shadow: 0 0 0 2px #ffd700, 0 0 16px 4px rgba(255, 215, 0, 0.5);
@@ -185,6 +184,7 @@
 
 		app-stack {
 			display: block;
+			pointer-events: none;
 		}
 	}
 
