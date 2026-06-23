@@ -7,7 +7,7 @@ A modern HTML5 card solitaire game collection built with Angular and TypeScript.
 Swarlehtaire is a web-based solitaire game platform inspired by the classic PySolFC card game collection. It features:
 
 - **Modern Tech Stack**: Angular 21 + TypeScript
-- **Card Games**: Starting with Klondike, with plans to add more variants
+- **Card Games**: 8 solitaire variants from Klondike to Clock
 - **Beautiful Cards**: Styling inspired by PySolFC
 - **Cross-platform**: Web, Desktop (via Electron/Tauri), Mobile
 
@@ -64,6 +64,7 @@ npm run build:prod
 - **Scorpion** - 7-column tableau game
 - **Yukon** - Move face-up sequences regardless of order
 - **Baker's Dozen** - 13-column tableau, no empty columns
+- **Clock** - Pure-chance patience; follow the card rank chain around the clock face, win if all 48 non-King cards are revealed before the 4th King (~1 in 13 odds)
 
 ## � Documentation
 
