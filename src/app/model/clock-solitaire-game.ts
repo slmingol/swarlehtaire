@@ -3,7 +3,7 @@ import { Deck } from './deck';
 
 export interface ClockPile {
 	faceDown: Card[];
-	faceUp: Card[];
+	faceUp: Card[];  // last element is always the pending card when this is currentPileIndex
 }
 
 export class ClockSolitaireGame {
@@ -22,7 +22,6 @@ export class ClockSolitaireGame {
 		const deck = new Deck();
 		deck.shuffle();
 		this.piles = Array.from({ length: 13 }, (): ClockPile => ({ faceDown: [], faceUp: [] }));
-		// Deal round-robin: pile 0 gets cards 0,13,26,39 etc.
 		for (let i = 0; i < 52; i++) {
 			const card = deck.deal()!;
 			this.piles[i % 13].faceDown.push(card);
@@ -32,18 +31,23 @@ export class ClockSolitaireGame {
 		this.kingsCount = 0;
 		this.gamePhase = 'playing';
 		this.moveCount = 0;
+
+		// Pre-reveal the first card at the King pile so the user sees a face-up card at center.
+		const first = this.piles[12].faceDown.pop()!;
+		first.faceUp = true;
+		this.piles[12].faceUp.push(first);
 	}
 
-	// Draw the top card from currentPile, route to its rank's pile, advance currentPile.
+	// Each step: place the pending face-up card from currentPile at its rank's pile,
+	// then reveal the next face-down card there (making it the new pending card).
 	step(): boolean {
 		if (this.gamePhase !== 'playing') return false;
+
 		const fromPile = this.piles[this.currentPileIndex];
-		if (fromPile.faceDown.length === 0) return false;
+		if (fromPile.faceUp.length === 0) return false;
 
-		const card = fromPile.faceDown.pop()!;
-		card.faceUp = true;
-
-		// Ace(1)→pile[0], ..., Queen(12)→pile[11], King(13)→pile[12] (center)
+		// Take the pending (top face-up) card and route it to its rank's pile.
+		const card = fromPile.faceUp.pop()!;
 		const destIndex = (card.rank as number) - 1;
 		this.piles[destIndex].faceUp.push(card);
 		this.lastCard = card;
@@ -58,7 +62,12 @@ export class ClockSolitaireGame {
 			}
 		}
 
+		// Reveal the next face-down card at the destination; it becomes the new pending card.
 		this.currentPileIndex = destIndex;
+		const nextCard = this.piles[destIndex].faceDown.pop()!;
+		nextCard.faceUp = true;
+		this.piles[destIndex].faceUp.push(nextCard);
+
 		return true;
 	}
 

@@ -83,8 +83,8 @@ export class ClockBoardComponent implements OnInit, OnDestroy {
 	}
 
 	getTopCard(pile: ClockPile): Card | null {
-		if (pile.faceDown.length > 0) return pile.faceDown[pile.faceDown.length - 1];
 		if (pile.faceUp.length > 0) return pile.faceUp[pile.faceUp.length - 1];
+		if (pile.faceDown.length > 0) return pile.faceDown[pile.faceDown.length - 1];
 		return null;
 	}
 
