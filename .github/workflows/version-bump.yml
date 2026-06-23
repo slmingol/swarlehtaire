@@ -38,7 +38,8 @@ jobs:
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-      
+          git fetch --tags origin
+
       - name: Determine version bump type
         id: bump-type
         run: |
@@ -92,7 +93,12 @@ jobs:
       - name: Create and push tag
         run: |
           NEW_VERSION=${{ steps.version.outputs.new_version }}
+          if git tag --list | grep -q "^${NEW_VERSION}$"; then
+            echo "Tag ${NEW_VERSION} already exists — skipping tag and push"
+            exit 0
+          fi
           git tag -a "${NEW_VERSION}" -m "Release ${NEW_VERSION}"
+          git pull --rebase origin main
           git push origin main --tags
 
       - name: Create GitHub release
