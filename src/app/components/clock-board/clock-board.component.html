@@ -43,7 +43,7 @@
 	</div>
 
 	@if (gameState) {
-		<div class="clock-face" (click)="onClockFaceClick()">
+		<div class="clock-face" #clockFace>
 			@for (pile of gameState.piles; track $index; let i = $index) {
 				<div class="clock-pile"
 				     [class.active]="i === gameState.currentPileIndex && gameState.gamePhase === 'playing'"
@@ -60,8 +60,6 @@
 						@if (pile.faceDown.length > 0) {
 							<div class="face-down-badge">{{ pile.faceDown.length }}</div>
 						}
-						<div class="pile-click-overlay"
-						     (click)="$event.stopPropagation(); onClockFaceClick()"></div>
 					</div>
 				</div>
 			}

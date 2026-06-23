@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Subject, takeUntil } from 'rxjs';
 import { ClockSolitaireService, ClockSolitaireGameState } from '../../service/clock-solitaire.service';
@@ -14,16 +14,16 @@ import { Card } from '../../model/card';
 	templateUrl: './clock-board.component.html',
 	styleUrls: ['./clock-board.component.scss']
 })
-export class ClockBoardComponent implements OnInit, OnDestroy {
+export class ClockBoardComponent implements OnInit, AfterViewInit, OnDestroy {
 	gameState: ClockSolitaireGameState | null = null;
 	showRules = false;
 	private destroy$ = new Subject<void>();
+	private clickHandler: ((e: MouseEvent) => void) | null = null;
+
+	@ViewChild('clockFace') clockFaceRef!: ElementRef<HTMLElement>;
 
 	readonly pileLabels = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
 
-	// Precomputed clock positions as CSS style objects.
-	// pile[0]=Ace→1 o'clock, pile[11]=Queen→12 o'clock, pile[12]=King→center.
-	// N = (index + 1) % 12 gives clock-hour index (0 = 12 o'clock, 1 = 1 o'clock, ...)
 	readonly pilePositions: { left: string; top: string }[] = Array.from({ length: 13 }, (_, i) => {
 		if (i === 12) return { left: '50%', top: '50%' };
 		const N = (i + 1) % 12;
@@ -58,7 +58,21 @@ export class ClockBoardComponent implements OnInit, OnDestroy {
 			.subscribe(state => this.gameState = state);
 	}
 
+	ngAfterViewInit(): void {
+		// Use capture-phase listener so stopPropagation in StackComponent's bubble
+		// phase cannot block us from receiving the click.
+		this.clickHandler = () => {
+			if (this.gameState?.gamePhase === 'playing') {
+				this.clockService.step();
+			}
+		};
+		this.clockFaceRef.nativeElement.addEventListener('click', this.clickHandler, true);
+	}
+
 	ngOnDestroy(): void {
+		if (this.clickHandler) {
+			this.clockFaceRef?.nativeElement.removeEventListener('click', this.clickHandler, true);
+		}
 		this.destroy$.next();
 		this.destroy$.complete();
 	}
@@ -79,13 +93,6 @@ export class ClockBoardComponent implements OnInit, OnDestroy {
 		this.showRules = !this.showRules;
 	}
 
-	onClockFaceClick(): void {
-		if (this.gameState?.gamePhase === 'playing') {
-			this.clockService.step();
-		}
-	}
-
-	// Returns the single card to display for a pile: top face-down if any, else top face-up, else null.
 	getTopCard(pile: ClockPile): Card | null {
 		if (pile.faceDown.length > 0) return pile.faceDown[pile.faceDown.length - 1];
 		if (pile.faceUp.length > 0) return pile.faceUp[pile.faceUp.length - 1];
