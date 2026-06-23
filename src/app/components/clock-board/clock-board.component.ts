@@ -25,8 +25,8 @@ export class ClockBoardComponent implements OnInit, OnDestroy {
 		if (i === 12) return { left: '50%', top: '50%', rotation: 0 };
 		const N = (i + 1) % 12;
 		const rad = N * 30 * Math.PI / 180;
-		const x = 50 + 40 * Math.sin(rad);
-		const y = 50 - 40 * Math.cos(rad);
+		const x = 50 + 44 * Math.sin(rad);
+		const y = 50 - 44 * Math.cos(rad);
 		return { left: `${x.toFixed(2)}%`, top: `${y.toFixed(2)}%`, rotation: N * 30 };
 	});
 
