@@ -21,13 +21,13 @@ export class ClockBoardComponent implements OnInit, OnDestroy {
 
 	readonly pileLabels = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
 
-	readonly pilePositions: { left: string; top: string }[] = Array.from({ length: 13 }, (_, i) => {
-		if (i === 12) return { left: '50%', top: '50%' };
+	readonly pilePositions: { left: string; top: string; rotation: number }[] = Array.from({ length: 13 }, (_, i) => {
+		if (i === 12) return { left: '50%', top: '50%', rotation: 0 };
 		const N = (i + 1) % 12;
 		const rad = N * 30 * Math.PI / 180;
 		const x = 50 + 40 * Math.sin(rad);
 		const y = 50 - 40 * Math.cos(rad);
-		return { left: `${x.toFixed(2)}%`, top: `${y.toFixed(2)}%` };
+		return { left: `${x.toFixed(2)}%`, top: `${y.toFixed(2)}%`, rotation: N * 30 };
 	});
 
 	rulesInfo = {

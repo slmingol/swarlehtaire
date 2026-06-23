@@ -154,7 +154,6 @@
 
 	.clock-pile {
 		position: absolute;
-		transform: translate(-50%, -50%);
 		display: flex;
 		flex-direction: column;
 		align-items: center;
@@ -181,6 +180,34 @@
 
 	.pile-slot {
 		position: relative;
+		isolation: isolate;
+
+		// Ghost cards simulate stack depth — fan clockwise-tangential (local +x = radial after rotation)
+		&.has-stack::before {
+			content: '';
+			position: absolute;
+			top: 0;
+			left: 6px;
+			width: var(--card-w, 80px);
+			height: var(--card-h, 112px);
+			background: linear-gradient(135deg, #1a3568 0%, #244a8a 100%);
+			border: 1px solid rgba(255, 255, 255, 0.2);
+			border-radius: 10px;
+			z-index: -1;
+		}
+
+		&.deep-stack::after {
+			content: '';
+			position: absolute;
+			top: 0;
+			left: 12px;
+			width: var(--card-w, 80px);
+			height: var(--card-h, 112px);
+			background: linear-gradient(135deg, #152850 0%, #1a3568 100%);
+			border: 1px solid rgba(255, 255, 255, 0.15);
+			border-radius: 10px;
+			z-index: -2;
+		}
 
 		.sliver-hint {
 			position: absolute;

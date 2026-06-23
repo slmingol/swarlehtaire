@@ -49,9 +49,15 @@
 				     [class.active]="i === gameState.currentPileIndex && gameState.gamePhase === 'playing'"
 				     [class.center-pile]="i === 12"
 				     [style.left]="pilePositions[i].left"
-				     [style.top]="pilePositions[i].top">
-					<div class="pile-label">{{ pileLabels[i] }}</div>
-					<div class="pile-slot">
+				     [style.top]="pilePositions[i].top"
+				     [style.transform]="'translate(-50%, -50%) rotate(' + pilePositions[i].rotation + 'deg)'">
+					<div class="pile-label"
+					     [style.transform]="pilePositions[i].rotation ? 'rotate(' + (-pilePositions[i].rotation) + 'deg)' : ''">
+						{{ pileLabels[i] }}
+					</div>
+					<div class="pile-slot"
+					     [class.has-stack]="pile.faceDown.length > 1 && !(i === gameState.currentPileIndex && gameState.gamePhase === 'playing')"
+					     [class.deep-stack]="pile.faceDown.length > 2 && !(i === gameState.currentPileIndex && gameState.gamePhase === 'playing')">
 						@if (getSliverCard(pile, i === gameState.currentPileIndex && gameState.gamePhase === 'playing'); as sliverCard) {
 							<div class="sliver-hint">
 								<app-stack [cards]="[sliverCard]" [spread]="'none'" [passClickThrough]="true"></app-stack>
@@ -63,7 +69,10 @@
 							<div class="empty-slot"></div>
 						}
 						@if (pile.faceDown.length > 0) {
-							<div class="face-down-badge">{{ pile.faceDown.length }}</div>
+							<div class="face-down-badge"
+							     [style.transform]="pilePositions[i].rotation ? 'rotate(' + (-pilePositions[i].rotation) + 'deg)' : ''">
+								{{ pile.faceDown.length }}
+							</div>
 						}
 					</div>
 				</div>
