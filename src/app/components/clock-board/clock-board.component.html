@@ -60,6 +60,8 @@
 						@if (pile.faceDown.length > 0) {
 							<div class="face-down-badge">{{ pile.faceDown.length }}</div>
 						}
+						<div class="pile-click-overlay"
+						     (click)="$event.stopPropagation(); onClockFaceClick()"></div>
 					</div>
 				</div>
 			}
