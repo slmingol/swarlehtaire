@@ -82,6 +82,13 @@ export class ClockBoardComponent implements OnInit, OnDestroy {
 		this.showRules = !this.showRules;
 	}
 
+	getSliverCard(pile: ClockPile, isCurrent: boolean): Card | null {
+		if (!isCurrent && pile.faceDown.length > 0 && pile.faceUp.length > 0) {
+			return pile.faceUp[pile.faceUp.length - 1];
+		}
+		return null;
+	}
+
 	getTopCard(pile: ClockPile, isCurrent = false): Card | null {
 		// Active pile: show the pending face-up card (the one about to be placed).
 		// All other piles: keep face-down cards on top so arrived cards don't surface.
