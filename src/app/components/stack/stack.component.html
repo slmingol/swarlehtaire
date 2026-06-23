@@ -17,7 +17,7 @@
 		@for (card of cards; track card.id; let i = $index) {
 			<div class="card-wrapper"
 				[style]="getCardStyle(i)"
-				(click)="onCardClick(card, i); $event.stopPropagation()"
+				(click)="onCardClick(card, i); passClickThrough || $event.stopPropagation()"
 				(pointerdown)="onPointerDown($event, i)"
 				(pointermove)="onPointerMove($event)"
 				(pointerup)="onPointerUp($event)"

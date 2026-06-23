@@ -42,7 +42,7 @@
 		}
 	</div>
 
-	<div class="clock-face" #clockFace>
+	<div class="clock-face" (click)="onClockFaceClick()">
 		@if (gameState) {
 			@for (pile of gameState.piles; track $index; let i = $index) {
 				<div class="clock-pile"
@@ -53,7 +53,7 @@
 					<div class="pile-label">{{ pileLabels[i] }}</div>
 					<div class="pile-slot">
 						@if (getTopCard(pile); as card) {
-							<app-stack [cards]="[card]" [spread]="'none'"></app-stack>
+							<app-stack [cards]="[card]" [spread]="'none'" [passClickThrough]="true"></app-stack>
 						} @else {
 							<div class="empty-slot"></div>
 						}

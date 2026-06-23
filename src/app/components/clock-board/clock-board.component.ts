@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, AfterViewInit, ViewChild, ElementRef, NgZone } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Subject, takeUntil } from 'rxjs';
 import { ClockSolitaireService, ClockSolitaireGameState } from '../../service/clock-solitaire.service';
@@ -14,13 +14,10 @@ import { Card } from '../../model/card';
 	templateUrl: './clock-board.component.html',
 	styleUrls: ['./clock-board.component.scss']
 })
-export class ClockBoardComponent implements OnInit, AfterViewInit, OnDestroy {
+export class ClockBoardComponent implements OnInit, OnDestroy {
 	gameState: ClockSolitaireGameState | null = null;
 	showRules = false;
 	private destroy$ = new Subject<void>();
-	private clickHandler: ((e: MouseEvent) => void) | null = null;
-
-	@ViewChild('clockFace') clockFaceRef!: ElementRef<HTMLElement>;
 
 	readonly pileLabels = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
 
@@ -48,8 +45,7 @@ export class ClockBoardComponent implements OnInit, AfterViewInit, OnDestroy {
 
 	constructor(
 		private clockService: ClockSolitaireService,
-		private cardSizeService: CardSizeService,
-		private ngZone: NgZone
+		private cardSizeService: CardSizeService
 	) {}
 
 	ngOnInit(): void {
@@ -59,25 +55,15 @@ export class ClockBoardComponent implements OnInit, AfterViewInit, OnDestroy {
 			.subscribe(state => this.gameState = state);
 	}
 
-	ngAfterViewInit(): void {
-		// Capture-phase listener: fires before StackComponent's bubble-phase
-		// stopPropagation can block it. NgZone.run() ensures change detection fires.
-		this.clickHandler = () => {
-			this.ngZone.run(() => {
-				if (this.gameState?.gamePhase === 'playing') {
-					this.clockService.step();
-				}
-			});
-		};
-		this.clockFaceRef.nativeElement.addEventListener('click', this.clickHandler, true);
-	}
-
 	ngOnDestroy(): void {
-		if (this.clickHandler) {
-			this.clockFaceRef?.nativeElement.removeEventListener('click', this.clickHandler, true);
-		}
 		this.destroy$.next();
 		this.destroy$.complete();
+	}
+
+	onClockFaceClick(): void {
+		if (this.gameState?.gamePhase === 'playing') {
+			this.clockService.step();
+		}
 	}
 
 	newGame(): void {
