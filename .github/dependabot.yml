@@ -11,6 +11,12 @@ updates:
       semver-major-days: 30
       semver-minor-days: 14
       semver-patch-days: 5
+    groups:
+      angular:
+        patterns:
+          - "@angular/*"
+          - "angular-eslint"
+          - "jest-preset-angular"
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
