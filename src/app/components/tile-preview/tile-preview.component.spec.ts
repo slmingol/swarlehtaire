@@ -1,3 +1,4 @@
+import { ChangeDetectorRef } from '@angular/core';
 import { type ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideTranslateService } from '@ngx-translate/core';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
@@ -66,6 +67,7 @@ describe('TilePreviewComponent', () => {
 
 	it('should apply dark class when settings.dark is true', () => {
 		component.app.settings.dark = true;
+		fixture.componentRef.injector.get(ChangeDetectorRef).markForCheck();
 		fixture.detectChanges();
 		const stage = fixture.debugElement.query(By.css('g.preview-stage'));
 		expect(stage.nativeElement.classList.contains('dark')).toBe(true);
@@ -73,6 +75,7 @@ describe('TilePreviewComponent', () => {
 
 	it('should apply contrast class when settings.contrast is true', () => {
 		component.app.settings.contrast = true;
+		fixture.componentRef.injector.get(ChangeDetectorRef).markForCheck();
 		fixture.detectChanges();
 		const stage = fixture.debugElement.query(By.css('g.preview-stage'));
 		expect(stage.nativeElement.classList.contains('contrast')).toBe(true);
@@ -80,6 +83,7 @@ describe('TilePreviewComponent', () => {
 
 	it('should apply tile3d class when settings.tile3d is true', () => {
 		component.app.settings.tile3d = true;
+		fixture.componentRef.injector.get(ChangeDetectorRef).markForCheck();
 		fixture.detectChanges();
 		const stage = fixture.debugElement.query(By.css('g.preview-stage'));
 		expect(stage.nativeElement.classList.contains('tile3d')).toBe(true);
@@ -87,6 +91,7 @@ describe('TilePreviewComponent', () => {
 
 	it('should render bevel rect when tile3d is true', () => {
 		component.app.settings.tile3d = true;
+		fixture.componentRef.injector.get(ChangeDetectorRef).markForCheck();
 		fixture.detectChanges();
 		const bevel = fixture.debugElement.query(By.css('rect.bevel'));
 		expect(bevel).toBeTruthy();
@@ -94,6 +99,7 @@ describe('TilePreviewComponent', () => {
 
 	it('should not render bevel rect when tile3d is false', () => {
 		component.app.settings.tile3d = false;
+		fixture.componentRef.injector.get(ChangeDetectorRef).markForCheck();
 		fixture.detectChanges();
 		const bevel = fixture.debugElement.query(By.css('rect.bevel'));
 		expect(bevel).toBeFalsy();
