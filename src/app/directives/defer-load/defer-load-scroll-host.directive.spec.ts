@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectorRef, Component } from '@angular/core';
 import { type ComponentFixture, TestBed } from '@angular/core/testing';
 import { DeferLoadScrollHostDirective } from './defer-load-scroll-host.directive';
 import { DeferLoadService } from './defer-load.service';
@@ -59,6 +59,7 @@ describe('DeferLoadScrollHostDirective', () => {
 			const hostElement = fixture.nativeElement.querySelector('div');
 
 			component.scrollTarget = target;
+			fixture.componentRef.injector.get(ChangeDetectorRef).markForCheck();
 			fixture.detectChanges();
 
 			expect(hostElement.scrollTop).toBe(300 - 50); // offsetTop - offsetHeight

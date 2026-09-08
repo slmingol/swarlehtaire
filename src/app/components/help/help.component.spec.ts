@@ -1,11 +1,9 @@
 import { type ComponentFixture, TestBed } from '@angular/core/testing';
+import { ChangeDetectorRef } from '@angular/core';
 import { provideTranslateService, TranslateService } from '@ngx-translate/core';
 import { AppService } from '../../service/app.service';
 import { HelpComponent } from './help.component';
 import { By } from '@angular/platform-browser';
-import { LayoutService } from '../../service/layout.service';
-import { LocalstorageService } from '../../service/localstorage.service';
-import type { LayoutScoreStore } from '../../model/types';
 
 describe('HelpComponent', () => {
 	let component: HelpComponent;
@@ -164,21 +162,18 @@ describe('HelpComponent', () => {
 
 	describe('Clear times functionality', () => {
 		beforeEach(() => {
-			const layoutService = TestBed.inject(LayoutService);
-			const localstorageService = TestBed.inject(LocalstorageService);
-
-			layoutService.layouts = {
+			component.stats = {
 				items: [{
-					id: 'test-layout',
 					name: 'Test Layout',
-					category: 'Test Category',
-					mapping: []
-				}]
+					winCount: 1,
+					loseCount: 1,
+					bestTime: 100,
+					averageTime: 100
+				}],
+				winCount: 1,
+				loseCount: 1
 			};
-			const mockResult: LayoutScoreStore = { winCount: 1, loseCount: 1, bestTime: 100, playTime: 200 };
-			jest.spyOn(localstorageService, 'getScore').mockReturnValue(mockResult);
-
-			component.ngOnInit();
+			fixture.componentRef.injector.get(ChangeDetectorRef).markForCheck();
 			fixture.detectChanges();
 		});
 

@@ -1,4 +1,5 @@
 import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { ChangeDetectorRef } from '@angular/core';
 import { type ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideTranslateService } from '@ngx-translate/core';
 import { provideHttpClient } from '@angular/common/http';
@@ -220,6 +221,7 @@ describe('GameComponent', () => {
 		Object.defineProperty(component.game, 'board', { value: mockBoard });
 
 		// Force change detection to update the button state
+		fixture.componentRef.injector.get(ChangeDetectorRef).markForCheck();
 		fixture.detectChanges();
 
 		const undoButton = fixture.debugElement.query(By.css('.ctrl-game button:nth-child(3)')).nativeElement;
