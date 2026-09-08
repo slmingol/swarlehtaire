@@ -1,6 +1,6 @@
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { type ComponentFixture, TestBed } from '@angular/core/testing';
-import { TranslateModule } from '@ngx-translate/core';
+import { provideTranslateService } from '@ngx-translate/core';
 import { provideHttpClient } from '@angular/common/http';
 import { AppService } from '../../service/app.service';
 import { SvgdefService } from '../../service/svgdef.service';
@@ -18,8 +18,8 @@ describe('GameComponent', () => {
 
 	beforeEach(async () =>
 		TestBed.configureTestingModule({
-			imports: [GameComponent, TranslateModule.forRoot()],
-			providers: [provideHttpClient(), provideHttpClientTesting(), SvgdefService, AppService]
+			imports: [GameComponent],
+			providers: [provideHttpClient(), provideHttpClientTesting(), SvgdefService, AppService, provideTranslateService()]
 		})
 			.compileComponents());
 
