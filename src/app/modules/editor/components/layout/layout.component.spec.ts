@@ -1,6 +1,6 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { type ComponentFixture, TestBed } from '@angular/core/testing';
-import { TranslateModule } from '@ngx-translate/core';
+import { provideTranslateService } from '@ngx-translate/core';
 import { LayoutComponent } from './layout.component';
 import { WorkerService } from '../../../../service/worker.service';
 import { LayoutService } from '../../../../service/layout.service';
@@ -33,10 +33,11 @@ describe('LayoutComponent', () => {
 	beforeEach(async () => {
 		jest.clearAllMocks();
 		await TestBed.configureTestingModule({
-			imports: [LayoutComponent, TranslateModule.forRoot()],
+			imports: [LayoutComponent],
 			providers: [
 				{ provide: WorkerService, useValue: mockWorkerService },
-				{ provide: LayoutService, useValue: mockLayoutService }
+				{ provide: LayoutService, useValue: mockLayoutService },
+				provideTranslateService()
 			],
 			schemas: [NO_ERRORS_SCHEMA]
 		}).compileComponents();

@@ -1,6 +1,6 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { type ComponentFixture, TestBed } from '@angular/core/testing';
-import { TranslateModule } from '@ngx-translate/core';
+import { provideTranslateService } from '@ngx-translate/core';
 import { LayoutService } from '../../../../service/layout.service';
 import { ImportComponent } from './import.component';
 import type { Layout, LoadLayout } from '../../../../model/types';
@@ -42,9 +42,10 @@ describe('ImportComponent', () => {
 		};
 
 		await TestBed.configureTestingModule({
-			imports: [ImportComponent, TranslateModule.forRoot()],
+			imports: [ImportComponent],
 			providers: [
-				{ provide: LayoutService, useValue: mockLayoutService }
+				{ provide: LayoutService, useValue: mockLayoutService },
+				provideTranslateService()
 			],
 			schemas: [NO_ERRORS_SCHEMA]
 		}).compileComponents();

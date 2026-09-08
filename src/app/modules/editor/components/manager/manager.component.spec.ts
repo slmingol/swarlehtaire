@@ -1,6 +1,6 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { type ComponentFixture, TestBed } from '@angular/core/testing';
-import { TranslateModule } from '@ngx-translate/core';
+import { provideTranslateService } from '@ngx-translate/core';
 import { LayoutService } from '../../../../service/layout.service';
 import { WorkerService } from '../../../../service/worker.service';
 import { ManagerComponent } from './manager.component';
@@ -34,10 +34,11 @@ describe('ManagerComponent', () => {
 		mockWorkerService = { solve: jest.fn() };
 
 		await TestBed.configureTestingModule({
-			imports: [ManagerComponent, TranslateModule.forRoot()],
+			imports: [ManagerComponent],
 			providers: [
 				{ provide: LayoutService, useValue: mockLayoutService },
-				{ provide: WorkerService, useValue: mockWorkerService }
+				{ provide: WorkerService, useValue: mockWorkerService },
+				provideTranslateService()
 			],
 			schemas: [NO_ERRORS_SCHEMA]
 		}).compileComponents();
