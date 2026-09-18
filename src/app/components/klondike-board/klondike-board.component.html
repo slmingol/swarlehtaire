@@ -45,14 +45,12 @@
 					<div class="stock-waste">
 						<app-stack
 							[cards]="gameState.stock"
-							[flyingCardIds]="flyingCardIds"
 							stackType="stock"
 							spread="none"
 							(stackClick)="onStockClick()">
 						</app-stack>
 						<app-stack
 							[cards]="visibleWasteCards"
-							[flyingCardIds]="flyingCardIds"
 							stackType="waste"
 							[spread]="wasteSpread"
 							(cardClick)="onWasteClick($event)"
@@ -65,7 +63,6 @@
 					@for (foundation of gameState.foundations; track $index) {
 						<app-stack
 							[cards]="foundation"
-							[flyingCardIds]="flyingCardIds"
 							stackType="foundation"
 							spread="none"
 							(cardClick)="onFoundationClick($index, $event)"
@@ -82,7 +79,6 @@
 				@for (pile of gameState.tableau; track $index) {
 					<app-stack
 						[cards]="pile"
-						[flyingCardIds]="flyingCardIds"
 						stackType="tableau"
 						spread="down"
 						(cardClick)="onTableauClick($index, $event)"

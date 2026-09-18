@@ -27,9 +27,6 @@ export class KlondikeBoardComponent implements OnInit, OnDestroy {
 	dragSource: { type: 'tableau' | 'waste' | 'foundation'; index: number; cardIndex: number } | null = null;
 	private dragFromRect: DOMRect | null = null;
 
-	// Card IDs hidden during fly animation — new Set ref on each change so Angular input detects it
-	flyingCardIds: Set<string> = new Set();
-
 	// Rules panel state
 	showRules = false;
 
@@ -162,25 +159,16 @@ export class KlondikeBoardComponent implements OnInit, OnDestroy {
 	}
 
 	private startFly(card: Card, fromRect: DOMRect, count = 1): void {
-		this.flyingCardIds = new Set([...this.flyingCardIds, card.id]);
-
-		const revealCard = () => {
-			this.ngZone.run(() => {
-				this.flyingCardIds = new Set([...this.flyingCardIds].filter(id => id !== card.id));
-			});
-		};
-
-		// Run animation work outside Angular zone to avoid triggering extra CD cycles
+		// rAF fires after Angular's CD updates the DOM but before the browser paints —
+		// perfect window to hide the destination card and launch the ghost.
 		this.ngZone.runOutsideAngular(() => {
-			setTimeout(() => {
+			requestAnimationFrame(() => {
 				const newEl = document.querySelector(`[data-card-id="${card.id}"]`) as HTMLElement | null;
-				const toRect = newEl?.getBoundingClientRect();
+				if (!newEl) return;
+				const toRect = newEl.getBoundingClientRect();
+				if (Math.abs(toRect.left - fromRect.left) < 2 && Math.abs(toRect.top - fromRect.top) < 2) return;
 
-				if (!newEl || !toRect ||
-					(Math.abs(toRect.left - fromRect.left) < 2 && Math.abs(toRect.top - fromRect.top) < 2)) {
-					revealCard();
-					return;
-				}
+				newEl.style.visibility = 'hidden';
 
 				const cardH = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--card-h').trim()) || 163;
 				const height = Math.min(cardH + (count - 1) * 28, cardH * 2.5);
@@ -215,9 +203,9 @@ export class KlondikeBoardComponent implements OnInit, OnDestroy {
 
 				setTimeout(() => {
 					fly.remove();
-					revealCard();
+					newEl.style.visibility = '';
 				}, 240);
-			}, 0);
+			});
 		});
 	}
 
