@@ -15,6 +15,7 @@ export class StackComponent {
 	@Input() stackType: 'stock' | 'waste' | 'foundation' | 'tableau' = 'tableau';
 	@Input() spread: 'none' | 'down' | 'right' = 'down';
 	@Input() passClickThrough = false;
+	@Input() flyingCardIds: Set<string> = new Set();
 	@Output() cardClick = new EventEmitter<{ card: Card; index: number }>();
 	@Output() stackClick = new EventEmitter<void>();
 	@Output() cardDragStart = new EventEmitter<number>();

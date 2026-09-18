@@ -17,6 +17,7 @@
 		@for (card of cards; track card.id; let i = $index) {
 			<div class="card-wrapper"
 				[attr.data-card-id]="card.id"
+				[style.visibility]="flyingCardIds.has(card.id) ? 'hidden' : null"
 				[style]="getCardStyle(i)"
 				(click)="onCardClick(card, i); passClickThrough || $event.stopPropagation()"
 				(pointerdown)="onPointerDown($event, i)"

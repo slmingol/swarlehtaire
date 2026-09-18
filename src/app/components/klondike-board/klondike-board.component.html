@@ -43,14 +43,16 @@
 			<div class="top-row">
 				<div class="left-section">
 					<div class="stock-waste">
-						<app-stack 
-							[cards]="gameState.stock" 
+						<app-stack
+							[cards]="gameState.stock"
+							[flyingCardIds]="flyingCardIds"
 							stackType="stock"
 							spread="none"
 							(stackClick)="onStockClick()">
 						</app-stack>
 						<app-stack
 							[cards]="visibleWasteCards"
+							[flyingCardIds]="flyingCardIds"
 							stackType="waste"
 							[spread]="wasteSpread"
 							(cardClick)="onWasteClick($event)"
@@ -61,8 +63,9 @@
 				</div>
 				<div class="foundations">
 					@for (foundation of gameState.foundations; track $index) {
-						<app-stack 
-							[cards]="foundation" 
+						<app-stack
+							[cards]="foundation"
+							[flyingCardIds]="flyingCardIds"
 							stackType="foundation"
 							spread="none"
 							(cardClick)="onFoundationClick($index, $event)"
@@ -77,8 +80,9 @@
 			<!-- Tableau -->
 			<div class="tableau">
 				@for (pile of gameState.tableau; track $index) {
-					<app-stack 
-						[cards]="pile" 
+					<app-stack
+						[cards]="pile"
+						[flyingCardIds]="flyingCardIds"
 						stackType="tableau"
 						spread="down"
 						(cardClick)="onTableauClick($index, $event)"

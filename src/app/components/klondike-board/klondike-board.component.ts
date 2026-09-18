@@ -27,6 +27,9 @@ export class KlondikeBoardComponent implements OnInit, OnDestroy {
 	dragSource: { type: 'tableau' | 'waste' | 'foundation'; index: number; cardIndex: number } | null = null;
 	private dragFromRect: DOMRect | null = null;
 
+	// Card IDs hidden during fly animation — new Set ref on each change so Angular input detects it
+	flyingCardIds: Set<string> = new Set();
+
 	// Rules panel state
 	showRules = false;
 
@@ -154,15 +157,23 @@ export class KlondikeBoardComponent implements OnInit, OnDestroy {
 		return el ? el.getBoundingClientRect() : null;
 	}
 
-	private animateFlyCard(card: Card, fromRect: DOMRect, count = 1): void {
+	private startFly(card: Card, fromRect: DOMRect, count = 1): void {
+		// Mark card hidden BEFORE moveCard() so Angular renders it hidden at destination
+		this.flyingCardIds = new Set([...this.flyingCardIds, card.id]);
+
 		setTimeout(() => {
 			const newEl = document.querySelector(`[data-card-id="${card.id}"]`) as HTMLElement | null;
-			if (!newEl) return;
-			const toRect = newEl.getBoundingClientRect();
-			if (Math.abs(toRect.left - fromRect.left) < 2 && Math.abs(toRect.top - fromRect.top) < 2) return;
+			const toRect = newEl?.getBoundingClientRect();
 
-			// Hide destination card while ghost is in flight
-			newEl.style.visibility = 'hidden';
+			const revealCard = () => {
+				this.flyingCardIds = new Set([...this.flyingCardIds].filter(id => id !== card.id));
+			};
+
+			if (!newEl || !toRect ||
+				(Math.abs(toRect.left - fromRect.left) < 2 && Math.abs(toRect.top - fromRect.top) < 2)) {
+				revealCard();
+				return;
+			}
 
 			const cardH = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--card-h').trim()) || 163;
 			const height = Math.min(cardH + (count - 1) * 28, cardH * 2.5);
@@ -197,7 +208,7 @@ export class KlondikeBoardComponent implements OnInit, OnDestroy {
 
 			setTimeout(() => {
 				fly.remove();
-				newEl.style.visibility = '';
+				revealCard();
 			}, 240);
 		}, 0);
 	}
@@ -212,7 +223,7 @@ export class KlondikeBoardComponent implements OnInit, OnDestroy {
 		for (let i = 0; i < 4; i++) {
 			const foundation = this.klondikeService.getFoundationStack(i);
 			if (this.klondikeService.moveCard(wasteStack, foundation, topCardIndex)) {
-				if (fromRect) this.animateFlyCard(topCard, fromRect);
+				if (fromRect) this.startFly(topCard, fromRect);
 				return;
 			}
 		}
@@ -220,7 +231,7 @@ export class KlondikeBoardComponent implements OnInit, OnDestroy {
 		for (let i = 0; i < this.gameState.tableau.length; i++) {
 			const tableau = this.klondikeService.getTableauStack(i);
 			if (this.klondikeService.moveCard(wasteStack, tableau, topCardIndex)) {
-				if (fromRect) this.animateFlyCard(topCard, fromRect);
+				if (fromRect) this.startFly(topCard, fromRect);
 				return;
 			}
 		}
@@ -234,7 +245,7 @@ export class KlondikeBoardComponent implements OnInit, OnDestroy {
 		for (let i = 0; i < 4; i++) {
 			const foundation = this.klondikeService.getFoundationStack(i);
 			if (this.klondikeService.moveCard(tableau, foundation, event.index)) {
-				if (fromRect) this.animateFlyCard(event.card, fromRect, count);
+				if (fromRect) this.startFly(event.card, fromRect, count);
 				return;
 			}
 		}
@@ -243,16 +254,14 @@ export class KlondikeBoardComponent implements OnInit, OnDestroy {
 			if (i !== tableauIndex) {
 				const targetTableau = this.klondikeService.getTableauStack(i);
 				if (this.klondikeService.moveCard(tableau, targetTableau, event.index)) {
-					if (fromRect) this.animateFlyCard(event.card, fromRect, count);
+					if (fromRect) this.startFly(event.card, fromRect, count);
 					return;
 				}
 			}
 		}
 	}
 
-	onFoundationClick(foundationIndex: number, event: { card: Card; index: number }): void {
-		// Could implement moving from foundation back to tableau if needed
-	}
+	onFoundationClick(_foundationIndex: number, _event: { card: Card; index: number }): void {}
 
 	onTableauStackClick(tableauIndex: number): void {
 		const tableau = this.klondikeService.getTableauStack(tableauIndex);
@@ -262,7 +271,7 @@ export class KlondikeBoardComponent implements OnInit, OnDestroy {
 				const topCard = waste.cards[waste.cards.length - 1];
 				const fromRect = this.captureCardRect(topCard.id);
 				if (this.klondikeService.moveCard(waste, tableau, waste.cards.length - 1)) {
-					if (fromRect) this.animateFlyCard(topCard, fromRect);
+					if (fromRect) this.startFly(topCard, fromRect);
 				}
 			}
 		}
@@ -342,7 +351,7 @@ export class KlondikeBoardComponent implements OnInit, OnDestroy {
 		const fromRect = this.dragFromRect;
 		const count = sourceStack.cards.length - actualCardIndex;
 		if (this.klondikeService.moveCard(sourceStack, targetStack, actualCardIndex) && fromRect && movedCard) {
-			this.animateFlyCard(movedCard, fromRect, count);
+			this.startFly(movedCard, fromRect, count);
 		}
 		this.dragSource = null;
 		this.dragFromRect = null;
