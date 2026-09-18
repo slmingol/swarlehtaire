@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, NgZone } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Subject, takeUntil } from 'rxjs';
 import { KlondikeService, GameState } from '../../service/klondike.service';
@@ -89,7 +89,11 @@ export class KlondikeBoardComponent implements OnInit, OnDestroy {
 		}
 	};
 
-	constructor(private klondikeService: KlondikeService, private cardSizeService: CardSizeService) {}
+	constructor(
+		private klondikeService: KlondikeService,
+		private cardSizeService: CardSizeService,
+		private ngZone: NgZone
+	) {}
 
 	ngOnInit(): void {
 		this.cardSizeService.setColumns(7);
@@ -158,59 +162,63 @@ export class KlondikeBoardComponent implements OnInit, OnDestroy {
 	}
 
 	private startFly(card: Card, fromRect: DOMRect, count = 1): void {
-		// Mark card hidden BEFORE moveCard() so Angular renders it hidden at destination
 		this.flyingCardIds = new Set([...this.flyingCardIds, card.id]);
 
-		setTimeout(() => {
-			const newEl = document.querySelector(`[data-card-id="${card.id}"]`) as HTMLElement | null;
-			const toRect = newEl?.getBoundingClientRect();
-
-			const revealCard = () => {
+		const revealCard = () => {
+			this.ngZone.run(() => {
 				this.flyingCardIds = new Set([...this.flyingCardIds].filter(id => id !== card.id));
-			};
+			});
+		};
 
-			if (!newEl || !toRect ||
-				(Math.abs(toRect.left - fromRect.left) < 2 && Math.abs(toRect.top - fromRect.top) < 2)) {
-				revealCard();
-				return;
-			}
-
-			const cardH = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--card-h').trim()) || 163;
-			const height = Math.min(cardH + (count - 1) * 28, cardH * 2.5);
-			const isRed = card.suit === Suit.HEARTS || card.suit === Suit.DIAMONDS;
-
-			const fly = document.createElement('div');
-			fly.style.cssText = [
-				'position:fixed',
-				`width:${fromRect.width}px`,
-				`height:${height}px`,
-				`left:${fromRect.left}px`,
-				`top:${fromRect.top}px`,
-				'pointer-events:none',
-				'z-index:10000',
-				'background:white',
-				'border:1px solid #ccc',
-				'border-radius:12px',
-				'box-shadow:0 8px 24px rgba(0,0,0,0.35)',
-				'display:flex',
-				'align-items:flex-start',
-				'padding:4px 6px',
-				`color:${isRed ? '#dc143c' : '#000'}`,
-				'font-size:16px',
-				'font-weight:bold',
-				'will-change:transform',
-				'transition:transform 0.22s cubic-bezier(0.2,0,0.2,1)',
-			].join(';');
-			document.body.appendChild(fly);
-
-			fly.getBoundingClientRect(); // force reflow
-			fly.style.transform = `translate(${toRect.left - fromRect.left}px,${toRect.top - fromRect.top}px)`;
-
+		// Run animation work outside Angular zone to avoid triggering extra CD cycles
+		this.ngZone.runOutsideAngular(() => {
 			setTimeout(() => {
-				fly.remove();
-				revealCard();
-			}, 240);
-		}, 0);
+				const newEl = document.querySelector(`[data-card-id="${card.id}"]`) as HTMLElement | null;
+				const toRect = newEl?.getBoundingClientRect();
+
+				if (!newEl || !toRect ||
+					(Math.abs(toRect.left - fromRect.left) < 2 && Math.abs(toRect.top - fromRect.top) < 2)) {
+					revealCard();
+					return;
+				}
+
+				const cardH = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--card-h').trim()) || 163;
+				const height = Math.min(cardH + (count - 1) * 28, cardH * 2.5);
+				const isRed = card.suit === Suit.HEARTS || card.suit === Suit.DIAMONDS;
+
+				const fly = document.createElement('div');
+				fly.style.cssText = [
+					'position:fixed',
+					`width:${fromRect.width}px`,
+					`height:${height}px`,
+					`left:${fromRect.left}px`,
+					`top:${fromRect.top}px`,
+					'pointer-events:none',
+					'z-index:10000',
+					'background:white',
+					'border:1px solid #ccc',
+					'border-radius:12px',
+					'box-shadow:0 8px 24px rgba(0,0,0,0.35)',
+					'display:flex',
+					'align-items:flex-start',
+					'padding:4px 6px',
+					`color:${isRed ? '#dc143c' : '#000'}`,
+					'font-size:16px',
+					'font-weight:bold',
+					'will-change:transform',
+					'transition:transform 0.22s cubic-bezier(0.2,0,0.2,1)',
+				].join(';');
+				document.body.appendChild(fly);
+
+				fly.getBoundingClientRect(); // force reflow
+				fly.style.transform = `translate(${toRect.left - fromRect.left}px,${toRect.top - fromRect.top}px)`;
+
+				setTimeout(() => {
+					fly.remove();
+					revealCard();
+				}, 240);
+			}, 0);
+		});
 	}
 
 	onWasteClick(_event: { card: Card; index: number }): void {
