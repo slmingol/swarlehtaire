@@ -35,7 +35,6 @@
 	top: 0;
 	left: 0;
 	touch-action: none;
-	transition: top 0.1s ease, left 0.1s ease;
 
 	.spread-down & {
 		pointer-events: auto;
