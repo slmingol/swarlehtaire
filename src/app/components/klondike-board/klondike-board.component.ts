@@ -156,10 +156,13 @@ export class KlondikeBoardComponent implements OnInit, OnDestroy {
 
 	private animateFlyCard(card: Card, fromRect: DOMRect, count = 1): void {
 		setTimeout(() => {
-			const newEl = document.querySelector(`[data-card-id="${card.id}"]`);
+			const newEl = document.querySelector(`[data-card-id="${card.id}"]`) as HTMLElement | null;
 			if (!newEl) return;
 			const toRect = newEl.getBoundingClientRect();
 			if (Math.abs(toRect.left - fromRect.left) < 2 && Math.abs(toRect.top - fromRect.top) < 2) return;
+
+			// Hide destination card while ghost is in flight
+			newEl.style.visibility = 'hidden';
 
 			const cardH = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--card-h').trim()) || 163;
 			const height = Math.min(cardH + (count - 1) * 28, cardH * 2.5);
@@ -192,7 +195,10 @@ export class KlondikeBoardComponent implements OnInit, OnDestroy {
 			fly.getBoundingClientRect(); // force reflow
 			fly.style.transform = `translate(${toRect.left - fromRect.left}px,${toRect.top - fromRect.top}px)`;
 
-			setTimeout(() => fly.remove(), 240);
+			setTimeout(() => {
+				fly.remove();
+				newEl.style.visibility = '';
+			}, 240);
 		}, 0);
 	}
 
