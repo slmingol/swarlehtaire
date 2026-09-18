@@ -194,7 +194,7 @@ export class KlondikeBoardComponent implements OnInit, OnDestroy {
 					'font-size:16px',
 					'font-weight:bold',
 					'will-change:transform',
-					'transition:transform 0.15s cubic-bezier(0.2,0,0.2,1)',
+					'transition:transform 0.11s cubic-bezier(0.2,0,0.2,1)',
 				].join(';');
 				document.body.appendChild(fly);
 
