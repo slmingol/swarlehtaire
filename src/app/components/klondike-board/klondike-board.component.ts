@@ -201,10 +201,10 @@ export class KlondikeBoardComponent implements OnInit, OnDestroy {
 				fly.getBoundingClientRect(); // force reflow
 				fly.style.transform = `translate(${toRect.left - fromRect.left}px,${toRect.top - fromRect.top}px)`;
 
-				setTimeout(() => {
+				fly.addEventListener('transitionend', () => {
 					fly.remove();
 					newEl.style.visibility = '';
-				}, 240);
+				}, { once: true });
 			});
 		});
 	}
