@@ -52,10 +52,10 @@ export class KlondikeService {
 
 	private updateState(): void {
 		const state: GameState = {
-			stock: this.game.stock.cards,
-			waste: this.game.waste.cards,
-			foundations: this.game.foundations.map(f => f.cards),
-			tableau: this.game.tableau.map(t => t.cards),
+			stock: [...this.game.stock.cards],
+			waste: [...this.game.waste.cards],
+			foundations: this.game.foundations.map(f => [...f.cards]),
+			tableau: this.game.tableau.map(t => [...t.cards]),
 			moveCount: this.game.moveCount,
 			canUndo: this.game.canUndo,
 			isWon: this.game.isWon(),
