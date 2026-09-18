@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Subject, takeUntil } from 'rxjs';
 import { KlondikeService, GameState } from '../../service/klondike.service';
 import { StackComponent } from '../stack/stack.component';
-import { Card } from '../../model/card';
+import { Card, Suit } from '../../model/card';
 import { GameVariant } from '../../model/klondike-game';
 import { CardSizeService } from '../../service/card-size.service';
 
@@ -25,6 +25,7 @@ export class KlondikeBoardComponent implements OnInit, OnDestroy {
 	
 	// Drag state
 	dragSource: { type: 'tableau' | 'waste' | 'foundation'; index: number; cardIndex: number } | null = null;
+	private dragFromRect: DOMRect | null = null;
 
 	// Rules panel state
 	showRules = false;
@@ -148,38 +149,95 @@ export class KlondikeBoardComponent implements OnInit, OnDestroy {
 		this.klondikeService.drawFromStock();
 	}
 
+	private captureCardRect(cardId: string): DOMRect | null {
+		const el = document.querySelector(`[data-card-id="${cardId}"]`);
+		return el ? el.getBoundingClientRect() : null;
+	}
+
+	private animateFlyCard(card: Card, fromRect: DOMRect, count = 1): void {
+		setTimeout(() => {
+			const newEl = document.querySelector(`[data-card-id="${card.id}"]`);
+			if (!newEl) return;
+			const toRect = newEl.getBoundingClientRect();
+			if (Math.abs(toRect.left - fromRect.left) < 2 && Math.abs(toRect.top - fromRect.top) < 2) return;
+
+			const cardH = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--card-h').trim()) || 163;
+			const height = Math.min(cardH + (count - 1) * 28, cardH * 2.5);
+			const isRed = card.suit === Suit.HEARTS || card.suit === Suit.DIAMONDS;
+
+			const fly = document.createElement('div');
+			fly.style.cssText = [
+				'position:fixed',
+				`width:${fromRect.width}px`,
+				`height:${height}px`,
+				`left:${fromRect.left}px`,
+				`top:${fromRect.top}px`,
+				'pointer-events:none',
+				'z-index:10000',
+				'background:white',
+				'border:1px solid #ccc',
+				'border-radius:12px',
+				'box-shadow:0 8px 24px rgba(0,0,0,0.35)',
+				'display:flex',
+				'align-items:flex-start',
+				'padding:4px 6px',
+				`color:${isRed ? '#dc143c' : '#000'}`,
+				'font-size:16px',
+				'font-weight:bold',
+				'will-change:transform',
+				'transition:transform 0.22s cubic-bezier(0.2,0,0.2,1)',
+			].join(';');
+			document.body.appendChild(fly);
+
+			fly.getBoundingClientRect(); // force reflow
+			fly.style.transform = `translate(${toRect.left - fromRect.left}px,${toRect.top - fromRect.top}px)`;
+
+			setTimeout(() => fly.remove(), 240);
+		}, 0);
+	}
+
 	onWasteClick(_event: { card: Card; index: number }): void {
 		const wasteStack = this.klondikeService.getWasteStack();
 		const topCardIndex = wasteStack.cards.length - 1;
 		if (topCardIndex < 0) return;
+		const topCard = wasteStack.cards[topCardIndex];
+		const fromRect = this.captureCardRect(topCard.id);
 
 		for (let i = 0; i < 4; i++) {
 			const foundation = this.klondikeService.getFoundationStack(i);
-			if (this.klondikeService.moveCard(wasteStack, foundation, topCardIndex)) return;
+			if (this.klondikeService.moveCard(wasteStack, foundation, topCardIndex)) {
+				if (fromRect) this.animateFlyCard(topCard, fromRect);
+				return;
+			}
 		}
 
 		for (let i = 0; i < this.gameState.tableau.length; i++) {
 			const tableau = this.klondikeService.getTableauStack(i);
-			if (this.klondikeService.moveCard(wasteStack, tableau, topCardIndex)) return;
+			if (this.klondikeService.moveCard(wasteStack, tableau, topCardIndex)) {
+				if (fromRect) this.animateFlyCard(topCard, fromRect);
+				return;
+			}
 		}
 	}
 
 	onTableauClick(tableauIndex: number, event: { card: Card; index: number }): void {
 		const tableau = this.klondikeService.getTableauStack(tableauIndex);
-		
-		// Try to move to foundation
+		const count = tableau.cards.length - event.index;
+		const fromRect = this.captureCardRect(event.card.id);
+
 		for (let i = 0; i < 4; i++) {
 			const foundation = this.klondikeService.getFoundationStack(i);
 			if (this.klondikeService.moveCard(tableau, foundation, event.index)) {
+				if (fromRect) this.animateFlyCard(event.card, fromRect, count);
 				return;
 			}
 		}
-		
-		// Try to move to another tableau
+
 		for (let i = 0; i < this.gameState.tableau.length; i++) {
 			if (i !== tableauIndex) {
 				const targetTableau = this.klondikeService.getTableauStack(i);
 				if (this.klondikeService.moveCard(tableau, targetTableau, event.index)) {
+					if (fromRect) this.animateFlyCard(event.card, fromRect, count);
 					return;
 				}
 			}
@@ -191,13 +249,15 @@ export class KlondikeBoardComponent implements OnInit, OnDestroy {
 	}
 
 	onTableauStackClick(tableauIndex: number): void {
-		// Try to move from waste to empty tableau
 		const tableau = this.klondikeService.getTableauStack(tableauIndex);
 		if (tableau.cards.length === 0) {
 			const waste = this.klondikeService.getWasteStack();
 			if (waste.cards.length > 0) {
-				// Move the top card (last card in waste)
-				this.klondikeService.moveCard(waste, tableau, waste.cards.length - 1);
+				const topCard = waste.cards[waste.cards.length - 1];
+				const fromRect = this.captureCardRect(topCard.id);
+				if (this.klondikeService.moveCard(waste, tableau, waste.cards.length - 1)) {
+					if (fromRect) this.animateFlyCard(topCard, fromRect);
+				}
 			}
 		}
 	}
@@ -224,10 +284,21 @@ export class KlondikeBoardComponent implements OnInit, OnDestroy {
 	// Drag and Drop handlers
 	onDragStart(source: { type: 'tableau' | 'waste' | 'foundation'; index: number; cardIndex: number }): void {
 		this.dragSource = source;
+		let cardId: string | undefined;
+		if (source.type === 'tableau') {
+			cardId = this.klondikeService.getTableauStack(source.index).cards[source.cardIndex]?.id;
+		} else if (source.type === 'waste') {
+			const waste = this.klondikeService.getWasteStack();
+			cardId = waste.cards[waste.cards.length - 1]?.id;
+		} else if (source.type === 'foundation') {
+			cardId = this.klondikeService.getFoundationStack(source.index).cards[source.cardIndex]?.id;
+		}
+		this.dragFromRect = cardId ? this.captureCardRect(cardId) : null;
 	}
 
 	onDragEnd(): void {
 		this.dragSource = null;
+		this.dragFromRect = null;
 	}
 
 	onDrop(target: { type: 'tableau' | 'foundation'; index: number }): void {
@@ -235,7 +306,7 @@ export class KlondikeBoardComponent implements OnInit, OnDestroy {
 
 		let sourceStack;
 		let actualCardIndex = this.dragSource.cardIndex;
-		
+
 		if (this.dragSource.type === 'tableau') {
 			sourceStack = this.klondikeService.getTableauStack(this.dragSource.index);
 		} else if (this.dragSource.type === 'waste') {
@@ -243,6 +314,7 @@ export class KlondikeBoardComponent implements OnInit, OnDestroy {
 			actualCardIndex = sourceStack.cards.length - 1;
 			if (actualCardIndex < 0) {
 				this.dragSource = null;
+				this.dragFromRect = null;
 				return;
 			}
 		} else if (this.dragSource.type === 'foundation') {
@@ -260,7 +332,13 @@ export class KlondikeBoardComponent implements OnInit, OnDestroy {
 			return;
 		}
 
-		this.klondikeService.moveCard(sourceStack, targetStack, actualCardIndex);
+		const movedCard = sourceStack.cards[actualCardIndex];
+		const fromRect = this.dragFromRect;
+		const count = sourceStack.cards.length - actualCardIndex;
+		if (this.klondikeService.moveCard(sourceStack, targetStack, actualCardIndex) && fromRect && movedCard) {
+			this.animateFlyCard(movedCard, fromRect, count);
+		}
 		this.dragSource = null;
+		this.dragFromRect = null;
 	}
 }
