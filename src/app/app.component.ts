@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, NgZone } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { KlondikeBoardComponent } from './components/klondike-board/klondike-board.component';
 import { SpiderBoardComponent } from './components/spider-board/spider-board.component';
@@ -44,6 +44,7 @@ export class AppComponent {
 	gameTypes = [GameType.KLONDIKE, GameType.SPIDER, GameType.FREECELL, GameType.PYRAMID, GameType.SCORPION, GameType.YUKON, GameType.BAKERS_DOZEN, GameType.CLOCK];
 	showHelp = false;
 
+	private ngZone = inject(NgZone);
 	private klondike = inject(KlondikeService);
 	private freeCell = inject(FreeCellService);
 	private pyramid = inject(PyramidService);
@@ -62,12 +63,12 @@ export class AppComponent {
 		if (target instanceof Element && target.nodeName.toLowerCase() === 'input') return;
 
 		if (event.key === 'Escape') {
-			this.showHelp = false;
+			this.ngZone.run(() => { this.showHelp = false; });
 			return;
 		}
 
 		if (event.key === '?') {
-			this.showHelp = !this.showHelp;
+			this.ngZone.run(() => { this.showHelp = !this.showHelp; });
 			event.preventDefault();
 			return;
 		}
@@ -78,15 +79,15 @@ export class AppComponent {
 		const isUndo = key === 'u' || (event.ctrlKey && key === 'z');
 
 		if (key === 'n') {
-			this.newGame();
+			this.ngZone.run(() => this.newGame());
 		} else if (isUndo) {
-			this.undo();
+			this.ngZone.run(() => this.undo());
 		} else if (key === 'd' || key === ' ') {
-			this.drawFromStock();
+			this.ngZone.run(() => this.drawFromStock());
 		} else if (key === 'a') {
-			this.autoComplete();
+			this.ngZone.run(() => this.autoComplete());
 		} else if (key === 'w') {
-			this.placeWasteCard();
+			this.ngZone.run(() => this.placeWasteCard());
 		} else {
 			return;
 		}
