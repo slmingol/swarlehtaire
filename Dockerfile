@@ -17,6 +17,10 @@ COPY . .
 # Build the application
 RUN npm run build:prod
 
+# Write version metadata
+RUN node -e "const p=require('./package.json'); require('fs').writeFileSync('./dist/version.txt', p.version);"
+RUN date -u +"%Y-%m-%dT%H:%M:%SZ" > dist/build-date.txt
+
 # Stage 2: Serve with nginx
 FROM nginx:alpine
 
@@ -25,6 +29,10 @@ COPY docker/nginx.conf /etc/nginx/conf.d/default.conf
 
 # Copy built app from builder stage
 COPY --from=builder /app/dist /usr/share/nginx/html
+
+# Startup banner
+COPY docker/banner.sh /docker-entrypoint.d/05-banner.sh
+RUN chmod +x /docker-entrypoint.d/05-banner.sh
 
 # Add healthcheck
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \

@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, NgZone } from '@angular/core';
+import { Component, OnInit, OnDestroy, NgZone, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Subject, takeUntil } from 'rxjs';
 import { KlondikeService, GameState } from '../../service/klondike.service';
@@ -89,7 +89,8 @@ export class KlondikeBoardComponent implements OnInit, OnDestroy {
 	constructor(
 		private klondikeService: KlondikeService,
 		private cardSizeService: CardSizeService,
-		private ngZone: NgZone
+		private ngZone: NgZone,
+		private cdr: ChangeDetectorRef
 	) {}
 
 	ngOnInit(): void {
@@ -103,6 +104,7 @@ export class KlondikeBoardComponent implements OnInit, OnDestroy {
 					this.rainItems = [];
 				}
 				this.gameState = state;
+				this.cdr.detectChanges();
 			});
 	}
 
