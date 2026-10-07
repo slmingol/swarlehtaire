@@ -105,9 +105,14 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh release create "${{ steps.version.outputs.new_version }}" \
-            --title "${{ steps.version.outputs.new_version }}" \
-            --notes "Release ${{ steps.version.outputs.new_version }}"
+          NEW_VERSION=${{ steps.version.outputs.new_version }}
+          if gh release view "${NEW_VERSION}" &>/dev/null; then
+            echo "Release ${NEW_VERSION} already exists — skipping"
+            exit 0
+          fi
+          gh release create "${NEW_VERSION}" \
+            --title "${NEW_VERSION}" \
+            --notes "Release ${NEW_VERSION}"
 
       - name: Summary
         run: |
