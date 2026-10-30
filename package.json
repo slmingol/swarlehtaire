@@ -63,7 +63,7 @@
 		"@mah/builders": "file:tools/builders",
 		"@stylistic/eslint-plugin": "5.10.0",
 		"@types/jest": "30.0.0",
-		"@types/node": "26.6.5",
+		"@types/node": "26.6.6",
 		"angular-eslint": "22.6.0",
 		"baseline-browser-mapping": "2.11.34",
 		"eslint": "10.13.0",
